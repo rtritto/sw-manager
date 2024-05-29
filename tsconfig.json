@@ -6,23 +6,13 @@
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "isolatedModules": true,
-    "module": "ESNext",
+    "module": "CommonJS",
     "moduleResolution": "Node",
     "noEmit": true,
-    "paths": {
-      "@/*": [
-        "src/*"
-      ]
-    },
+    "outDir": "dist",
     "resolveJsonModule": true,
     "skipLibCheck": true,
     "strict": true,
-    "target": "ESNext",
-    "types": [
-      "src/index.d.ts"
-    ]
-  },
-  "include": [
-    "src/**/*"
-  ]
+    "target": "ESNext"
+  }
 }
