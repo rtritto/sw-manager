@@ -1,9 +1,17 @@
 import { app, BrowserWindow } from 'electron'
+import { createRequire } from 'node:module'
 import path from 'node:path'
+import { fileURLToPath } from 'node:url'
 
-// Handle creating/removing shortcuts on Windows when installing/uninstalling.
-if (require('electron-squirrel-startup')) {
+const require = createRequire(import.meta.url)
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
+
+try {
+  // Handle creating/removing shortcuts on Windows when installing/uninstalling.
+  require.resolve('electron-squirrel-startup/package.json', { paths: [__dirname] })
   app.quit()
+} catch {
+  // Ignore
 }
 
 const createWindow = () => {
@@ -12,7 +20,7 @@ const createWindow = () => {
     width: 800,
     height: 600,
     webPreferences: {
-      preload: path.join(__dirname, 'preload.js')
+      preload: path.join(__dirname, 'preload.mjs')
     }
   })
 
