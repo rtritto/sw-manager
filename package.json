@@ -1,20 +1,29 @@
 {
   "name": "yarn-berry-template",
   "version": "1.0.0",
-  "exports": "./src/index.ts",
+  "exports": "./src/main.ts",
   "types": "./src/index.d.ts",
   "license": "MIT",
   "type": "module",
   "packageManager": "yarn@4.2.2",
   "scripts": {
-    "start": "yarn node --import tsx/esm ./start.ts",
+    "start": "yarn electron ./src/main.ts",
     "od": "yarn outdated"
   },
   "devDependencies": {
-    "@types/node": "^20.12.12",
+    "@electron-forge/plugin-fuses": "^7.4.0",
+    "@electron-forge/plugin-vite": "^7.4.0",
+    "@electron/fuses": "^1.8.0",
+    "@types/node": "^20.14.2",
+    "@typescript-eslint/eslint-plugin": "^7.13.0",
+    "@typescript-eslint/parser": "^7.13.0",
     "@yarnpkg/sdks": "^3.1.2",
-    "tsx": "^4.10.5",
-    "typescript": "5.4.3"
+    "electron": "^31.0.0",
+    "eslint": "8.57.0",
+    "eslint-plugin-import": "^2.29.1",
+    "tsx": "^4.15.1",
+    "typescript": "5.4.3",
+    "vite": "^5.2.13"
   },
   "engines": {
     "node": ">=18 || >=20 || >=22"
