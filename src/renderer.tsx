@@ -26,6 +26,10 @@
  * ```
  */
 
+import { render } from 'solid-js/web'
 import './index.css'
+import App from './App'
 
-console.log('👋 This message is being logged by "renderer.ts", included via Vite')
+render(() => <App />, document.getElementById('app')!)
+
+// console.log('👋 This message is being logged by "renderer.ts", included via Vite')
