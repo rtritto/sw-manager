@@ -1,14 +1,12 @@
 import { app, BrowserWindow } from 'electron'
-import { createRequire } from 'node:module'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
-const require = createRequire(import.meta.url)
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 try {
   // Handle creating/removing shortcuts on Windows when installing/uninstalling.
-  require.resolve('electron-squirrel-startup/package.json', { paths: [__dirname] })
+  import.meta.resolve('electron-squirrel-startup/package.json')
   app.quit()
 } catch {
   // Ignore
