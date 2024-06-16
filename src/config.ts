@@ -452,13 +452,7 @@ let APP_MAP: Config = {
       version: '2023.5.0',
       website: 'Softpedia',
     },
-  },
-  Games: {
-    'TEKKEN 7: Ultimate Edition': {
-      url: 'https://fitgirl-repacks.site/tekken-7-ultimate-edition',
-      version: '4.22',
-    },
-  },
+  }
 }
 
 export default APP_MAP
