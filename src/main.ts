@@ -1,6 +1,9 @@
-import { app, BrowserWindow } from 'electron'
+import { app, BrowserWindow, ipcMain } from 'electron'
+import { autoUpdater } from 'electron-updater'
+import log from 'electron-log'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { CHANNELS, EVENTS } from './constants'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
@@ -12,13 +15,26 @@ try {
   // Ignore
 }
 
+autoUpdater.logger = log
+autoUpdater.logger.transports.file.level = 'info'
+
+let mainWindow: BrowserWindow
+
 const createWindow = () => {
   // Create the browser window.
-  const mainWindow = new BrowserWindow({
+  mainWindow = new BrowserWindow({
     width: 800,
     height: 600,
+    // autoHideMenuBar: true,
+    // icon: 'icon.ico',
     webPreferences: {
       preload: path.join(__dirname, 'preload.mjs')
+      // devTools: false
+      // enableRemoteModule: true,  // deprecated and replaced with @electron/remote (or ipcRenderer.invoke, see README)
+      //#region Fix TypeError: window.require is not a function & ReferenceError: require is not defined
+      // nodeIntegration: true,
+      // contextIsolation: false  // remove protection against prototype pollution
+      //#endregion
     }
   })
 
@@ -31,29 +47,58 @@ const createWindow = () => {
 
   // Open the DevTools.
   mainWindow.webContents.openDevTools()
+
+  // mainWindow.maximize();
 }
+
+function sendStatusToWindow(text: string) {
+  log.info(text)
+  mainWindow.webContents.send(text) // send notification to UI about Update
+}
+
+autoUpdater.on(CHANNELS.ERROR, () => {
+  sendStatusToWindow(CHANNELS.UPDATE_ERROR)
+})
+autoUpdater.on(CHANNELS.UPDATE_NOT_AVAILABLE, () => {
+  sendStatusToWindow(CHANNELS.UPDATE_NOT_AVAILABLE)
+})
+autoUpdater.on(CHANNELS.UPDATE_AVAILABLE, () => {
+  sendStatusToWindow(CHANNELS.UPDATE_AVAILABLE)
+})
+autoUpdater.on(CHANNELS.UPDATE_DOWNLOADED, () => {
+  sendStatusToWindow(CHANNELS.UPDATE_DOWNLOADED)
+})
+
+ipcMain.on(CHANNELS.RESTART_APP, () => {
+  autoUpdater.quitAndInstall()
+})
+ipcMain.on(CHANNELS.CHECK_FOR_UPDATE, () => {
+  autoUpdater.checkForUpdates()
+})
+
+// Check for Update when App launch
+app.on(EVENTS.READY, () => {
+  autoUpdater.checkForUpdates()
+})
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
-app.on('ready', createWindow)
+app.on(EVENTS.READY, createWindow)
 
 // Quit when all windows are closed, except on macOS. There, it's common
 // for applications and their menu bar to stay active until the user quits
 // explicitly with Cmd + Q.
-app.on('window-all-closed', () => {
+app.on(EVENTS.WINDOW_ALL_CLOSED, () => {
   if (process.platform !== 'darwin') {
     app.quit()
   }
 })
 
-app.on('activate', () => {
+app.on(EVENTS.ACTIVATE, () => {
   // On OS X it's common to re-create a window in the app when the
   // dock icon is clicked and there are no other windows open.
   if (BrowserWindow.getAllWindows().length === 0) {
     createWindow()
   }
 })
-
-// In this file you can include the rest of your app's specific main process
-// code. You can also put them in separate files and import them here.
