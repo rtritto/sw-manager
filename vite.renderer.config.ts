@@ -1,6 +1,8 @@
 import type { ConfigEnv, UserConfig } from 'vite'
 import { defineConfig } from 'vite'
 import solidPlugin from 'vite-plugin-solid'
+import tailwindcss from 'tailwindcss'
+import autoprefixer from 'autoprefixer'
 import { pluginExposeRenderer } from './vite.base.config'
 
 // https://vitejs.dev/config
@@ -20,6 +22,14 @@ export default defineConfig((env) => {
       pluginExposeRenderer(name),
       solidPlugin()
     ],
+    css: {
+      postcss: {
+        plugins: [
+          tailwindcss,
+          autoprefixer
+        ]
+      }
+    },
     resolve: {
       preserveSymlinks: true
     },
