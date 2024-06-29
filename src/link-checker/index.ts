@@ -59,7 +59,7 @@ const getUseRequest = ({ website }) => {
   }
 }
 
-const getLabel = (label: string, APP_MAP) => {
+const getLabel = (label: string, APP_MAP: Config) => {
   return APP_MAP[label]
   // TODO add generic PC support
   // return label in APP_MAP ?
@@ -67,8 +67,19 @@ const getLabel = (label: string, APP_MAP) => {
   //   Object.keys(APP_MAP).find(k => k.includes(label))
 }
 
-const main = async () => {
-  const results = {}
+const addToResult = (titleVersion: string | undefined, section: NestedConfig) => {
+  const { url, download, version } = section
+  return {
+    version: {
+      current: version,
+      newest: titleVersion,
+      url: download || url
+    }
+  }
+}
+
+export const main = async () => {
+  const results: Results = {}
 
   for (const label of APP_TO_CHECK) {
     const SECTION = getLabel(label, APP_MAP)
@@ -87,24 +98,28 @@ const main = async () => {
         const datas = await Promise.allSettled(
           chunk.map(async (appName) => {
             try {
-              const { isVersionUpdated, titleVersion, fileUrl } = await getVersionAndFileUrl(SECTION[appName])
+              const versionAndFileUrl = await getVersionAndFileUrl(SECTION[appName])
+              const { isVersionUpdated, titleVersion, fileUrl } = versionAndFileUrl
               console.debug('isVersionUpdated, titleVersion, fileUrl: ', isVersionUpdated, titleVersion, fileUrl)
 
               // PREVENT download FILE
               // return
 
               if (!titleVersion && !SECTION[appName].download) {
-                const { url, download, version } = SECTION[appName]
-                results[label][appName] = {
-                  version: {
-                    current: version,
-                    newest: titleVersion,
-                    url: download || url
-                  }
-                }
+                results[label][appName] = addToResult(titleVersion, SECTION[appName])
                 // EXIT
                 return
               }
+
+              if (isVersionUpdated === true && !(DOWNLOAD_ALL === 'true')) {
+                // EXIT
+                return
+              }
+
+              results[label][appName] = addToResult(titleVersion, SECTION[appName])
+
+              // TODO remove
+              return
 
               const appFolder = `${applyRegex(appName, { version: titleVersion! })}`
 
@@ -128,10 +143,10 @@ const main = async () => {
                 }
               }
 
-              if (isVersionUpdated === true && !(DOWNLOAD_ALL === 'true')) {
-                // EXIT
-                return
-              }
+              // if (isVersionUpdated === true && !(DOWNLOAD_ALL === 'true')) {
+              //   // EXIT
+              //   return
+              // }
 
               const appFolderPath = path.join(OUTPUT_FOLDER, label, appFolder)
               /* const isFolderCreated = */ createFoder(appFolderPath)
@@ -145,7 +160,7 @@ const main = async () => {
               }
 
               // PREVENT WRITE config FILE
-              return
+              return;
 
               // update config file
               APP_MAP[label][appName].version = titleVersion
@@ -177,4 +192,8 @@ const main = async () => {
   console.log(JSON.stringify(results, null, 2))
 }
 
-main()
+export const getDownloadLinks = async () => {
+
+}
+
+// main()

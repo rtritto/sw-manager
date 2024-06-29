@@ -44,3 +44,17 @@ type Config = {
     [type2: string]: NestedConfig
   }
 }
+
+type Version = {
+  current: string
+  newest?: string
+  url?: string
+}
+
+type Results = {
+  [type: string]: {
+    [type2: string]: {
+      version: Version
+    }
+  }
+}

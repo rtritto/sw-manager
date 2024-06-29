@@ -4,6 +4,7 @@ import log from 'electron-log'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { CHANNELS, EVENTS } from './constants'
+import { main } from './link-checker'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
@@ -16,7 +17,9 @@ try {
 }
 
 autoUpdater.logger = log
-autoUpdater.logger.transports.file.level = 'info'
+// https://github.com/megahertz/electron-log/blob/master/docs/transports/file.md
+// The file transport writes log messages to a file.
+// autoUpdater.logger.transports.file.level = 'info'
 
 let mainWindow: BrowserWindow
 
@@ -72,14 +75,15 @@ autoUpdater.on(CHANNELS.UPDATE_DOWNLOADED, () => {
 ipcMain.on(CHANNELS.RESTART_APP, () => {
   autoUpdater.quitAndInstall()
 })
-ipcMain.on(CHANNELS.CHECK_FOR_UPDATE, () => {
-  autoUpdater.checkForUpdates()
+ipcMain.on(CHANNELS.CHECK_FOR_UPDATE, async () => {
+  // autoUpdater.checkForUpdates()
+  await main()
 })
 
 // Check for Update when App launch
-app.on(EVENTS.READY, () => {
-  autoUpdater.checkForUpdates()
-})
+// app.on(EVENTS.READY, () => {
+//   autoUpdater.checkForUpdates()
+// })
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
