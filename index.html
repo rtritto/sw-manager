@@ -1,16 +1,21 @@
 <!DOCTYPE html>
-<html class="dark">
+<html data-theme="dark">
 
 <head>
   <meta charset="UTF-8">
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
+  <!-- <meta http-equiv="Content-Security-Policy" content="img-src 'self' data:; default-src 'self' http://XX.XX.XX.XX:8084/mypp/"> -->
+
+  <!-- <meta class="meta-theme" name="theme-color" content="#FAFAFA" data-other="#18181B" />
+  <meta class="meta-theme" name="color-scheme" content="light" data-other="dark" /> -->
+
   <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
   <meta http-equiv="Content-Security-Policy"
-    content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'">
+    content="img-src https://*; default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'">
 
-  <link rel="stylesheet" href="./styles.css">
+  <!-- <link rel="stylesheet" href="./styles.css"> -->
 
   <title>Hello World!</title>
 </head>

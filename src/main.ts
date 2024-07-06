@@ -2,11 +2,9 @@ import { app, BrowserWindow, ipcMain } from 'electron'
 import { autoUpdater } from 'electron-updater'
 import log from 'electron-log'
 import path from 'node:path'
-import { fileURLToPath } from 'node:url'
 import { CHANNELS, EVENTS } from './constants'
-import { main } from './link-checker'
-
-const __dirname = path.dirname(fileURLToPath(import.meta.url))
+import { getInfos } from './link-checker'
+import APP_MAP from './config'
 
 try {
   // Handle creating/removing shortcuts on Windows when installing/uninstalling.
@@ -31,7 +29,7 @@ const createWindow = () => {
     // autoHideMenuBar: true,
     // icon: 'icon.ico',
     webPreferences: {
-      preload: path.join(__dirname, 'preload.mjs')
+      preload: path.join(import.meta.dirname, 'preload.mjs')
       // devTools: false
       // enableRemoteModule: true,  // deprecated and replaced with @electron/remote (or ipcRenderer.invoke, see README)
       //#region Fix TypeError: window.require is not a function & ReferenceError: require is not defined
@@ -45,7 +43,7 @@ const createWindow = () => {
   if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
     mainWindow.loadURL(MAIN_WINDOW_VITE_DEV_SERVER_URL)
   } else {
-    mainWindow.loadFile(path.join(__dirname, `../renderer/${MAIN_WINDOW_VITE_NAME}/index.html`))
+    mainWindow.loadFile(path.join(import.meta.dirname, `../renderer/${MAIN_WINDOW_VITE_NAME}/index.html`))
   }
 
   // Open the DevTools.
@@ -75,10 +73,19 @@ autoUpdater.on(CHANNELS.UPDATE_DOWNLOADED, () => {
 ipcMain.on(CHANNELS.RESTART_APP, () => {
   autoUpdater.quitAndInstall()
 })
-ipcMain.on(CHANNELS.CHECK_FOR_UPDATE, async () => {
-  // autoUpdater.checkForUpdates()
-  await main()
-})
+
+const handleCheckForUpdate = async () => {
+  const infos = await getInfos(APP_MAP.SO)
+  return infos
+}
+
+ipcMain.handle(CHANNELS.CHECK_FOR_UPDATE, handleCheckForUpdate)
+
+// ipcMain.on(CHANNELS.CHECK_FOR_UPDATE, async () => {
+//   // autoUpdater.checkForUpdates()
+//   const infos = await getInfos(APP_MAP.SO)
+//   console.log('a: ', infos);
+// })
 
 // Check for Update when App launch
 // app.on(EVENTS.READY, () => {
@@ -106,3 +113,12 @@ app.on(EVENTS.ACTIVATE, () => {
     createWindow()
   }
 })
+
+// app.whenReady().then(() => {
+//   // ipcMain.handle('dialog:checkForUpdate', handleCheckForUpdate)
+//   ipcMain.handle(CHANNELS.CHECK_FOR_UPDATE, handleCheckForUpdate)
+//   createWindow()
+//   app.on(EVENTS.ACTIVATE, function () {
+//     if (BrowserWindow.getAllWindows().length === 0) createWindow()
+//   })
+// })

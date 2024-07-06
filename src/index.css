@@ -9,7 +9,7 @@
 /* @import url("https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,900&display=swap"); */
 @tailwind base;
 
-@layer base {
+/* @layer base {
   html {
     @apply text-surface;
     @apply bg-white;
@@ -19,11 +19,11 @@
     @apply text-neutral-50;
     @apply bg-body-dark;
   }
-}
+} */
 
 @tailwind components;
 @tailwind utilities;
 
-p {
+/* p {
   @apply leading-[1.6];
-}
+} */

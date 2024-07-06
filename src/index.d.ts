@@ -1,6 +1,10 @@
 interface Window {
-  electron: {
-    ipcRenderer: import('electron').IpcRenderer
+  electronApi: {
+    ipcRenderer: import('electron').IpcRenderer,
+    checkForUpdate: () => Promise<{
+      results: InfoResult,
+      error: Error
+    }>
   }
 }
 
@@ -39,10 +43,12 @@ type NestedConfig = {
   comment?: string
 }
 
+type AppConfig = {
+  [appName: string]: NestedConfig
+}
+
 type Config = {
-  [type: string]: {
-    [type2: string]: NestedConfig
-  }
+  [category: string]: AppConfig
 }
 
 type Version = {
@@ -51,10 +57,26 @@ type Version = {
   url?: string
 }
 
-type Results = {
-  [type: string]: {
-    [type2: string]: {
-      version: Version
-    }
+type AppResult = {
+  [appName: string]: {
+    version: Version
   }
 }
+
+type Results = {
+  [category: string]: AppResult
+}
+
+type Info = {
+  isVersionUpdated?: boolean
+  currentVersion?: string
+  newVersion?: string
+  fileUrl?: string
+  imageUrl?: string
+}
+
+type InfoResult = {
+  [appName: string]: Info
+}
+
+type Component = import('solid-js').Component

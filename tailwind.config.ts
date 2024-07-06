@@ -1,15 +1,16 @@
 import type { Config } from 'tailwindcss'
-import twElementPlugin from 'tw-elements/plugin.cjs'
+import daisyui from 'daisyui'
 
 export default {
   content: [
     './index.html',
-    './src/**/*.{ts,tsx}',
-    // './node_modules/tw-elements/js/**/*.js'
+    './src/**/*.{ts,tsx}'
   ],
-  theme: {
-    extend: {}
+  daisyui: {
+    themes: [
+      // 'light',
+      'dark'
+    ]
   },
-  darkMode: 'class',
-  plugins: [twElementPlugin]
+  plugins: [daisyui]
 } as Config

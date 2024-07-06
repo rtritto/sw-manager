@@ -30,7 +30,7 @@ const getFilteredVersion = (currentVersion: string, newestVersions: string[]): s
  *  https://github.com/<OWNER>/<REPO>/releases/download/<RELEASE_TAG>/<FILE>.<EXTENSION>
  *  https://fs21.uploadrar.com:183/d/<RANDOM_ALPHANUMERIC>/<FILE>.<EXTENSION>
  */
-const getVersionAndFileUrl = async (obj: NestedConfig): Promise<{ isVersionUpdated?: boolean, titleVersion?: string, fileUrl?: string }> => {
+const getVersionAndFileUrl = async (obj: NestedConfig): Promise<Info> => {
   const { website, version } = obj
 
   // if (!website) {
@@ -43,6 +43,8 @@ const getVersionAndFileUrl = async (obj: NestedConfig): Promise<{ isVersionUpdat
     case 'FileCatchers':
     case 'FCPortables': {
       const html = await getHTML(obj.url!)
+      const meta = html.querySelector('meta[property="og:image"]')
+      const ogImageContent = meta?.getAttribute('content')
       const title = html.querySelector('title')
       const title_raw = title?.rawText
       titleVersion = title_raw?.match(REGEX_GET_VERSION)?.at(0)
@@ -80,8 +82,10 @@ const getVersionAndFileUrl = async (obj: NestedConfig): Promise<{ isVersionUpdat
 
       return {
         isVersionUpdated: titleVersion === version,
-        titleVersion,
-        fileUrl
+        currentVersion: version,
+        newVersion: titleVersion,
+        fileUrl,
+        imageUrl: ogImageContent
       }
       // }
       // return {}
@@ -112,7 +116,8 @@ const getVersionAndFileUrl = async (obj: NestedConfig): Promise<{ isVersionUpdat
       if (download) {
         return {
           isVersionUpdated: titleVersion === version,
-          titleVersion,
+          currentVersion: version,
+          newVersion: titleVersion,
           fileUrl: applyRegex(download, { version: applyVersionOptions(titleVersion, obj.versionOptions) as string })
         }
       }
@@ -190,7 +195,8 @@ const getVersionAndFileUrl = async (obj: NestedConfig): Promise<{ isVersionUpdat
       const { download, assetNumber, versionOptions } = obj
       return {
         isVersionUpdated: titleVersion === version,
-        titleVersion,
+        currentVersion: version,
+        newVersion: titleVersion,
         fileUrl: download
           ? applyRegex(download, { version: applyVersionOptions(data.tag_name, versionOptions) as string })
           : data.assets[assetNumber!].browser_download_url
@@ -218,7 +224,8 @@ const getVersionAndFileUrl = async (obj: NestedConfig): Promise<{ isVersionUpdat
   if (download) {
     return {
       isVersionUpdated: titleVersion === version,
-      titleVersion,
+      currentVersion: version,
+      newVersion: titleVersion,
       fileUrl: applyRegex(download, { version: applyVersionOptions(titleVersion, versionOptions) as string })
     }
   }

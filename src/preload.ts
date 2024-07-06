@@ -7,10 +7,11 @@ import { CHANNELS } from './constants'
 
 // Set up context bridge between the renderer process and the main process
 // expose as window
-contextBridge.exposeInMainWorld('electron', {
+contextBridge.exposeInMainWorld('electronApi', {
   ipcRenderer: {
     send: ipcRenderer.send
-  }
+  },
+  checkForUpdate: () => ipcRenderer.invoke(CHANNELS.CHECK_FOR_UPDATE)
 })
 // contextBridge.exposeInMainWorld('api', {
 // send: (channel, data) => {

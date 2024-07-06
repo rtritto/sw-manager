@@ -1,7 +1,8 @@
+import type { Component } from 'solid-js'
 import Home from '../components/Home'
 
 
-const App = () => {
+const App: Component = () => {
   return (
     <div>
       <h1>Solid + Vite + TypeScript</h1>
