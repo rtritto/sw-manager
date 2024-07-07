@@ -62,7 +62,12 @@
   "shouldBeDependencies": [
     "daisyui",
     "electron-squirrel-startup",
-    "solid-js"
+    "jotai",
+    "json5",
+    "node-html-parser",
+    "solid-jotai",
+    "solid-js",
+    "undici"
   ],
   "tmpDevDependencies": [
     "@electron/remote",
