@@ -8,6 +8,8 @@ export const CHANNELS = {
   RESTART_APP: 'restart_app',
   CHECK_FOR_UPDATE: 'check_for_update',
   DOWNLOAD_BY_URL: 'download_by_url',
+  DOWNLOAD_COMPLETED: 'download-completed',
+  DOWNLOAD_PROGRESS: 'download-progress',
   SINGLE_DOWNLOAD: 'single_download',
   UPDATE_ERROR: 'update_error',
 } as const

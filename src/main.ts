@@ -95,7 +95,16 @@ ipcMain.on(CHANNELS.DOWNLOAD_BY_URL, async (event: Electron.IpcMainInvokeEvent, 
 
   const win = BrowserWindow.getFocusedWindow()!
   try {
-    await download(win, downloadUrl, { saveAs: true })
+    await download(win, downloadUrl, {
+      // saveAs: true,
+      onProgress: (progress) => {
+        console.log('onProgress.progress: ', progress);
+        mainWindow.webContents.send(CHANNELS.DOWNLOAD_PROGRESS, progress)
+      },
+      onCompleted: (item) => {
+        mainWindow.webContents.send(CHANNELS.DOWNLOAD_COMPLETED, item)
+      }
+    })
   } catch (error) {
     if (error instanceof CancelError) {
       console.info('item.cancel() was called')

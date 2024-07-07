@@ -9,6 +9,7 @@ import { CHANNELS } from './constants'
 // expose as window
 contextBridge.exposeInMainWorld('electronApi', {
   ipcRenderer: {
+    on: ipcRenderer.on,
     send: ipcRenderer.send
   },
   checkForUpdate: () => ipcRenderer.invoke(CHANNELS.CHECK_FOR_UPDATE),
