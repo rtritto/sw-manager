@@ -24,6 +24,195 @@ const getFilteredVersion = (currentVersion: string, newestVersions: string[]): s
   return filteredVersion
 }
 
+export const getVersion = async (obj: NestedConfig): Promise<Info> => {
+  const { website, version } = obj
+
+  // if (!website) {
+  //   // IGNORE
+  //   return {}
+  // }
+
+  let titleVersion: string | undefined
+  let ogImageContent: string | undefined
+  let additionalInfo: Promise<AdditionalInfo> | undefined
+  switch (website) {
+    case 'FileCatchers':
+    case 'FCPortables': {
+      const html = await getHTML(obj.url!)
+      const title = html.querySelector('title')
+      const title_raw = title?.rawText
+      titleVersion = title_raw?.match(REGEX_GET_VERSION)?.at(0)
+
+      const meta = html.querySelector('meta[property="og:image"]')
+      ogImageContent = meta?.getAttribute('content')
+
+      additionalInfo = (async (html: HTMLElement) => {
+        // ? TODO get titleVersion from html
+        // if (titleVersion !== version) {
+        const content = html.querySelector('#content')
+        const lastP = content!.querySelector('p:last-of-type')
+        const a = lastP!.querySelector('a')
+        const urlUploadrar = a!.getAttribute('href')
+
+        if (!urlUploadrar) {
+          throw Error('Missing urlUploadrar')
+        }
+
+        const fileId = urlUploadrar.split('/').at(-1)
+        const htmlUploadrar = await fetch(urlUploadrar, {
+          headers: {
+            // 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:92.0) Gecko/20100101 Firefox/92.0',
+            // Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+            // 'Accept-Language': 'en-US,en;q=0.5',
+            'Content-Type': 'application/x-www-form-urlencoded',
+            // 'Upgrade-Insecure-Requests': '1',
+            // 'Sec-Fetch-Dest': 'document',
+            // 'Sec-Fetch-Mode': 'navigate',
+            // 'Sec-Fetch-Site': 'same-origin'
+          },
+          body: `op=download2&id=${fileId}&rand=&referer=https%3A%2F%2Fuploadrar.com&method_free=Free+Download&adblock_detected=0`,
+          method: 'POST',
+          credentials: 'include',
+          mode: 'cors',
+          referrer: urlUploadrar
+        }).then((res) => res.text())
+        const fileUrl = htmlUploadrar.match(/<a href="([^"]+"?uploadrar.com:[^"]+)"/)?.at(1)
+        return {
+          fileUrl
+        }
+      })(html)
+      break
+    }
+    case 'PortableApps': {
+      const html = await getHTML(obj.url!)
+
+      const downloadInfo = html.querySelector('p.download-info')
+      // const [downloadInfoCN] = downloadInfo.childNodes
+      // return downloadInfoCN.rawText  // Version <VERSION> for Windows Multilingual
+      const downloadInfoAs = downloadInfo!.querySelectorAll('a')
+      const downloadInfoA = downloadInfoAs!.find((a) => a.childNodes[0].rawText === 'Antivirus Scan')
+      const downloadInfoAHref = downloadInfoA!.rawAttrs
+      const { v } = querystring.parse(decode(downloadInfoAHref)) as { v: string } // convert "&amp" to "&"
+      titleVersion = v
+      break
+    }
+    case 'Softpedia': {
+      const html = await getHTML(obj.url!)
+
+      const h2 = html.querySelector('h2.sanscond.curpo')
+      const strong = h2!.querySelector('strong')
+      const strongCN = strong!.childNodes.at(0)
+      titleVersion = strongCN!.rawText
+      additionalInfo = (async (obj: NestedConfig, titleVersion: string) => {
+        const { download } = obj
+        if (download) {
+          return {
+            fileUrl: applyRegex(download, { version: applyVersionOptions(titleVersion, obj.versionOptions) as string })
+          }
+        }
+
+        throw Error('Missing download')
+        // TODO
+
+        const fd = new FormData()
+        fd.append('t', 15)
+        fd.append('id', obj.id!)
+        fd.append('tsf', 0)
+        const htmlDlInfo = await fetch('https://www.softpedia.com/_xaja/dlinfo.php?skipa=0', {
+          body: fd,
+          method: 'POST'
+        }).then((res) => res.text())
+        const rootDlInfo = parse(htmlDlInfo, PARSE_OPTIONS)
+        const muhscroll = rootDlInfo.querySelector('#muhscroll')
+        const div = muhscroll!.querySelector(`div.dllinkbox2:nth-child(${obj.childNumber!})`)
+        const a = div!.querySelector('a')
+        const href = a!.getAttribute('href')
+
+        // TODO get new page and scrap the setup link
+        // await fetch(href)
+      })(obj, titleVersion)
+      break
+    }
+    case 'GitHub': {
+      const { owner, repo, tagNumber } = obj
+      let response: Dispatcher.ResponseData | undefined
+      if (!tagNumber) {
+        response = await request(`https://api.github.com/repos/${owner}/${repo}/releases/latest`, {
+          headers: {
+            'User-Agent': `UA/${Date.now().toString()}`
+          }
+        })
+      }
+      let data: GithubTag
+      if (response && response.statusCode === 200) {
+        data = await response.body.json() as GithubTag
+      } else {
+        // Not Found
+        // no redirect to /latest/<LATEST_TAG>
+        // but is redirected to /releases because latest tag is missing
+        const responseTagsRaw = await request(`https://api.github.com/repos/${owner}/${repo}/tags`, {
+          headers: {
+            'User-Agent': `UA/${Date.now().toString()}`
+          }
+        })
+        if (responseTagsRaw.statusCode !== 200) {
+          throw Error('Missing tags')
+        }
+        const responseTags = await responseTagsRaw.body.json() as GithubTags
+        const firstTag = responseTags.at(obj.tagNumber ?? 0)!
+        const tag = firstTag.name
+        const responseTagRaw = await request(`https://api.github.com/repos/${owner}/${repo}/releases/tags/${tag}`, {
+          headers: {
+            'User-Agent': `UA/${Date.now().toString()}`
+          }
+        })
+        if (responseTagRaw.statusCode === 200) {
+          data = await responseTagRaw.body.json() as GithubTag
+        } else {
+          data = { tag_name: tag } as GithubTag
+          const { download } = obj
+          if (!download) {
+            throw Error('Missing download')
+          }
+        }
+        additionalInfo = (async (obj: NestedConfig, data: GithubTag) => {
+          const { download, assetNumber, versionOptions } = obj
+          return {
+            fileUrl: download
+              ? applyRegex(download, { version: applyVersionOptions(data.tag_name, versionOptions) as string })
+              : data.assets[assetNumber!].browser_download_url
+          }
+        })(obj, data)
+      }
+      if (!data.tag_name) {
+        throw Error('Missing tag_name')
+      }
+      titleVersion = data.tag_name?.match(REGEX_GET_VERSION)?.at(0)
+      break
+    }
+    case 'VideoHelp':
+    default: {
+      const { url } = obj
+      if (!url) {
+        throw Error('Missing url')
+      }
+      const html = await getHTML(url)
+
+      const title = html.querySelector('title')!.rawText
+      // clean version
+      const newestVersions = [...title.matchAll(/[0-9.]+/g)].flat()
+      titleVersion = getFilteredVersion(version, newestVersions)
+    }
+  }
+  return {
+    isVersionUpdated: titleVersion === version,
+    currentVersion: version,
+    newVersion: titleVersion,
+    imageUrl: ogImageContent,
+    additionalInfo
+  }
+}
+
 /**
  * @param obj
  * @returns fileUrl

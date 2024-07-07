@@ -6,7 +6,7 @@ import { fetch, request, Agent } from 'undici'
 import applyRegex from './funcs/applyRegex'
 import downloadFile from './funcs/downloadFile'
 import createFoder from './funcs/createFolder'
-import getVersionAndFileUrl from './getVersionAndFileUrl'
+import { getVersion } from './getVersionAndFileUrl'
 import APP_MAP from '../config'
 
 const { DOWNLOAD_ALL } = process.env
@@ -102,7 +102,7 @@ export const getInfos = async (appConfigs: AppConfig) => {
     await Promise.allSettled(
       chunk.map(async (appName: string) => {
         try {
-          const info = await getVersionAndFileUrl(appConfigs[appName])
+          const info = await getVersion(appConfigs[appName])
           results[appName] = info
         } catch (error) {
           promiseErrors[appName] = error

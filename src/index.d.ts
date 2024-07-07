@@ -67,12 +67,16 @@ type Results = {
   [category: string]: AppResult
 }
 
+type AdditionalInfo = {
+  fileUrl?: string
+}
+
 type Info = {
   isVersionUpdated?: boolean
   currentVersion?: string
   newVersion?: string
-  fileUrl?: string
-  imageUrl?: string
+  imageUrl?: string,
+  additionalInfo?: Promise<AdditionalInfo>
 }
 
 type InfoResult = {
