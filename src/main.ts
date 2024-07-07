@@ -89,6 +89,10 @@ const handleSingleDownload = async (event: Electron.IpcMainInvokeEvent, info: In
 
 ipcMain.handle(CHANNELS.SINGLE_DOWNLOAD, handleSingleDownload)
 
+ipcMain.on(CHANNELS.DOWNLOAD_BY_URL, (event: Electron.IpcMainInvokeEvent, downloadUrl: string) => {
+  mainWindow.webContents.downloadURL(downloadUrl)
+})
+
 // ipcMain.on(CHANNELS.CHECK_FOR_UPDATE, async () => {
 //   // autoUpdater.checkForUpdates()
 //   const infos = await getInfos(APP_MAP.SO)

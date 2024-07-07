@@ -1,15 +1,10 @@
 import { For, type Component } from 'solid-js'
+import { CHANNELS } from '../constants'
 
 const TableSelectionRows: Component<{ infos: Info[] }> = (props) => {
   const onDownload = async (info: Info) => {
-    // const downloadLink = await getDownloadLink(info)
     const downloadLink = await window.electronApi.singleDownload({ ...info })
-    console.log('downloadLink: ', downloadLink);
-    // console.log('info: ', info);
-    // const a = await info.additionalInfo
-    // console.log('a: ', a);
-    // const { fileUrl } = a
-    // console.log('url: ', fileUrl);
+    window.electronApi.ipcRenderer.send(CHANNELS.DOWNLOAD_BY_URL, downloadLink)
   }
 
   return (
