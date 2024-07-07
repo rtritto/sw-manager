@@ -1,15 +1,13 @@
 import { Show, createEffect, type Component } from 'solid-js'
-import { useAtom, useAtomValue, } from 'solid-jotai'
-import { infosAtom, messageAtom, showNotificationAtom, showRestartButtonAtom } from '../store/atoms'
+import { useAtom, useAtomValue } from 'solid-jotai'
+import { messageAtom, showNotificationAtom, showRestartButtonAtom } from '../store/atoms'
 import { CHANNELS } from '../constants'
-import TableSelectionRows from '../components/TableSelectionRows'
+import UpdatesManager from './UpdatesManager'
 
 const Home: Component = () => {
   const [showNotification, setShowNotification] = useAtom(showNotificationAtom)
   const showRestartButton = useAtomValue(showRestartButtonAtom)
   const message = useAtomValue(messageAtom)
-
-  const [infos, setInfos] = useAtom(infosAtom)
 
   const closeNotification = () => {
     setShowNotification(true)
@@ -17,12 +15,6 @@ const Home: Component = () => {
 
   const restartApp = () => {
     window.electronApi.ipcRenderer.send(CHANNELS.RESTART_APP)
-  }
-
-  const checkForUpdate = async () => {
-    // window.electronApi.ipcRenderer.send(CHANNELS.CHECK_FOR_UPDATE)
-    const _infos = await window.electronApi.checkForUpdate()
-    setInfos(Object.values(_infos.results))
   }
 
   createEffect(() => {
@@ -33,15 +25,12 @@ const Home: Component = () => {
 
     // Clean the listener after the component is dismounted
     return () => {
-      window.electronApi.ipcRenderer.removeAllListeners(CHANNELS.CHECK_FOR_UPDATE)
       window.electronApi.ipcRenderer.removeAllListeners(CHANNELS.RESTART_APP)
     }
   }, [])
 
   return (
     <div>
-      <button class="btn" onClick={checkForUpdate}>Check For Update</button>
-
       <Show when={showNotification() === true}>
         <div id="notification">
           <p id="message">{message()}</p>
@@ -58,7 +47,7 @@ const Home: Component = () => {
         </div>
       </Show>
 
-      <TableSelectionRows infos={infos()} />
+      <UpdatesManager />
     </div>
   )
 }
