@@ -1,6 +1,6 @@
-import { Show, createEffect, createSignal, type Component } from 'solid-js'
-import { useAtom, useAtomValue } from 'solid-jotai'
-import { messageAtom, showNotificationAtom, showRestartButtonAtom } from '../store/atoms'
+import { Show, createEffect, type Component } from 'solid-js'
+import { useAtom, useAtomValue, } from 'solid-jotai'
+import { infosAtom, messageAtom, showNotificationAtom, showRestartButtonAtom } from '../store/atoms'
 import { CHANNELS } from '../constants'
 import TableSelectionRows from '../components/TableSelectionRows'
 
@@ -9,7 +9,7 @@ const Home: Component = () => {
   const showRestartButton = useAtomValue(showRestartButtonAtom)
   const message = useAtomValue(messageAtom)
 
-  const [infos, setInfos] = createSignal<Info[]>()
+  const [infos, setInfos] = useAtom(infosAtom)
 
   const closeNotification = () => {
     setShowNotification(true)
