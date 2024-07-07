@@ -6,6 +6,7 @@ import { CHANNELS, EVENTS } from './constants'
 import { getInfos } from './link-checker'
 import { getDownloadLink } from './link-checker/getVersionAndFileUrl'
 import APP_MAP from './config'
+import { download, CancelError } from 'electron-dl'
 
 try {
   // Handle creating/removing shortcuts on Windows when installing/uninstalling.
@@ -89,8 +90,19 @@ const handleSingleDownload = async (event: Electron.IpcMainInvokeEvent, info: In
 
 ipcMain.handle(CHANNELS.SINGLE_DOWNLOAD, handleSingleDownload)
 
-ipcMain.on(CHANNELS.DOWNLOAD_BY_URL, (event: Electron.IpcMainInvokeEvent, downloadUrl: string) => {
-  mainWindow.webContents.downloadURL(downloadUrl)
+ipcMain.on(CHANNELS.DOWNLOAD_BY_URL, async (event: Electron.IpcMainInvokeEvent, downloadUrl: string) => {
+  // mainWindow.webContents.downloadURL(downloadUrl)
+
+  const win = BrowserWindow.getFocusedWindow()!
+  try {
+    await download(win, downloadUrl, { saveAs: true })
+  } catch (error) {
+    if (error instanceof CancelError) {
+      console.info('item.cancel() was called')
+    } else {
+      console.error(error)
+    }
+  }
 })
 
 // ipcMain.on(CHANNELS.CHECK_FOR_UPDATE, async () => {
