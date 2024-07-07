@@ -23,7 +23,6 @@ const Home: Component = () => {
     // window.electronApi.ipcRenderer.send(CHANNELS.CHECK_FOR_UPDATE)
     const _infos = await window.electronApi.checkForUpdate()
     setInfos(Object.values(_infos.results))
-    console.log('infos: ', infos());
   }
 
   createEffect(() => {

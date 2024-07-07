@@ -6,7 +6,7 @@ import { fetch, request, Agent } from 'undici'
 import applyRegex from './funcs/applyRegex'
 import downloadFile from './funcs/downloadFile'
 import createFoder from './funcs/createFolder'
-import { getVersion } from './getVersionAndFileUrl'
+import getVersionAndFileUrl, { getVersion } from './getVersionAndFileUrl'
 import APP_MAP from '../config'
 
 const { DOWNLOAD_ALL } = process.env
@@ -67,12 +67,12 @@ const getLabel = (label: string, APP_MAP: Config) => {
   //   Object.keys(APP_MAP).find(k => k.includes(label))
 }
 
-const createResult = (titleVersion: string | undefined, section: NestedConfig, imageUrl: string) => {
+const createResult = (newVersion: string | undefined, section: NestedConfig, imageUrl: string) => {
   const { url, download, version } = section
   return {
     version: {
       current: version,
-      newest: titleVersion,
+      newest: newVersion,
       url: download || url,
       imageUrl
     }
@@ -82,7 +82,7 @@ const createResult = (titleVersion: string | undefined, section: NestedConfig, i
 // const getInfo = async (obj: NestedConfig) => {
 //   const info = await getVersionAndFileUrl(obj)
 
-//   if (!info.titleVersion && !obj.download) {
+//   if (!info.newVersion && !obj.download) {
 //     return info
 //   }
 
@@ -139,16 +139,16 @@ export const main = async () => {
               // TODO remove
               // const info = await getInfo(SECTION[appName])
               // if (info) {
-              //   results[label][appName] = createResult(info.titleVersion, SECTION[appName], info.imageUrl!)
+              //   results[label][appName] = createResult(info.newVersion, SECTION[appName], info.imageUrl!)
               // }
 
               const info = await getVersionAndFileUrl(SECTION[appName])
-              results[label][appName] = createResult(info.titleVersion, SECTION[appName], info.imageUrl!)
+              results[label][appName] = createResult(info.newVersion, SECTION[appName], info.imageUrl!)
 
               // PREVENT download FILE
               return
 
-              const appFolder = `${applyRegex(appName, { version: info.titleVersion! })}`
+              const appFolder = `${applyRegex(appName, { version: info.newVersion! })}`
 
               // DELETE OLD VERSIONS
               const dirsList = fs.readdirSync(path.join(OUTPUT_FOLDER, label), { withFileTypes: true })
@@ -160,8 +160,8 @@ export const main = async () => {
                     && dir.name.startsWith(start)
                     && dir.name.endsWith(end)
                   ) {
-                    // const titleVersionOld = `${applyRegex(appName, { version: APP_MAP[label][appName].version })}`
-                    const oldVersionFolder = path.join(OUTPUT_FOLDER, label, /* titleVersionOld */dir.name)
+                    // const newVersionOld = `${applyRegex(appName, { version: APP_MAP[label][appName].version })}`
+                    const oldVersionFolder = path.join(OUTPUT_FOLDER, label, /* newVersionOld */dir.name)
                     if (fs.existsSync(oldVersionFolder) === true) {
                       fs.rmSync(oldVersionFolder, { recursive: true })
                       // console.log(`oldVersionFolder Delete: ${oldVersionFolder}`)
@@ -190,7 +190,7 @@ export const main = async () => {
               return;
 
               // update config file
-              APP_MAP[label][appName].version = info.titleVersion
+              APP_MAP[label][appName].version = info.newVersion
               const updatedConfig = JSON5.stringify(APP_MAP, null, 2, { quote: '\'' })
               fs.writeFileSync('./src/config.ts', `let APP_MAP: Config = ${updatedConfig}\n\nexport default APP_MAP`)
               // }
