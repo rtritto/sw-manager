@@ -4,7 +4,8 @@ interface Window {
     checkForUpdate: () => Promise<{
       results: InfoResult,
       error: Error
-    }>
+    }>,
+    singleDownload: (info: Info) => Promise<string>
   }
 }
 
@@ -72,10 +73,12 @@ type AdditionalInfo = {
 }
 
 type Info = {
+  website: string
   isVersionUpdated?: boolean
   currentVersion?: string
   newVersion?: string
   imageUrl?: string,
+  fileUrl?: string
   additionalInfo?: Promise<AdditionalInfo>
 }
 

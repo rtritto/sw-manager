@@ -34,7 +34,8 @@ export const getVersion = async (obj: NestedConfig): Promise<Info> => {
 
   let titleVersion: string | undefined
   let ogImageContent: string | undefined
-  let additionalInfo: Promise<AdditionalInfo> | undefined
+  // let additionalInfo: Promise<AdditionalInfo> | undefined
+  let fileUrl: string | undefined
   switch (website) {
     case 'FileCatchers':
     case 'FCPortables': {
@@ -46,41 +47,50 @@ export const getVersion = async (obj: NestedConfig): Promise<Info> => {
       const meta = html.querySelector('meta[property="og:image"]')
       ogImageContent = meta?.getAttribute('content')
 
-      additionalInfo = (async (html: HTMLElement) => {
-        // ? TODO get titleVersion from html
-        // if (titleVersion !== version) {
-        const content = html.querySelector('#content')
-        const lastP = content!.querySelector('p:last-of-type')
-        const a = lastP!.querySelector('a')
-        const urlUploadrar = a!.getAttribute('href')
+      const content = html.querySelector('#content')
+      const lastP = content!.querySelector('p:last-of-type')
+      const a = lastP!.querySelector('a')
+      const urlUploadrar = a!.getAttribute('href')
+      if (!urlUploadrar) {
+        throw Error('Missing urlUploadrar')
+      }
+      fileUrl = urlUploadrar
 
-        if (!urlUploadrar) {
-          throw Error('Missing urlUploadrar')
-        }
+      // additionalInfo = (async (html: HTMLElement) => {
+      //   // ? TODO get titleVersion from html
+      //   // if (titleVersion !== version) {
+      //   // const content = html.querySelector('#content')
+      //   // const lastP = content!.querySelector('p:last-of-type')
+      //   // const a = lastP!.querySelector('a')
+      //   // const urlUploadrar = a!.getAttribute('href')
 
-        const fileId = urlUploadrar.split('/').at(-1)
-        const htmlUploadrar = await fetch(urlUploadrar, {
-          headers: {
-            // 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:92.0) Gecko/20100101 Firefox/92.0',
-            // Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
-            // 'Accept-Language': 'en-US,en;q=0.5',
-            'Content-Type': 'application/x-www-form-urlencoded',
-            // 'Upgrade-Insecure-Requests': '1',
-            // 'Sec-Fetch-Dest': 'document',
-            // 'Sec-Fetch-Mode': 'navigate',
-            // 'Sec-Fetch-Site': 'same-origin'
-          },
-          body: `op=download2&id=${fileId}&rand=&referer=https%3A%2F%2Fuploadrar.com&method_free=Free+Download&adblock_detected=0`,
-          method: 'POST',
-          credentials: 'include',
-          mode: 'cors',
-          referrer: urlUploadrar
-        }).then((res) => res.text())
-        const fileUrl = htmlUploadrar.match(/<a href="([^"]+"?uploadrar.com:[^"]+)"/)?.at(1)
-        return {
-          fileUrl
-        }
-      })(html)
+      //   // if (!urlUploadrar) {
+      //   //   throw Error('Missing urlUploadrar')
+      //   // }
+
+      //   const fileId = urlUploadrar.split('/').at(-1)
+      //   const htmlUploadrar = await fetch(urlUploadrar, {
+      //     headers: {
+      //       // 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:92.0) Gecko/20100101 Firefox/92.0',
+      //       // Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+      //       // 'Accept-Language': 'en-US,en;q=0.5',
+      //       'Content-Type': 'application/x-www-form-urlencoded',
+      //       // 'Upgrade-Insecure-Requests': '1',
+      //       // 'Sec-Fetch-Dest': 'document',
+      //       // 'Sec-Fetch-Mode': 'navigate',
+      //       // 'Sec-Fetch-Site': 'same-origin'
+      //     },
+      //     body: `op=download2&id=${fileId}&rand=&referer=https%3A%2F%2Fuploadrar.com&method_free=Free+Download&adblock_detected=0`,
+      //     method: 'POST',
+      //     credentials: 'include',
+      //     mode: 'cors',
+      //     referrer: urlUploadrar
+      //   }).then((res) => res.text())
+      //   const fileUrl = htmlUploadrar.match(/<a href="([^"]+"?uploadrar.com:[^"]+)"/)?.at(1)
+      //   return {
+      //     fileUrl
+      //   }
+      // })(html)
       break
     }
     case 'PortableApps': {
@@ -103,6 +113,7 @@ export const getVersion = async (obj: NestedConfig): Promise<Info> => {
       const strong = h2!.querySelector('strong')
       const strongCN = strong!.childNodes.at(0)
       titleVersion = strongCN!.rawText
+
       additionalInfo = (async (obj: NestedConfig, titleVersion: string) => {
         const { download } = obj
         if (download) {
@@ -205,11 +216,42 @@ export const getVersion = async (obj: NestedConfig): Promise<Info> => {
     }
   }
   return {
+    website,
     isVersionUpdated: titleVersion === version,
     currentVersion: version,
     newVersion: titleVersion,
     imageUrl: ogImageContent,
-    additionalInfo
+    fileUrl
+    // additionalInfo
+  }
+}
+
+export const getDownloadLink = async (info: Info): Promise<string> => {
+  const { website, fileUrl } = info
+
+  switch (website) {
+    case 'FileCatchers':
+    case 'FCPortables': {
+      const fileId = fileUrl!.split('/').at(-1)
+      const htmlUploadrar = await fetch(fileUrl!, {
+        headers: {
+          // 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:92.0) Gecko/20100101 Firefox/92.0',
+          // Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+          // 'Accept-Language': 'en-US,en;q=0.5',
+          'Content-Type': 'application/x-www-form-urlencoded',
+          // 'Upgrade-Insecure-Requests': '1',
+          // 'Sec-Fetch-Dest': 'document',
+          // 'Sec-Fetch-Mode': 'navigate',
+          // 'Sec-Fetch-Site': 'same-origin'
+        },
+        body: `op=download2&id=${fileId}&rand=&referer=https%3A%2F%2Fuploadrar.com&method_free=Free+Download&adblock_detected=0`,
+        method: 'POST',
+        credentials: 'include',
+        mode: 'cors',
+        referrer: fileUrl!
+      }).then((res) => res.text())
+      return htmlUploadrar.match(/<a href="([^"]+"?uploadrar.com:[^"]+)"/)?.at(1)!
+    }
   }
 }
 

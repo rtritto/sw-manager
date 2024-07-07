@@ -11,7 +11,8 @@ contextBridge.exposeInMainWorld('electronApi', {
   ipcRenderer: {
     send: ipcRenderer.send
   },
-  checkForUpdate: () => ipcRenderer.invoke(CHANNELS.CHECK_FOR_UPDATE)
+  checkForUpdate: () => ipcRenderer.invoke(CHANNELS.CHECK_FOR_UPDATE),
+  singleDownload: (info: Info) => ipcRenderer.invoke(CHANNELS.SINGLE_DOWNLOAD, info)
 })
 // contextBridge.exposeInMainWorld('api', {
 // send: (channel, data) => {

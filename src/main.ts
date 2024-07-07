@@ -4,6 +4,7 @@ import log from 'electron-log'
 import path from 'node:path'
 import { CHANNELS, EVENTS } from './constants'
 import { getInfos } from './link-checker'
+import { getDownloadLink } from './link-checker/getVersionAndFileUrl'
 import APP_MAP from './config'
 
 try {
@@ -80,6 +81,13 @@ const handleCheckForUpdate = async () => {
 }
 
 ipcMain.handle(CHANNELS.CHECK_FOR_UPDATE, handleCheckForUpdate)
+
+const handleSingleDownload = async (event: Electron.IpcMainInvokeEvent, info: Info): Promise<string> => {
+  const downloadLink = await getDownloadLink(info)
+  return downloadLink
+}
+
+ipcMain.handle(CHANNELS.SINGLE_DOWNLOAD, handleSingleDownload)
 
 // ipcMain.on(CHANNELS.CHECK_FOR_UPDATE, async () => {
 //   // autoUpdater.checkForUpdates()

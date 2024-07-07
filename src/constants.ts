@@ -7,6 +7,7 @@ export const CHANNELS = {
   // Custom Channels
   RESTART_APP: 'restart_app',
   CHECK_FOR_UPDATE: 'check_for_update',
+  SINGLE_DOWNLOAD: 'single_download',
   UPDATE_ERROR: 'update_error',
 } as const
 

@@ -1,6 +1,16 @@
 import { For, type Component } from 'solid-js'
 
 const TableSelectionRows: Component<{ infos: Info[] }> = (props) => {
+  const onDownload = async (info: Info) => {
+    // const downloadLink = await getDownloadLink(info)
+    const downloadLink = await window.electronApi.singleDownload({ ...info })
+    console.log('downloadLink: ', downloadLink);
+    // console.log('info: ', info);
+    // const a = await info.additionalInfo
+    // console.log('a: ', a);
+    // const { fileUrl } = a
+    // console.log('url: ', fileUrl);
+  }
 
   return (
     <div class="overflow-x-auto">
@@ -76,9 +86,9 @@ const TableSelectionRows: Component<{ infos: Info[] }> = (props) => {
                   <span class="badge badge-ghost badge-sm">Desktop Support Technician</span>
                 </td> */}
                 <th>
-                  <div class="tooltip" data-tip={item.fileUrl}>
-                    <button class="btn" value={item.fileUrl}>Download</button>
-                  </div>
+                  {/* <div class="tooltip" data-tip={item}> */}
+                  <button class="btn" onClick={() => onDownload(item)}>Download</button>
+                  {/* </div> */}
                 </th>
               </tr>
             )}
