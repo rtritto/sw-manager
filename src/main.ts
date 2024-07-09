@@ -6,7 +6,7 @@ import { CHANNELS, EVENTS } from './constants'
 import { getInfos } from './link-checker'
 import { getDownloadLink } from './link-checker/getVersionAndFileUrl'
 import APP_MAP from './config'
-import { download, CancelError } from 'electron-dl'
+import { ElectronDownloadManager } from 'electron-dl-manager'
 
 try {
   // Handle creating/removing shortcuts on Windows when installing/uninstalling.
@@ -22,6 +22,8 @@ autoUpdater.logger = log
 // autoUpdater.logger.transports.file.level = 'info'
 
 let mainWindow: BrowserWindow
+
+const manager = new ElectronDownloadManager()
 
 const createWindow = () => {
   // Create the browser window.
@@ -93,25 +95,20 @@ ipcMain.handle(CHANNELS.SINGLE_DOWNLOAD, handleSingleDownload)
 ipcMain.on(CHANNELS.DOWNLOAD_BY_URL, async (event: Electron.IpcMainInvokeEvent, downloadUrl: string) => {
   // mainWindow.webContents.downloadURL(downloadUrl)
 
-  const win = BrowserWindow.getFocusedWindow()!
-  try {
-    await download(win, downloadUrl, {
-      // saveAs: true,
-      onProgress: (progress) => {
-        console.log('onProgress.progress: ', progress);
-        mainWindow.webContents.send(CHANNELS.DOWNLOAD_PROGRESS, progress)
+  await manager.download({
+    window: mainWindow,
+    url: downloadUrl,
+    // enable Save As
+    saveDialogOptions: {},
+    callbacks: {
+      onDownloadProgress: ({ percentCompleted }) => {
+        mainWindow.webContents.send(CHANNELS.DOWNLOAD_PROGRESS, percentCompleted)
       },
-      onCompleted: (item) => {
-        mainWindow.webContents.send(CHANNELS.DOWNLOAD_COMPLETED, item)
+      onDownloadCompleted: ({ item }) => {
+        mainWindow.webContents.send(CHANNELS.DOWNLOAD_COMPLETED, item.getFilename())
       }
-    })
-  } catch (error) {
-    if (error instanceof CancelError) {
-      console.info('item.cancel() was called')
-    } else {
-      console.error(error)
     }
-  }
+  })
 })
 
 // ipcMain.on(CHANNELS.CHECK_FOR_UPDATE, async () => {

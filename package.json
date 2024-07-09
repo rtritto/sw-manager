@@ -40,7 +40,7 @@
     "autoprefixer": "^10.4.19",
     "daisyui": "^4.12.10",
     "electron": "^31.1.0",
-    "electron-dl": "^4.0.0",
+    "electron-dl-manager": "^3.0.0",
     "electron-log": "^5.1.5",
     "electron-updater": "^6.2.1",
     "eslint": "8.57.0",
@@ -63,7 +63,7 @@
   "shouldBeDependencies": [
     "daisyui",
     "electron",
-    "electron-dl",
+    "electron-dl-manager",
     "electron-log",
     "electron-updater",
     "electron-squirrel-startup",

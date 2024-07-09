@@ -5,11 +5,13 @@ import { useSetAtom } from 'solid-jotai'
 import { messageAtom, showNotificationAtom, showRestartButtonAtom } from './store/atoms'
 import { CHANNELS } from './constants'
 
+type IpcRendererOnParams = Parameters<Electron.IpcRenderer['on']>
+
 // Set up context bridge between the renderer process and the main process
 // expose as window
 contextBridge.exposeInMainWorld('electronApi', {
   ipcRenderer: {
-    on: ipcRenderer.on,
+    on: (channel: IpcRendererOnParams[0], listener: IpcRendererOnParams[1]) => ipcRenderer.on(channel, listener),
     send: ipcRenderer.send
   },
   checkForUpdate: () => ipcRenderer.invoke(CHANNELS.CHECK_FOR_UPDATE),

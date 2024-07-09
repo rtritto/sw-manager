@@ -1,4 +1,3 @@
-import type { File, Progress } from 'electron-dl'
 import { useAtom } from 'solid-jotai'
 import { createEffect, createSignal, type Component } from 'solid-js'
 import { infosAtom } from '../store/atoms'
@@ -18,16 +17,11 @@ const UpdatesManager: Component = () => {
 
   createEffect(() => {
     // Listen for the event
-    console.log('createEffect');
-    window.electronApi.ipcRenderer.on(CHANNELS.DOWNLOAD_PROGRESS, (event: Electron.IpcRendererEvent, args: Progress[]) => {
-      const [progress] = args
-      console.log('window.electronApi.ipcRenderer progress.percent: ', progress.percent);
-      setDownloadProgress(progress.percent * 100)
+    window.electronApi.ipcRenderer.on(CHANNELS.DOWNLOAD_PROGRESS, (event: Electron.IpcRendererEvent, percentCompleted: number) => {
+      setDownloadProgress(percentCompleted)
     })
-    window.electronApi.ipcRenderer.on(CHANNELS.DOWNLOAD_COMPLETED, (event: Electron.IpcRendererEvent, args: File[]) => {
-      const [downloadedItem] = args
-      console.log('window.electronApi.ipcRenderer downloadedItem: ', downloadedItem);
-      setDownloadFileName(downloadedItem.path.split('/').pop())
+    window.electronApi.ipcRenderer.on(CHANNELS.DOWNLOAD_COMPLETED, (event: Electron.IpcRendererEvent, filename: string) => {
+      setDownloadFileName(filename)
     })
 
     // Clean the listener after the component is dismounted
