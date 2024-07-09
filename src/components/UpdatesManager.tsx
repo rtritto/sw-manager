@@ -10,24 +10,18 @@ const UpdatesManager: Component = () => {
   const [infos, setInfos] = useAtom(infosAtom)
 
   const checkForUpdate = async () => {
-    // window.electronApi.ipcRenderer.send(CHANNELS.CHECK_FOR_UPDATE)
     const _infos = await window.electronApi.checkForUpdate()
     setInfos(Object.values(_infos.results))
   }
 
   createEffect(() => {
     // Listen for the event
-    window.electronApi.ipcRenderer.on(CHANNELS.DOWNLOAD_PROGRESS, (event: Electron.IpcRendererEvent, percentCompleted: number) => {
+    window.electronApi.ipcRenderer.on(CHANNELS.DOWNLOAD_PROGRESS, (percentCompleted: number) => {
       setDownloadProgress(percentCompleted)
     })
-    window.electronApi.ipcRenderer.on(CHANNELS.DOWNLOAD_COMPLETED, (event: Electron.IpcRendererEvent, filename: string) => {
+    window.electronApi.ipcRenderer.on(CHANNELS.DOWNLOAD_COMPLETED, (filename: string) => {
       setDownloadFileName(filename)
     })
-
-    // Clean the listener after the component is dismounted
-    return () => {
-      window.electronApi.ipcRenderer.removeAllListeners(CHANNELS.CHECK_FOR_UPDATE)
-    }
   }, [])
 
   return (

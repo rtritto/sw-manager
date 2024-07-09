@@ -1,6 +1,13 @@
+type ValueOf<T> = T[keyof T]
+
+type Channels = ValueOf<typeof import('./constants').CHANNELS>
+
 interface Window {
   electronApi: {
-    ipcRenderer: import('electron').IpcRenderer,
+    ipcRenderer: {
+      on(channel: Channels, func: (...args: any[]) => void): () => void
+      send(channel: Channels, ...args: any[]): void
+    },
     checkForUpdate: () => Promise<{
       results: InfoResult,
       error: Error

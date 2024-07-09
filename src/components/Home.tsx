@@ -17,18 +17,6 @@ const Home: Component = () => {
     window.electronApi.ipcRenderer.send(CHANNELS.RESTART_APP)
   }
 
-  createEffect(() => {
-    // Listen for the event
-    // window.electronApi.ipcRenderer.on('', (event, arg) => {
-    //   ...
-    // })
-
-    // Clean the listener after the component is dismounted
-    return () => {
-      window.electronApi.ipcRenderer.removeAllListeners(CHANNELS.RESTART_APP)
-    }
-  }, [])
-
   return (
     <div>
       <Show when={showNotification() === true}>

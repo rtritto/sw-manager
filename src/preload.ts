@@ -5,45 +5,25 @@ import { useSetAtom } from 'solid-jotai'
 import { messageAtom, showNotificationAtom, showRestartButtonAtom } from './store/atoms'
 import { CHANNELS } from './constants'
 
-type IpcRendererOnParams = Parameters<Electron.IpcRenderer['on']>
-
-// Set up context bridge between the renderer process and the main process
-// expose as window
+// Set up context bridge between the renderer process and the main process expose as window
 contextBridge.exposeInMainWorld('electronApi', {
+  // https://github.com/davidgs/on-air-desktop/blob/main/src/main/preload.ts
   ipcRenderer: {
-    on: (channel: IpcRendererOnParams[0], listener: IpcRendererOnParams[1]) => ipcRenderer.on(channel, listener),
-    send: ipcRenderer.send
+    on(channel: Channels, func: (...args: any[]) => void) {
+      const subscription = (_event: Electron.IpcRendererEvent, ...args: any[]) => func(...args)
+      ipcRenderer.on(channel, subscription)
+
+      return () => {
+        ipcRenderer.removeListener(channel, subscription)
+      }
+    },
+    send(channel: Channels, ...args: any[]) {
+      ipcRenderer.send(channel, ...args)
+    }
   },
   checkForUpdate: () => ipcRenderer.invoke(CHANNELS.CHECK_FOR_UPDATE),
   singleDownload: (info: Info) => ipcRenderer.invoke(CHANNELS.SINGLE_DOWNLOAD, info)
 })
-// contextBridge.exposeInMainWorld('api', {
-// send: (channel, data) => {
-//   // whitelist channels
-//   let validChannels = ["toMain"]
-//   if (validChannels.includes(channel)) {
-//     ipcRenderer.send(channel, data)
-//   }
-// },
-// receive: (channel, func) => {
-//   let validChannels = ["fromMain"]
-//   if (validChannels.includes(channel)) {
-//     // Deliberately strip event as it includes `sender`
-//     ipcRenderer.on(channel, (event, ...args) => fn(...args))
-//   }
-// }
-// })
-
-// contextBridge.exposeInMainWorld('windowControls', {
-//   // close: () => ipcRenderer.send('windowControls:close'),
-//   // maximize: () => ipcRenderer.send('windowControls:maximize'),
-//   // minimize: () => ipcRenderer.send('windowControls:minimize'),
-//   // add: (data) => ipcRenderer.send('item:add', data),
-// })
-
-// ipcRenderer.on('itemreceived',(event,message)=>{
-//   console.log('item received message',message)
-// }
 
 const setShowNotification = useSetAtom(showNotificationAtom)
 const setShowRestartButtonAtom = useSetAtom(showRestartButtonAtom)
