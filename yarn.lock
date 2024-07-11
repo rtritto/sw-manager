@@ -1539,6 +1539,42 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@tabler/icons-solidjs@npm:^3.10.0":
+  version: 3.10.0
+  resolution: "@tabler/icons-solidjs@npm:3.10.0"
+  dependencies:
+    "@tabler/icons": "npm:3.10.0"
+  peerDependencies:
+    solid-js: ^1.4.7
+  checksum: 10c0/bbe3f37a14b292016f753e5f78d57aa921446d1c13cd3487567808a57da7c6d76143312439e68fffded4aea3d0b4dea4e48b50bcc3923229fd292a0019600619
+  languageName: node
+  linkType: hard
+
+"@tabler/icons@npm:3.10.0":
+  version: 3.10.0
+  resolution: "@tabler/icons@npm:3.10.0"
+  checksum: 10c0/8b6b3d481a822b4bcdd7467a0d0dc14e7e7af56d98e61f9794bffc564c50be1fd0af1d216fcbf36e123916ac8f8a790fa8e60eeb9bbcfd40a2b7549a3888c7ad
+  languageName: node
+  linkType: hard
+
+"@tanstack/solid-table@npm:^8.19.2":
+  version: 8.19.2
+  resolution: "@tanstack/solid-table@npm:8.19.2"
+  dependencies:
+    "@tanstack/table-core": "npm:8.19.2"
+  peerDependencies:
+    solid-js: ">=1.3"
+  checksum: 10c0/984db81c8d6f826960e792bd108d2d3be678a9983a76cf18b3b86c0ce89de0e66e8d19e4044e595fc6b66e6aad23a3b54d167c9cfd3ffb0362baaf1f716085d4
+  languageName: node
+  linkType: hard
+
+"@tanstack/table-core@npm:8.19.2":
+  version: 8.19.2
+  resolution: "@tanstack/table-core@npm:8.19.2"
+  checksum: 10c0/f09f1b4860899466f106fd5b89faf465f0d5210416505d0d6a6641025da05dec7f8eb193ca98d204288f05eb2b617497e0cd9e274ead3f504391749696cfcd3f
+  languageName: node
+  linkType: hard
+
 "@tootallnate/once@npm:2":
   version: 2.0.0
   resolution: "@tootallnate/once@npm:2.0.0"
@@ -9703,6 +9739,8 @@ __metadata:
     "@electron-forge/plugin-vite": "npm:^7.4.0"
     "@electron-forge/shared-types": "npm:^7.4.0"
     "@electron/fuses": "npm:^1.8.0"
+    "@tabler/icons-solidjs": "npm:^3.10.0"
+    "@tanstack/solid-table": "npm:^8.19.2"
     "@types/electron-squirrel-startup": "npm:^1.0.2"
     "@types/node": "npm:^20.14.10"
     "@typescript-eslint/eslint-plugin": "npm:^7.15.0"
