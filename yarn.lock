@@ -1651,6 +1651,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/bytes@npm:^3":
+  version: 3.1.4
+  resolution: "@types/bytes@npm:3.1.4"
+  checksum: 10c0/4649550082e279f32a76a1dda31c3f88370eadfcd0b25fb7cbd22b22ffcc2be45ebe5486c14025acba0718247edb55e376255dcca6d759c833ce4c962e22b683
+  languageName: node
+  linkType: hard
+
 "@types/cacheable-request@npm:^6.0.1":
   version: 6.0.3
   resolution: "@types/cacheable-request@npm:6.0.3"
@@ -1663,7 +1670,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/electron-squirrel-startup@npm:^1.0.2":
+"@types/electron-squirrel-startup@npm:^1":
   version: 1.0.2
   resolution: "@types/electron-squirrel-startup@npm:1.0.2"
   checksum: 10c0/d6d6b7b26ef1a0814f7fec15649032d3d518c961155ac3b8e08408d1fff6b08d0e1597ef2926ede34e37dee091129b72e064ba711820a91b3d9f12574a3666a8
@@ -1733,7 +1740,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:*, @types/node@npm:^20.14.10, @types/node@npm:^20.9.0":
+"@types/node@npm:*, @types/node@npm:^20, @types/node@npm:^20.9.0":
   version: 20.14.10
   resolution: "@types/node@npm:20.14.10"
   dependencies:
@@ -2676,7 +2683,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"bytes@npm:3.1.2":
+"bytes@npm:3.1.2, bytes@npm:^3.1.2":
   version: 3.1.2
   resolution: "bytes@npm:3.1.2"
   checksum: 10c0/76d1c43cbd602794ad8ad2ae94095cddeb1de78c5dddaa7005c51af10b0176c69971a6d88e805a90c2b6550d76636e43c40d8427a808b8645ede885de4a0358e
@@ -9741,12 +9748,14 @@ __metadata:
     "@electron/fuses": "npm:^1.8.0"
     "@tabler/icons-solidjs": "npm:^3.10.0"
     "@tanstack/solid-table": "npm:^8.19.2"
-    "@types/electron-squirrel-startup": "npm:^1.0.2"
-    "@types/node": "npm:^20.14.10"
+    "@types/bytes": "npm:^3"
+    "@types/electron-squirrel-startup": "npm:^1"
+    "@types/node": "npm:^20"
     "@typescript-eslint/eslint-plugin": "npm:^7.15.0"
     "@typescript-eslint/parser": "npm:^7.15.0"
     "@yarnpkg/sdks": "npm:^3.1.3"
     autoprefixer: "npm:^10.4.19"
+    bytes: "npm:^3.1.2"
     daisyui: "npm:^4.12.10"
     electron: "npm:^31.1.0"
     electron-dl-manager: "npm:^3.0.0"

@@ -101,8 +101,13 @@ ipcMain.on(CHANNELS.DOWNLOAD_BY_URL, async (event: Electron.IpcMainInvokeEvent, 
     // enable Save As
     saveDialogOptions: {},
     callbacks: {
-      onDownloadProgress: ({ percentCompleted }) => {
-        mainWindow.webContents.send(CHANNELS.DOWNLOAD_PROGRESS, percentCompleted)
+      onDownloadProgress: ({ downloadRateBytesPerSecond, estimatedTimeRemainingSeconds, percentCompleted, resolvedFilename }) => {
+        mainWindow.webContents.send(CHANNELS.DOWNLOAD_PROGRESS, {
+          downloadRateBytesPerSecond,
+          estimatedTimeRemainingSeconds,
+          percentCompleted,
+          resolvedFilename
+        })
       },
       onDownloadCompleted: ({ item }) => {
         mainWindow.webContents.send(CHANNELS.DOWNLOAD_COMPLETED, item.getFilename())
