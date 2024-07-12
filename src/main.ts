@@ -101,12 +101,18 @@ ipcMain.on(CHANNELS.DOWNLOAD_BY_URL, async (event: Electron.IpcMainInvokeEvent, 
     // enable Save As
     saveDialogOptions: {},
     callbacks: {
-      onDownloadProgress: ({ downloadRateBytesPerSecond, estimatedTimeRemainingSeconds, percentCompleted, resolvedFilename }) => {
+      onDownloadStarted: ({ item, resolvedFilename }) => {
+        mainWindow.webContents.send(CHANNELS.DOWNLOAD_STARTED, {
+          resolvedFilename,
+          totalBytes: item.getTotalBytes()
+        })
+      },
+      onDownloadProgress: ({ downloadRateBytesPerSecond, estimatedTimeRemainingSeconds, item, percentCompleted }) => {
         mainWindow.webContents.send(CHANNELS.DOWNLOAD_PROGRESS, {
           downloadRateBytesPerSecond,
           estimatedTimeRemainingSeconds,
           percentCompleted,
-          resolvedFilename
+          receivedBytes: item.getReceivedBytes()
         })
       },
       onDownloadCompleted: ({ item }) => {

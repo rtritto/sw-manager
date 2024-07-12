@@ -22,7 +22,7 @@ const MINUTE = 3600
 const HOUR = 24
 const M_X_H = MINUTE * HOUR
 
-const convertSecondsToETA = (seconds: number): string => {
+const convertSecondsToDHMS = (seconds: number): string => {
   const d = Math.floor(seconds / M_X_H)
   const h = Math.floor(seconds % M_X_H / SECOND)
   const m = Math.floor(seconds % MINUTE / SECOND)
@@ -37,8 +37,12 @@ const convertSecondsToETA = (seconds: number): string => {
   return eta.join(':')
 }
 
+const convertBytes = (bytesToConvert: number): string => bytes(bytesToConvert, { unitSeparator: ' ' })
+
 const UpdatesManager: Component = () => {
   const [downloadFilename, setDownloadFilename] = createSignal('')
+  const [downloadFilesize, setDownloadFilesize] = createSignal(0)
+  const [downloadReceivedBytes, setDownloadReceivedBytes] = createSignal(0)
   const [downloadProgress, setDownloadProgress] = createSignal(0)
   const [downloadRateBPS, setDownloadRateBPS] = createSignal(0)
   const [timeRemainingSeconds, setTimeRemainingSeconds] = createSignal(0)
@@ -65,11 +69,7 @@ const UpdatesManager: Component = () => {
       // header: () => 'Download',
       header: () => '',
       cell: info => (
-        <button
-          class="btn"
-          disabled={downloadFilename() !== ''}
-          onClick={() => handleDownload(info.getValue() as Info)}
-        >
+        <button class="btn" disabled={downloadFilename() !== ''} onClick={() => handleDownload(info.getValue() as Info)}>
           <IconDownload />
         </button>
       ),
@@ -96,6 +96,9 @@ const UpdatesManager: Component = () => {
         <Show when={downloadFilename()}>
           <div>
             {`${downloadFilename()}`}
+
+            <div class="my-1 divider divider-neutral" />
+
             <div class="flex items-center">
               <progress class="progress progress-accent w-56" value={downloadProgress()} max="100" />
 
@@ -106,12 +109,29 @@ const UpdatesManager: Component = () => {
       )
     }),
     columnHelper.accessor(() => { }, {
+      id: 'size',
+      header: () => 'Size',
+      cell: () => (
+        <Show when={downloadFilename()}>
+          <div>
+            <Show when={downloadFilename() && isDownloadCompleted() === false}>
+              <span>{convertBytes(downloadReceivedBytes())}</span>
+
+              <div class="my-1 divider divider-neutral" />
+            </Show>
+
+            <span>{convertBytes(downloadFilesize())}</span>
+          </div>
+        </Show>
+      )
+    }),
+    columnHelper.accessor(() => { }, {
       id: 'speed',
       // header: () => 'Transfer Rate',
       header: () => 'Speed',
       cell: () => (
         <Show when={downloadFilename() && isDownloadCompleted() === false}>
-          <div>{bytes(downloadRateBPS(), { unitSeparator: ' ' })}/s</div>
+          <div>{convertBytes(downloadRateBPS())}/s</div>
         </Show>
       )
     }),
@@ -121,7 +141,7 @@ const UpdatesManager: Component = () => {
       header: () => 'ETA',
       cell: () => (
         <Show when={downloadFilename() && isDownloadCompleted() === false}>
-          <div>{convertSecondsToETA(timeRemainingSeconds())}</div>
+          <div>{convertSecondsToDHMS(timeRemainingSeconds())}</div>
         </Show>
       )
     })
@@ -129,18 +149,25 @@ const UpdatesManager: Component = () => {
 
   createEffect(() => {
     // Listen for the event
+    window.electronApi.ipcRenderer.on(CHANNELS.DOWNLOAD_STARTED, ({
+      resolvedFilename,
+      totalBytes
+    }: DownloadData & { totalBytes: number }) => {
+      setDownloadFilename(resolvedFilename)
+      setDownloadFilesize(totalBytes)
+    })
     window.electronApi.ipcRenderer.on(CHANNELS.DOWNLOAD_PROGRESS, ({
       downloadRateBytesPerSecond,
       estimatedTimeRemainingSeconds,
       percentCompleted,
-      resolvedFilename
-    }: DownloadData) => {
+      receivedBytes
+    }: DownloadData & { receivedBytes: number }) => {
       setDownloadProgress(percentCompleted)
-      setDownloadFilename(resolvedFilename)
+      setDownloadReceivedBytes(receivedBytes)
       setDownloadRateBPS(downloadRateBytesPerSecond)
       setTimeRemainingSeconds(estimatedTimeRemainingSeconds)
     })
-    window.electronApi.ipcRenderer.on(CHANNELS.DOWNLOAD_COMPLETED, (filename: string) => {
+    window.electronApi.ipcRenderer.on(CHANNELS.DOWNLOAD_COMPLETED, () => {
       setIsDownloadCompleted(true)
     })
   }, [])
