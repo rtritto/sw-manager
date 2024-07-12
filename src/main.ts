@@ -1,12 +1,13 @@
 import { app, BrowserWindow, ipcMain } from 'electron'
-import { autoUpdater } from 'electron-updater'
+import { ElectronDownloadManager } from 'electron-dl-manager'
 import log from 'electron-log'
+import { autoUpdater } from 'electron-updater'
 import path from 'node:path'
+
 import { CHANNELS, EVENTS } from './constants'
 import { getInfos } from './link-checker'
 import { getDownloadLink } from './link-checker/getVersionAndFileUrl'
 import APP_MAP from './config'
-import { ElectronDownloadManager } from 'electron-dl-manager'
 
 try {
   // Handle creating/removing shortcuts on Windows when installing/uninstalling.
@@ -28,8 +29,8 @@ const manager = new ElectronDownloadManager()
 const createWindow = () => {
   // Create the browser window.
   mainWindow = new BrowserWindow({
-    width: 800,
-    height: 600,
+    // width: 800,
+    // height: 600,
     // autoHideMenuBar: true,
     // icon: 'icon.ico',
     webPreferences: {
@@ -53,10 +54,10 @@ const createWindow = () => {
   // Open the DevTools.
   mainWindow.webContents.openDevTools()
 
-  // mainWindow.maximize();
+  mainWindow.maximize()
 }
 
-function sendStatusToWindow(text: string) {
+const sendStatusToWindow = (text: string) => {
   log.info(text)
   mainWindow.webContents.send(text) // send notification to UI about Update
 }
@@ -78,21 +79,18 @@ ipcMain.on(CHANNELS.RESTART_APP, () => {
   autoUpdater.quitAndInstall()
 })
 
-const handleCheckForUpdate = async () => {
-  const infos = await getInfos(APP_MAP.SO)
-  return infos
-}
 
-ipcMain.handle(CHANNELS.CHECK_FOR_UPDATE, handleCheckForUpdate)
+ipcMain.handle(CHANNELS.CHECK_FOR_UPDATE, async () => {
+  const _infos = await getInfos(APP_MAP.SO)
+  return _infos
+})
 
-const handleSingleDownload = async (event: Electron.IpcMainInvokeEvent, info: Info): Promise<string> => {
-  const downloadLink = await getDownloadLink(info)
-  return downloadLink
-}
+ipcMain.handle(CHANNELS.SINGLE_DOWNLOAD, async (_event: Electron.IpcMainInvokeEvent, info: Info): Promise<string> => {
+  const _downloadLink = await getDownloadLink(info)
+  return _downloadLink
+})
 
-ipcMain.handle(CHANNELS.SINGLE_DOWNLOAD, handleSingleDownload)
-
-ipcMain.on(CHANNELS.DOWNLOAD_BY_URL, async (event: Electron.IpcMainInvokeEvent, downloadUrl: string) => {
+ipcMain.on(CHANNELS.DOWNLOAD_BY_URL, async (_event: Electron.IpcMainInvokeEvent, downloadUrl: string) => {
   // mainWindow.webContents.downloadURL(downloadUrl)
 
   await manager.download({
@@ -122,12 +120,6 @@ ipcMain.on(CHANNELS.DOWNLOAD_BY_URL, async (event: Electron.IpcMainInvokeEvent, 
   })
 })
 
-// ipcMain.on(CHANNELS.CHECK_FOR_UPDATE, async () => {
-//   // autoUpdater.checkForUpdates()
-//   const infos = await getInfos(APP_MAP.SO)
-//   console.log('a: ', infos);
-// })
-
 // Check for Update when App launch
 // app.on(EVENTS.READY, () => {
 //   autoUpdater.checkForUpdates()
@@ -137,15 +129,6 @@ ipcMain.on(CHANNELS.DOWNLOAD_BY_URL, async (event: Electron.IpcMainInvokeEvent, 
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on(EVENTS.READY, createWindow)
-
-// Quit when all windows are closed, except on macOS. There, it's common
-// for applications and their menu bar to stay active until the user quits
-// explicitly with Cmd + Q.
-app.on(EVENTS.WINDOW_ALL_CLOSED, () => {
-  if (process.platform !== 'darwin') {
-    app.quit()
-  }
-})
 
 app.on(EVENTS.ACTIVATE, () => {
   // On OS X it's common to re-create a window in the app when the
@@ -163,3 +146,12 @@ app.on(EVENTS.ACTIVATE, () => {
 //     if (BrowserWindow.getAllWindows().length === 0) createWindow()
 //   })
 // })
+
+// Quit when all windows are closed, except on macOS. There, it's common
+// for applications and their menu bar to stay active until the user quits
+// explicitly with Cmd + Q.
+app.on(EVENTS.WINDOW_ALL_CLOSED, () => {
+  if (process.platform !== 'darwin') {
+    app.quit()
+  }
+})
