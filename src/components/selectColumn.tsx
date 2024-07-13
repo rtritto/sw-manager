@@ -4,7 +4,7 @@ import type { Component, JSX } from 'solid-js'
 
 const Checkbox: Component<JSX.InputHTMLAttributes<HTMLInputElement>> = (props) => {
   return (
-    <input type="checkbox" class="checkbox" {...props} />
+    <input type="checkbox" class="checkbox bg-slate-700" {...props} />
   )
 }
 

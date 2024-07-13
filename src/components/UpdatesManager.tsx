@@ -37,7 +37,7 @@ const convertSecondsToDHMS = (seconds: number): string => {
   return eta.join(':')
 }
 
-const convertBytes = (bytesToConvert: number): string => bytes(bytesToConvert, { unitSeparator: ' ' })
+const convertBytes = (bytesToConvert: number): string => bytes(bytesToConvert, { fixedDecimals: true, unitSeparator: ' ' })
 
 const DOWNLOAD_STATUS = {
   STARTED: CHANNELS.DOWNLOAD_STARTED,
@@ -87,7 +87,7 @@ const UpdatesManager: Component = () => {
       // header: () => 'Download',
       header: () => '',
       cell: info => (
-        <div>
+        <div class="btn-group btn-group-horizontal flex">
           <button class="btn" disabled={downloadFilename() !== ''} onClick={() => handleDownload(info.getValue() as Info)}>
             <IconDownload />
           </button>
@@ -109,7 +109,7 @@ const UpdatesManager: Component = () => {
     }),
     columnHelper.accessor('imageUrl', {
       id: 'imageUrl',
-      header: () => 'App',
+      header: () => `App (Total: ${infos().length})`,
       cell: info => <img src={info.getValue() as string} />
     }),
     columnHelper.accessor('currentVersion', {
@@ -125,14 +125,14 @@ const UpdatesManager: Component = () => {
       // header: () => 'Download Status',
       header: () => 'Progress',
       cell: () => (
-        <Show when={downloadFilename()}>
+        <Show when={downloadFilename() !== ''}>
           <div>
-            {`${downloadFilename()}`}
+            {downloadFilename()}
 
-            <div class="my-1 divider divider-neutral" />
+            <div class="my-0 h-0.5 divider divider-neutral" />
 
             <div class="flex items-center">
-              <progress class="progress progress-accent w-56" value={downloadProgress()} max="100" />
+              <progress class={`progress ${downloadStatus() === DOWNLOAD_STATUS.DOWNLOADING ? 'progress-info' : (downloadStatus() === DOWNLOAD_STATUS.PAUSED ? 'progress-warning' : 'progress-accent')} w-56`} value={downloadProgress()} max="100" />
 
               <span class="whitespace-nowrap px-2">{convertProgress(downloadProgress())}%</span>
             </div>
@@ -144,12 +144,12 @@ const UpdatesManager: Component = () => {
       id: 'size',
       header: () => 'Size',
       cell: () => (
-        <Show when={downloadFilename()}>
+        <Show when={downloadFilename() !== ''}>
           <div>
             <Show when={downloadFilename() && (downloadStatus() === DOWNLOAD_STATUS.DOWNLOADING || downloadStatus() === DOWNLOAD_STATUS.PAUSED)}>
               <span>{convertBytes(downloadReceivedBytes())}</span>
 
-              <div class="my-1 divider divider-neutral" />
+              <div class="my-0 h-0.5 divider divider-neutral" />
             </Show>
 
             <span>{convertBytes(downloadFilesize())}</span>

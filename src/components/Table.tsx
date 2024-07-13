@@ -1,7 +1,7 @@
+import { IconSortAscending, IconSortDescending, IconDots } from '@tabler/icons-solidjs'
 import { createSolidTable, flexRender, getCoreRowModel, getFilteredRowModel, getSortedRowModel } from '@tanstack/solid-table'
 import type { ColumnDef, ColumnFilter, ColumnSort, RowSelectionState, Row as TanstackRow } from '@tanstack/solid-table'
 import { For, Show, createSignal, mergeProps, type Component } from 'solid-js'
-import { IconSortAscending, IconSortDescending, IconDots } from '@tabler/icons-solidjs'
 
 const Size = {
   XS: 48,
@@ -50,7 +50,7 @@ const Table: Component<{ columnData: Record<string, unknown>[], columns: ColumnD
         <thead>
           <For each={solidTable.getHeaderGroups()}>{(headerGroup) => (
             // <tr class="items-center border-b border-b-gray-200 text-left font-semibold capitalize">
-            <tr class="items-center border-b text-left font-semibold capitalize">
+            <tr class="border-b font-semibold">
               <For each={headerGroup.headers}>{(header) => (
                 <th colSpan={header.colSpan}>
                   <Show when={!header.isPlaceholder}>
@@ -76,9 +76,9 @@ const Table: Component<{ columnData: Record<string, unknown>[], columns: ColumnD
         <tbody>
           <For each={solidTable.getRowModel().rows}>{(row) => (
             // <tr class="border-b border-b-gray-200 hover:bg-gray-50">
-            <tr class="border-b hover:bg-gray-50">
+            <tr class="hover:bg-gray-600">
               <For each={row.getVisibleCells()}>{(cell) => (
-                <td class="p-4">
+                <td class="p-4 text-right">
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}
                 </td>
               )}</For>
