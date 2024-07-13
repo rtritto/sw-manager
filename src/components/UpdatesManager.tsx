@@ -149,14 +149,14 @@ const UpdatesManager: Component = () => {
 
   createEffect(() => {
     // Listen for the event
-    window.electronApi.ipcRenderer.on(CHANNELS.DOWNLOAD_STARTED, ({
+    window.electronApi.ipcRenderer.on(CHANNELS.DOWNLOAD_STARTED, (_, {
       resolvedFilename,
       totalBytes
     }: DownloadData & { totalBytes: number }) => {
       setDownloadFilename(resolvedFilename)
       setDownloadFilesize(totalBytes)
     })
-    window.electronApi.ipcRenderer.on(CHANNELS.DOWNLOAD_PROGRESS, ({
+    window.electronApi.ipcRenderer.on(CHANNELS.DOWNLOAD_PROGRESS, (_, {
       downloadRateBytesPerSecond,
       estimatedTimeRemainingSeconds,
       percentCompleted,

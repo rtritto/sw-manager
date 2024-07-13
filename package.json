@@ -31,6 +31,7 @@
     "@electron-forge/plugin-fuses": "^7.4.0",
     "@electron-forge/plugin-vite": "^7.4.0",
     "@electron-forge/shared-types": "^7.4.0",
+    "@electron-toolkit/preload": "^3.0.1",
     "@electron/fuses": "^1.8.0",
     "@tabler/icons-solidjs": "^3.10.0",
     "@tanstack/solid-table": "^8.19.2",
@@ -65,6 +66,7 @@
     "vite-plugin-solid": "^2.10.2"
   },
   "shouldBeDependencies": [
+    "@electron-toolkit/preload",
     "@tabler/icons-solidjs",
     "@tanstack/solid-table",
     "bytes",

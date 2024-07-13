@@ -85,12 +85,12 @@ ipcMain.handle(CHANNELS.CHECK_FOR_UPDATE, async () => {
   return _infos
 })
 
-ipcMain.handle(CHANNELS.SINGLE_DOWNLOAD, async (_event: Electron.IpcMainInvokeEvent, info: Info): Promise<string> => {
+ipcMain.handle(CHANNELS.SINGLE_DOWNLOAD, async (_, info: Info): Promise<string> => {
   const _downloadLink = await getDownloadLink(info)
   return _downloadLink
 })
 
-ipcMain.on(CHANNELS.DOWNLOAD_BY_URL, async (_event: Electron.IpcMainInvokeEvent, downloadUrl: string) => {
+ipcMain.on(CHANNELS.DOWNLOAD_BY_URL, async (_, downloadUrl: string) => {
   // mainWindow.webContents.downloadURL(downloadUrl)
 
   await manager.download({

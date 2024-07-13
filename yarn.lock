@@ -724,6 +724,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@electron-toolkit/preload@npm:^3.0.1":
+  version: 3.0.1
+  resolution: "@electron-toolkit/preload@npm:3.0.1"
+  peerDependencies:
+    electron: ">=13.0.0"
+  checksum: 10c0/7ebc3738dbdbc7295f37fa5cfc4dbc0b60576405c04a017aa121f6b3377674fc38871c030f0506cf9c7dc61c96f944576731dd8ae1aac471b8b63f4651b9451f
+  languageName: node
+  linkType: hard
+
 "@electron/asar@npm:^3.0.3, @electron/asar@npm:^3.2.1, @electron/asar@npm:^3.2.7":
   version: 3.2.10
   resolution: "@electron/asar@npm:3.2.10"
@@ -9745,6 +9754,7 @@ __metadata:
     "@electron-forge/plugin-fuses": "npm:^7.4.0"
     "@electron-forge/plugin-vite": "npm:^7.4.0"
     "@electron-forge/shared-types": "npm:^7.4.0"
+    "@electron-toolkit/preload": "npm:^3.0.1"
     "@electron/fuses": "npm:^1.8.0"
     "@tabler/icons-solidjs": "npm:^3.10.0"
     "@tanstack/solid-table": "npm:^8.19.2"
