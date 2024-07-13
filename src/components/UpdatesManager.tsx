@@ -1,9 +1,9 @@
 import { type ColumnDef, createColumnHelper } from '@tanstack/solid-table'
-import { IconDownload } from '@tabler/icons-solidjs'
+import { IconDownload, IconPlayerPauseFilled, IconPlayerPlayFilled } from '@tabler/icons-solidjs'
 import bytes from 'bytes'
 import type { DownloadData } from 'electron-dl-manager'
 // import { useAtom } from 'solid-jotai'
-import { createEffect, createMemo, createSignal, Show, type Component } from 'solid-js'
+import { createEffect, createMemo, createSignal, Show } from 'solid-js'
 
 // import { infosAtom } from '../store/atoms'
 import { CHANNELS } from '../constants'
@@ -39,25 +39,43 @@ const convertSecondsToDHMS = (seconds: number): string => {
 
 const convertBytes = (bytesToConvert: number): string => bytes(bytesToConvert, { unitSeparator: ' ' })
 
+const DOWNLOAD_STATUS = {
+  STARTED: CHANNELS.DOWNLOAD_STARTED,
+  DOWNLOADING: CHANNELS.DOWNLOAD_PROGRESS,
+  PAUSED: CHANNELS.DOWNLOAD_PAUSE,
+  COMPLETED: CHANNELS.DOWNLOAD_COMPLETED
+}
+
 const UpdatesManager: Component = () => {
+  const [downloadId, setDownloadId] = createSignal('')
+  const [downloadStatus, setDownloadStatus] = createSignal('')
   const [downloadFilename, setDownloadFilename] = createSignal('')
   const [downloadFilesize, setDownloadFilesize] = createSignal(0)
   const [downloadReceivedBytes, setDownloadReceivedBytes] = createSignal(0)
   const [downloadProgress, setDownloadProgress] = createSignal(0)
   const [downloadRateBPS, setDownloadRateBPS] = createSignal(0)
   const [timeRemainingSeconds, setTimeRemainingSeconds] = createSignal(0)
-  const [isDownloadCompleted, setIsDownloadCompleted] = createSignal(false)
   // const [infos, setInfos] = useAtom(infosAtom)
   const [infos, setInfos] = createSignal<Info[]>([])
+
+  const handleCheckForUpdate = async () => {
+    const _infos = await window.electronApi.checkForUpdate()
+    setInfos(Object.values(_infos.results))
+  }
 
   const handleDownload = async (info: Info) => {
     const _downloadLink = await window.electronApi.singleDownload({ ...info })
     window.electronApi.ipcRenderer.send(CHANNELS.DOWNLOAD_BY_URL, _downloadLink)
   }
 
-  const handleCheckForUpdate = async () => {
-    const _infos = await window.electronApi.checkForUpdate()
-    setInfos(Object.values(_infos.results))
+  const handleDonwloadPause = (id: string) => {
+    window.electronApi.ipcRenderer.send(CHANNELS.DOWNLOAD_PAUSE, id)
+    setDownloadStatus(DOWNLOAD_STATUS.PAUSED)
+  }
+
+  const handleDonwloadResume = (id: string) => {
+    window.electronApi.ipcRenderer.send(CHANNELS.DOWNLOAD_RESUME, id)
+    setDownloadStatus(DOWNLOAD_STATUS.DOWNLOADING)
   }
 
   const columnHelper = createColumnHelper<Record<string, unknown>>()
@@ -69,9 +87,23 @@ const UpdatesManager: Component = () => {
       // header: () => 'Download',
       header: () => '',
       cell: info => (
-        <button class="btn" disabled={downloadFilename() !== ''} onClick={() => handleDownload(info.getValue() as Info)}>
-          <IconDownload />
-        </button>
+        <div>
+          <button class="btn" disabled={downloadFilename() !== ''} onClick={() => handleDownload(info.getValue() as Info)}>
+            <IconDownload />
+          </button>
+
+          <Show when={downloadStatus() === DOWNLOAD_STATUS.DOWNLOADING}>
+            <button class="btn" disabled={downloadStatus() === DOWNLOAD_STATUS.PAUSED} onClick={() => handleDonwloadPause(downloadId() as string)}>
+              <IconPlayerPauseFilled />
+            </button>
+          </Show>
+
+          <Show when={downloadStatus() === DOWNLOAD_STATUS.PAUSED}>
+            <button class="btn" disabled={downloadStatus() === DOWNLOAD_STATUS.DOWNLOADING} onClick={() => handleDonwloadResume(downloadId() as string)}>
+              <IconPlayerPlayFilled />
+            </button>
+          </Show>
+        </div>
       ),
       enableSorting: false
     }),
@@ -114,7 +146,7 @@ const UpdatesManager: Component = () => {
       cell: () => (
         <Show when={downloadFilename()}>
           <div>
-            <Show when={downloadFilename() && isDownloadCompleted() === false}>
+            <Show when={downloadFilename() && (downloadStatus() === DOWNLOAD_STATUS.DOWNLOADING || downloadStatus() === DOWNLOAD_STATUS.PAUSED)}>
               <span>{convertBytes(downloadReceivedBytes())}</span>
 
               <div class="my-1 divider divider-neutral" />
@@ -130,7 +162,7 @@ const UpdatesManager: Component = () => {
       // header: () => 'Transfer Rate',
       header: () => 'Speed',
       cell: () => (
-        <Show when={downloadFilename() && isDownloadCompleted() === false}>
+        <Show when={downloadFilename() && downloadStatus() === DOWNLOAD_STATUS.DOWNLOADING}>
           <div>{convertBytes(downloadRateBPS())}/s</div>
         </Show>
       )
@@ -140,7 +172,7 @@ const UpdatesManager: Component = () => {
       // header: () => 'Time Left',
       header: () => 'ETA',
       cell: () => (
-        <Show when={downloadFilename() && isDownloadCompleted() === false}>
+        <Show when={downloadFilename() && downloadStatus() === DOWNLOAD_STATUS.DOWNLOADING}>
           <div>{convertSecondsToDHMS(timeRemainingSeconds())}</div>
         </Show>
       )
@@ -150,25 +182,37 @@ const UpdatesManager: Component = () => {
   createEffect(() => {
     // Listen for the event
     window.electronApi.ipcRenderer.on(CHANNELS.DOWNLOAD_STARTED, (_, {
+      id,
       resolvedFilename,
       totalBytes
     }: DownloadData & { totalBytes: number }) => {
+      setDownloadStatus(DOWNLOAD_STATUS.STARTED)
+      setDownloadId(id)
       setDownloadFilename(resolvedFilename)
       setDownloadFilesize(totalBytes)
     })
     window.electronApi.ipcRenderer.on(CHANNELS.DOWNLOAD_PROGRESS, (_, {
+      id,
       downloadRateBytesPerSecond,
       estimatedTimeRemainingSeconds,
       percentCompleted,
       receivedBytes
     }: DownloadData & { receivedBytes: number }) => {
+      if (downloadStatus() !== DOWNLOAD_STATUS.PAUSED) {
+        setDownloadStatus(DOWNLOAD_STATUS.DOWNLOADING)
+      }
+      // setDownloadId(id)
       setDownloadProgress(percentCompleted)
       setDownloadReceivedBytes(receivedBytes)
       setDownloadRateBPS(downloadRateBytesPerSecond)
       setTimeRemainingSeconds(estimatedTimeRemainingSeconds)
     })
-    window.electronApi.ipcRenderer.on(CHANNELS.DOWNLOAD_COMPLETED, () => {
-      setIsDownloadCompleted(true)
+    window.electronApi.ipcRenderer.on(CHANNELS.DOWNLOAD_COMPLETED, (_, {
+      id,
+      filename
+    }: DownloadData & { filename: string }) => {
+      setDownloadStatus(DOWNLOAD_STATUS.COMPLETED)
+      // setDownloadId(id)
     })
   }, [])
 

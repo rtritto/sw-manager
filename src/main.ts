@@ -90,7 +90,15 @@ ipcMain.handle(CHANNELS.SINGLE_DOWNLOAD, async (_, info: Info): Promise<string> 
   return _downloadLink
 })
 
-ipcMain.on(CHANNELS.DOWNLOAD_BY_URL, async (_, downloadUrl: string) => {
+ipcMain.on(CHANNELS.DOWNLOAD_PAUSE, (_, id: string): void => {
+  manager.pauseDownload(id)
+})
+
+ipcMain.on(CHANNELS.DOWNLOAD_RESUME, (_, id: string): void => {
+  manager.resumeDownload(id)
+})
+
+ipcMain.on(CHANNELS.DOWNLOAD_BY_URL, async (_, downloadUrl: string): Promise<void> => {
   // mainWindow.webContents.downloadURL(downloadUrl)
 
   await manager.download({
@@ -99,22 +107,27 @@ ipcMain.on(CHANNELS.DOWNLOAD_BY_URL, async (_, downloadUrl: string) => {
     // enable Save As
     saveDialogOptions: {},
     callbacks: {
-      onDownloadStarted: ({ item, resolvedFilename }) => {
+      onDownloadStarted: ({ id, item, resolvedFilename }) => {
         mainWindow.webContents.send(CHANNELS.DOWNLOAD_STARTED, {
+          id,
           resolvedFilename,
           totalBytes: item.getTotalBytes()
         })
       },
-      onDownloadProgress: ({ downloadRateBytesPerSecond, estimatedTimeRemainingSeconds, item, percentCompleted }) => {
+      onDownloadProgress: ({ id, downloadRateBytesPerSecond, estimatedTimeRemainingSeconds, item, percentCompleted }) => {
         mainWindow.webContents.send(CHANNELS.DOWNLOAD_PROGRESS, {
+          id,
           downloadRateBytesPerSecond,
           estimatedTimeRemainingSeconds,
           percentCompleted,
           receivedBytes: item.getReceivedBytes()
         })
       },
-      onDownloadCompleted: ({ item }) => {
-        mainWindow.webContents.send(CHANNELS.DOWNLOAD_COMPLETED, item.getFilename())
+      onDownloadCompleted: ({ id, item }) => {
+        mainWindow.webContents.send(CHANNELS.DOWNLOAD_COMPLETED, {
+          id,
+          filename: item.getFilename()
+        })
       }
     }
   })
