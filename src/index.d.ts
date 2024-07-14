@@ -71,10 +71,6 @@ type Results = {
   [category: string]: AppResult
 }
 
-type AdditionalInfo = {
-  fileUrl?: string
-}
-
 type Info = {
   website: string
   isVersionUpdated?: boolean
@@ -82,7 +78,6 @@ type Info = {
   newVersion?: string
   imageUrl?: string
   fileUrl?: string
-  additionalInfo?: Promise<AdditionalInfo>
 }
 
 type InfoResult = {
