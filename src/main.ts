@@ -82,6 +82,9 @@ ipcMain.on(CHANNELS.RESTART_APP, () => {
 
 ipcMain.handle(CHANNELS.CHECK_FOR_UPDATE, async () => {
   const _infos = await getInfos(APP_MAP.SO)
+  for (const info in _infos.errors) {
+    autoUpdater.emit(CHANNELS.ERROR, _infos.errors[info] as Error)
+  }
   return _infos
 })
 
