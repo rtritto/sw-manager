@@ -1,4 +1,4 @@
-import { Show, createEffect, type Component } from 'solid-js'
+import { Show } from 'solid-js'
 import { useAtom, useAtomValue } from 'solid-jotai'
 import { messageAtom, showNotificationAtom, showRestartButtonAtom } from '../store/atoms'
 import { CHANNELS } from '../constants'

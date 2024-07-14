@@ -3,10 +3,10 @@ import path from 'node:path'
 import JSON5 from 'json5'
 import { fetch, request, Agent } from 'undici'
 
-import applyRegex from './funcs/applyRegex'
-import downloadFile from './funcs/downloadFile'
-import createFoder from './funcs/createFolder'
-import getVersionAndFileUrl, { getVersion } from './getVersionAndFileUrl'
+import applyRegex from './funcs/apply-regex'
+import downloadFile from './funcs/download-file'
+import createFoder from './funcs/create-folder'
+import getVersionAndFileUrl, { getVersion } from './get-version-and-fileUrl'
 import APP_MAP from '../config'
 
 const { DOWNLOAD_ALL } = process.env
@@ -208,7 +208,7 @@ export const main = async () => {
 
       const rejectedResult = promiseResult.filter((r) => r.status === 'rejected')
 
-      if (rejectedResult.length !== 0) {
+      if (rejectedResult.length > 0) {
         const reasons = rejectedResult.map(r => r.reason)
         console.error(reasons)
         results.failed = reasons

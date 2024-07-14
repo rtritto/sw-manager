@@ -6,7 +6,7 @@ import path from 'node:path'
 
 import { CHANNELS, EVENTS } from './constants'
 import { getInfos } from './link-checker'
-import { getDownloadLink } from './link-checker/getVersionAndFileUrl'
+import { getDownloadLink } from './link-checker/get-version-and-fileUrl'
 import APP_MAP from './config'
 
 try {

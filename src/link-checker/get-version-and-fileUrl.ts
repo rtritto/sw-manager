@@ -3,8 +3,8 @@ import { decode } from 'html-entities'
 import { type HTMLElement, parse } from 'node-html-parser'
 import { fetch, request, FormData, type Dispatcher } from 'undici'
 
-import applyRegex from './funcs/applyRegex'
-import applyVersionOptions from './funcs/applyVersionOptions'
+import applyRegex from './funcs/apply-regex'
+import applyVersionOptions from './funcs/apply-version-options'
 import { REGEX_GET_VERSION } from './Regexes'
 import PARSE_OPTIONS from './PARSE_OPTIONS'
 
@@ -52,7 +52,7 @@ export const getVersion = async (obj: NestedConfig): Promise<Info> => {
       const a = lastP!.querySelector('a')
       const urlUploadrar = a!.getAttribute('href')
       if (!urlUploadrar) {
-        throw Error('Missing urlUploadrar')
+        throw new Error('Missing urlUploadrar')
       }
       fileUrl = urlUploadrar
 
@@ -122,7 +122,7 @@ export const getVersion = async (obj: NestedConfig): Promise<Info> => {
           }
         }
 
-        throw Error('Missing download')
+        throw new Error('Missing download')
         // TODO
 
         const fd = new FormData()
@@ -167,7 +167,7 @@ export const getVersion = async (obj: NestedConfig): Promise<Info> => {
           }
         })
         if (responseTagsRaw.statusCode !== 200) {
-          throw Error('Missing tags')
+          throw new Error('Missing tags')
         }
         const responseTags = await responseTagsRaw.body.json() as GithubTags
         const firstTag = responseTags.at(obj.tagNumber ?? 0)!
@@ -183,7 +183,7 @@ export const getVersion = async (obj: NestedConfig): Promise<Info> => {
           data = { tag_name: tag } as GithubTag
           const { download } = obj
           if (!download) {
-            throw Error('Missing download')
+            throw new Error('Missing download')
           }
         }
         additionalInfo = (async (obj: NestedConfig, data: GithubTag) => {
@@ -196,7 +196,7 @@ export const getVersion = async (obj: NestedConfig): Promise<Info> => {
         })(obj, data)
       }
       if (!data.tag_name) {
-        throw Error('Missing tag_name')
+        throw new Error('Missing tag_name')
       }
       titleVersion = data.tag_name?.match(REGEX_GET_VERSION)?.at(0)
       break
@@ -205,13 +205,13 @@ export const getVersion = async (obj: NestedConfig): Promise<Info> => {
     default: {
       const { url } = obj
       if (!url) {
-        throw Error('Missing url')
+        throw new Error('Missing url')
       }
       const html = await getHTML(url)
 
       const title = html.querySelector('title')!.rawText
       // clean version
-      const newestVersions = [...title.matchAll(/[0-9.]+/g)].flat()
+      const newestVersions = [...title.matchAll(/[\d.]+/g)].flat()
       titleVersion = getFilteredVersion(version, newestVersions)
     }
   }
@@ -288,7 +288,7 @@ const getVersionAndFileUrl = async (obj: NestedConfig): Promise<Info> => {
       const urlUploadrar = a!.getAttribute('href')
 
       if (!urlUploadrar) {
-        throw Error('Missing urlUploadrar')
+        throw new Error('Missing urlUploadrar')
       }
 
       const fileId = urlUploadrar.split('/').at(-1)
@@ -353,7 +353,7 @@ const getVersionAndFileUrl = async (obj: NestedConfig): Promise<Info> => {
         }
       }
 
-      throw Error('Missing download')
+      throw new Error('Missing download')
       // TODO
 
       const fd = new FormData()
@@ -398,7 +398,7 @@ const getVersionAndFileUrl = async (obj: NestedConfig): Promise<Info> => {
           }
         })
         if (responseTagsRaw.statusCode !== 200) {
-          throw Error('Missing tags')
+          throw new Error('Missing tags')
         }
         const responseTags = await responseTagsRaw.body.json() as GithubTags
         const firstTag = responseTags.at(obj.tagNumber ?? 0)!
@@ -414,12 +414,12 @@ const getVersionAndFileUrl = async (obj: NestedConfig): Promise<Info> => {
           data = { tag_name: tag } as GithubTag
           const { download } = obj
           if (!download) {
-            throw Error('Missing download')
+            throw new Error('Missing download')
           }
         }
       }
       if (!data.tag_name) {
-        throw Error('Missing tag_name')
+        throw new Error('Missing tag_name')
       }
       titleVersion = data.tag_name?.match(REGEX_GET_VERSION)?.at(0)
       // if (titleVersion !== version) {
@@ -439,13 +439,13 @@ const getVersionAndFileUrl = async (obj: NestedConfig): Promise<Info> => {
     default: {
       const { url } = obj
       if (!url) {
-        throw Error('Missing url')
+        throw new Error('Missing url')
       }
       const html = await getHTML(url)
 
       const title = html.querySelector('title')!.rawText
       // clean version
-      const newestVersions = [...title.matchAll(/[0-9.]+/g)].flat()
+      const newestVersions = [...title.matchAll(/[\d.]+/g)].flat()
       titleVersion = getFilteredVersion(version, newestVersions)
     }
   }
@@ -460,7 +460,7 @@ const getVersionAndFileUrl = async (obj: NestedConfig): Promise<Info> => {
       fileUrl: applyRegex(download, { version: applyVersionOptions(titleVersion, versionOptions) as string })
     }
   }
-  throw Error('Missing download')
+  throw new Error('Missing download')
   // }
   // return {}
 }

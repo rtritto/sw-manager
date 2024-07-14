@@ -236,7 +236,7 @@ const UpdatesManager: Component = () => {
       setDownloadRateBPS(0)
       setTimeRemainingSeconds(0)
     })
-  }, [])
+  })
 
   return (
     <div>

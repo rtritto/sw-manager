@@ -57,7 +57,7 @@ const Table: Component<{ columnData: Record<string, unknown>[], columns: ColumnD
 
                       {{
                         asc: <IconSortAscending />,
-                        desc: <IconSortDescending />,
+                        desc: <IconSortDescending />
                       }[header.column.getIsSorted() as string]
                         ?? (header.column.getCanSort() ? (
                           <IconDots />

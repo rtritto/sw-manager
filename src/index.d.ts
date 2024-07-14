@@ -80,7 +80,7 @@ type Info = {
   isVersionUpdated?: boolean
   currentVersion?: string
   newVersion?: string
-  imageUrl?: string,
+  imageUrl?: string
   fileUrl?: string
   additionalInfo?: Promise<AdditionalInfo>
 }

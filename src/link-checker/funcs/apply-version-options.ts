@@ -1,4 +1,4 @@
-import applyRegex from './applyRegex'
+import applyRegex from './apply-regex'
 
 /**
  * Transform " Rev 2" -> "_Rev_2"
@@ -11,7 +11,7 @@ const applyVersionOptions = (version: string, versionOptions?: VersionOptions): 
     if (evaluate) {
       return eval(applyRegex(evaluate, { version }))
     }
-    throw Error('Missing a version option')
+    throw new Error('Missing a version option')
   }
   return version
 }

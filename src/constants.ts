@@ -15,7 +15,7 @@ export const CHANNELS = {
   DOWNLOAD_RESUME: 'download-resume',
   DOWNLOAD_STARTED: 'download-started',
   SINGLE_DOWNLOAD: 'single_download',
-  UPDATE_ERROR: 'update_error',
+  UPDATE_ERROR: 'update_error'
 } as const
 
 export const EVENTS = {

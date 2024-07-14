@@ -30,6 +30,6 @@ import { render } from 'solid-js/web'
 import './index.css'
 import App from './pages/App'
 
-render(() => <App />, document.getElementById('app')!)
+render(() => <App />, document.querySelector('#app')!)
 
 // console.log('👋 This message is being logged by "renderer.ts", included via Vite')
