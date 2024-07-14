@@ -1,7 +1,7 @@
 import querystring from 'node:querystring'
 import { decode } from 'html-entities'
 import { type HTMLElement, parse } from 'node-html-parser'
-import { fetch, request, FormData, type Dispatcher } from 'undici'
+import { request, FormData, type Dispatcher } from 'undici'
 
 import applyRegex from './funcs/apply-regex'
 import applyVersionOption from './funcs/apply-version-option'
@@ -9,8 +9,14 @@ import { REGEX_GET_VERSION } from './Regexes'
 import PARSE_OPTIONS from './PARSE_OPTIONS'
 
 const getHTML = async (url: string): Promise<HTMLElement> => {
-  const data = await fetch(url).then((res) => res.text())
-  // const data = await request(url).then((res) => res.body.text())
+  const data = await request(url, {
+    headers: {
+      Accept: '*/*',
+      Connection: 'keep-alive',
+      'Content-Type': 'text/plain; charset=UTF-8',
+      'User-Agent': `UA/${Date.now().toString()}`
+    }
+  }).then((res) => res.body.text())
   return parse(data, PARSE_OPTIONS)
 }
 
@@ -94,10 +100,10 @@ export const getVersion = async (obj: NestedConfig): Promise<Info> => {
       fd.append('t', 15)
       fd.append('id', obj.id!)
       fd.append('tsf', 0)
-      const htmlDlInfo = await fetch('https://www.softpedia.com/_xaja/dlinfo.php?skipa=0', {
+      const htmlDlInfo = await request('https://www.softpedia.com/_xaja/dlinfo.php?skipa=0', {
         body: fd,
         method: 'POST'
-      }).then((res) => res.text())
+      }).then((res) => res.body.text())
       const rootDlInfo = parse(htmlDlInfo, PARSE_OPTIONS)
       const muhscroll = rootDlInfo.querySelector('#muhscroll')
       const div = muhscroll!.querySelector(`div.dllinkbox2:nth-child(${obj.childNumber!})`)
@@ -105,7 +111,7 @@ export const getVersion = async (obj: NestedConfig): Promise<Info> => {
       const href = a!.getAttribute('href')
 
       // TODO get new page and scrape the setup link
-      // await fetch(href)
+      // await request(href)
       break
     }
     case 'GitHub': {
@@ -203,7 +209,7 @@ export const getDownloadLink = async (info: Info): Promise<string> => {
     case 'FileCatchers':
     case 'FCPortables': {
       const fileId = fileUrl!.split('/').at(-1)
-      const htmlUploadrar = await fetch(fileUrl!, {
+      const htmlUploadrar = await request(fileUrl!, {
         headers: {
           // 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:92.0) Gecko/20100101 Firefox/92.0',
           // Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
@@ -213,13 +219,22 @@ export const getDownloadLink = async (info: Info): Promise<string> => {
           // 'Sec-Fetch-Dest': 'document',
           // 'Sec-Fetch-Mode': 'navigate',
           // 'Sec-Fetch-Site': 'same-origin'
+          //#region Optional
+          // Accept: '*/*',
+          // Connection: 'keep-alive',
+          // Referrer: fileUrl!,
+          // RequestMode: 'cors',
+          // 'User-Agent': `UA/${Date.now().toString()}`
+          //#endregion
         },
         body: `op=download2&id=${fileId}&rand=&referer=https%3A%2F%2Fuploadrar.com&method_free=Free+Download&adblock_detected=0`,
         method: 'POST',
-        credentials: 'include',
-        mode: 'cors',
-        referrer: fileUrl!
-      }).then((res) => res.text())
+        //#region fetch options
+        // credentials: 'include',
+        // mode: 'cors',
+        // referrer: fileUrl!
+        //#endregion
+      }).then((res) => res.body.text())
       return htmlUploadrar.match(/<a href="([^"]+"?uploadrar.com:[^"]+)"/)?.at(1)!
     }
     // case 'PortableApps':
