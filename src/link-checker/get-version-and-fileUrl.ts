@@ -37,7 +37,7 @@ export const getVersion = async (obj: NestedConfig): Promise<Info> => {
   // }
 
   let titleVersion: string | undefined
-  let ogImageContent: string | undefined
+  let imageUrl: string | undefined = obj.imageUrl
   let fileUrl: string | undefined
   switch (website) {
     case 'FileCatchers':
@@ -46,14 +46,14 @@ export const getVersion = async (obj: NestedConfig): Promise<Info> => {
       const title = html.querySelector('title')
       const title_raw = title?.rawText
       titleVersion = title_raw?.match(REGEX_GET_VERSION)?.at(0)
-
-      const meta = html.querySelector('meta[property="og:image"]')
-      ogImageContent = meta?.getAttribute('content')
-
-      const content = html.querySelector('#content')
-      const lastP = content!.querySelector('p:last-of-type')
-      const a = lastP!.querySelector('a')
-      const urlUploadrar = a!.getAttribute('href')
+      // if (imageUrl === undefined) {
+      //   imageUrl = html.querySelector('meta[property="og:image"]')!.getAttribute('content')
+      // }
+      const urlUploadrar = html
+        .querySelector('#content')!
+        .querySelector('p:last-of-type')!
+        .querySelector('a')!
+        .getAttribute('href')
       if (!urlUploadrar) {
         throw new Error('Missing urlUploadrar')
       }
@@ -62,8 +62,7 @@ export const getVersion = async (obj: NestedConfig): Promise<Info> => {
     }
     case 'PortableApps': {
       const html = await getHTML(obj.url!)
-
-      const downloadInfo = html.querySelector('p.download-info')
+      const downloadInfo = html!.querySelector('p.download-info')
       // const [downloadInfoCN] = downloadInfo.childNodes
       // return downloadInfoCN.rawText  // Version <VERSION> for Windows Multilingual
       const downloadInfoAs = downloadInfo!.querySelectorAll('a')
@@ -71,6 +70,9 @@ export const getVersion = async (obj: NestedConfig): Promise<Info> => {
       const downloadInfoAHref = downloadInfoA!.rawAttrs
       const { v } = querystring.parse(decode(downloadInfoAHref)) as { v: string } // convert "&amp" to "&"
       titleVersion = v
+      // if (imageUrl === undefined) {
+      //   imageUrl = html.querySelector('img.main-app-logo')!.getAttribute('src')
+      // }
       const { download } = obj
       if (download) {
         fileUrl = applyRegex(download, { version: titleVersion })
@@ -81,12 +83,15 @@ export const getVersion = async (obj: NestedConfig): Promise<Info> => {
     }
     case 'Softpedia': {
       const html = await getHTML(obj.url!)
-
-      const h2 = html.querySelector('h2.sanscond.curpo')
-      const strong = h2!.querySelector('strong')
+      const strong = html
+        .querySelector('h2.sanscond.curpo')!
+        .querySelector('strong')
       const strongCN = strong!.childNodes.at(0)
       const rawVersion = strongCN!.rawText
       titleVersion = applyVersionOption(rawVersion, obj.versionOptions?.title!) as string
+      // if (imageUrl === undefined) {
+      //   imageUrl = html.querySelector('img.fl')!.getAttribute('src')
+      // }
       const { download } = obj
       if (download) {
         fileUrl = applyRegex(download, { version: applyVersionOption(rawVersion, obj.versionOptions?.download!) as string })
@@ -192,7 +197,7 @@ export const getVersion = async (obj: NestedConfig): Promise<Info> => {
     isVersionUpdated: titleVersion === version,
     currentVersion: version,
     newVersion: titleVersion,
-    imageUrl: ogImageContent,
+    imageUrl,
     fileUrl
   }
 }

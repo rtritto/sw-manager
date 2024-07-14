@@ -37,6 +37,7 @@ type NestedConfig = {
   urlTmp2?: string
   download?: string
   downloadTmp?: string
+  imageUrl?: string
   owner?: string
   repo?: string
   assetNumber?: number
