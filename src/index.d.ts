@@ -24,7 +24,8 @@ type GithubTag = {
 type GithubTags = GithubTag[]
 
 type VersionOptions = {
-  evaluate: string
+  title?: string
+  download?: string
 }
 
 type NestedConfig = {

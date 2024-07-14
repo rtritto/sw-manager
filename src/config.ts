@@ -11,7 +11,8 @@ let APP_MAP: Config = {
       version: '2.6.6',
       download: 'https://swupdate.openvpn.org/community/releases/OpenVPN-<VERSION>-amd64.msi',
       versionOptions: {
-        evaluate: '"<VERSION>".split(" ").join("-")',
+        title: '"<VERSION>".split(" ").at(0)',
+        download: '"<VERSION>".split(" ").join("-")',
       },
       website: 'Softpedia',
     },
@@ -55,7 +56,7 @@ let APP_MAP: Config = {
       download: 'https://download.cpuid.com/hwmonitor/hwmonitor_<VERSION>.zip',
       version: '1.51.0',
       versionOptions: {
-        evaluate: '"<VERSION>".split(".").slice(0,3).join("-")',
+        download: '"<VERSION>".split(".").slice(0,3).join("-")',
       },
       website: 'Softpedia',
     },
@@ -114,7 +115,7 @@ let APP_MAP: Config = {
       urlTmp: 'https://lockhunter.com/download.htm',
       download: 'https://lockhunter.com/assets/exe/lockhuntersetup_portable_<VERSION>.exe',
       versionOptions: {
-        evaluate: '"<VERSION>".split(".").slice(0,3).join("-")',
+        download: '"<VERSION>".split(".").slice(0,3).join("-")',
       },
       version: '3.4.3.146',
       website: 'Softpedia',
@@ -276,7 +277,7 @@ let APP_MAP: Config = {
       url: 'https://www.softpedia.com/get/PORTABLE-SOFTWARE/Multimedia/Video/Portable-MKVToolnix.shtml',
       download: 'https://mkvtoolnix.download/windows/releases/<VERSION>/mkvtoolnix-64-bit-<VERSION>.7z',
       versionOptions: {
-        evaluate: '"<VERSION>".split(".").slice(0,2).join(".")',
+        download: '"<VERSION>".split(".").slice(0,2).join(".")',
       },
       version: '81.0.0',
       website: 'Softpedia',
@@ -372,7 +373,7 @@ let APP_MAP: Config = {
       url: 'https://www.softpedia.com/get/Compression-tools/WinRAR.shtml',
       download: 'https://www.rarlab.com/rar/winrar-x64-<VERSION>.exe',
       versionOptions: {
-        evaluate: '"<VERSION>".split(".").join("")',
+        download: '"<VERSION>".split(".").join("")',
       },
       version: '6.24',
       website: 'Softpedia',
@@ -400,7 +401,7 @@ let APP_MAP: Config = {
       url: 'https://www.softpedia.com/get/PORTABLE-SOFTWARE/Other-Portable-Applications/PPSSPP-Portable.shtml',
       download: 'https://www.ppsspp.org/files/<VERSION>/ppsspp_win.zip',
       versionOptions: {
-        evaluate: '"<VERSION>".split(".").join("_")',
+        download: '"<VERSION>".split(".").join("_")',
       },
       version: '1.15.4',
       website: 'Softpedia',
@@ -447,7 +448,7 @@ let APP_MAP: Config = {
       url: 'https://www.softpedia.com/get/Internet/Servers/Database-Utils/Studio-3T.shtml',
       downloadTmp: 'https://download.studio3t.com/studio-3t/windows/<VERSION>/studio-3t-x64.zip',
       versionOptions: {
-        evaluate: '"<VERSION>"',
+        download: '"<VERSION>"',
       },
       version: '2023.5.0',
       website: 'Softpedia',

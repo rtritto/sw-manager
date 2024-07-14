@@ -4,7 +4,7 @@ import { type HTMLElement, parse } from 'node-html-parser'
 import { fetch, request, FormData, type Dispatcher } from 'undici'
 
 import applyRegex from './funcs/apply-regex'
-import applyVersionOptions from './funcs/apply-version-options'
+import applyVersionOption from './funcs/apply-version-option'
 import { REGEX_GET_VERSION } from './Regexes'
 import PARSE_OPTIONS from './PARSE_OPTIONS'
 
@@ -67,7 +67,7 @@ export const getVersion = async (obj: NestedConfig): Promise<Info> => {
       titleVersion = v
       const { download } = obj
       if (download) {
-        fileUrl = applyRegex(download, { version: applyVersionOptions(titleVersion, obj.versionOptions) as string })
+        fileUrl = applyRegex(download, { version: titleVersion })
       } else {
         throw new Error('PortableApps: missing download')
       }
@@ -79,11 +79,11 @@ export const getVersion = async (obj: NestedConfig): Promise<Info> => {
       const h2 = html.querySelector('h2.sanscond.curpo')
       const strong = h2!.querySelector('strong')
       const strongCN = strong!.childNodes.at(0)
-      titleVersion = strongCN!.rawText
-
+      const rawVersion = strongCN!.rawText
+      titleVersion = applyVersionOption(rawVersion, obj.versionOptions?.title!) as string
       const { download } = obj
       if (download) {
-        fileUrl = applyRegex(download, { version: applyVersionOptions(titleVersion, obj.versionOptions) as string })
+        fileUrl = applyRegex(download, { version: applyVersionOption(rawVersion, obj.versionOptions?.download!) as string })
       } else {
         throw new Error('Softpedia: missing download')
       }
@@ -154,10 +154,10 @@ export const getVersion = async (obj: NestedConfig): Promise<Info> => {
       if (!data.tag_name) {
         throw new Error('Missing tag_name')
       }
-      titleVersion = data.tag_name?.match(REGEX_GET_VERSION)?.at(0)
+      titleVersion = data.tag_name?.match(REGEX_GET_VERSION)?.at(0)!
       const { download } = obj
       fileUrl = download
-        ? applyRegex(download, { version: applyVersionOptions(data.tag_name, obj.versionOptions) as string })
+        ? applyRegex(download, { version: titleVersion })
         : data.assets[obj.assetNumber!].browser_download_url
       break
     }
@@ -175,7 +175,7 @@ export const getVersion = async (obj: NestedConfig): Promise<Info> => {
       titleVersion = getFilteredVersion(version, newestVersions)
       const { download } = obj
       if (download) {
-        fileUrl = applyRegex(download, { version: applyVersionOptions(titleVersion, obj.versionOptions) as string })
+        fileUrl = applyRegex(download, { version: titleVersion })
       } else {
         throw new Error('default: missing download')
       }
