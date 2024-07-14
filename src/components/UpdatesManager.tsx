@@ -1,5 +1,5 @@
 import { type ColumnDef, createColumnHelper } from '@tanstack/solid-table'
-import { IconDownload, IconPlayerPauseFilled, IconPlayerPlayFilled } from '@tabler/icons-solidjs'
+import { IconDownload, IconPlayerPauseFilled, IconPlayerPlayFilled, IconPlayerStopFilled } from '@tabler/icons-solidjs'
 import bytes from 'bytes'
 import type { DownloadData } from 'electron-dl-manager'
 // import { useAtom } from 'solid-jotai'
@@ -43,7 +43,8 @@ const DOWNLOAD_STATUS = {
   STARTED: CHANNELS.DOWNLOAD_STARTED,
   DOWNLOADING: CHANNELS.DOWNLOAD_PROGRESS,
   PAUSED: CHANNELS.DOWNLOAD_PAUSE,
-  COMPLETED: CHANNELS.DOWNLOAD_COMPLETED
+  COMPLETED: CHANNELS.DOWNLOAD_COMPLETED,
+  CANCEL: CHANNELS.DOWNLOAD_CANCEL
 }
 
 const UpdatesManager: Component = () => {
@@ -78,6 +79,10 @@ const UpdatesManager: Component = () => {
     setDownloadStatus(DOWNLOAD_STATUS.DOWNLOADING)
   }
 
+  const handleDonwloadCancel = (id: string) => {
+    window.electronApi.ipcRenderer.send(CHANNELS.DOWNLOAD_CANCEL, id)
+  }
+
   const columnHelper = createColumnHelper<Record<string, unknown>>()
   const columns = createMemo<ColumnDef<Record<string, unknown>, any>[]>(() => [
     columnHelper.accessor('id', selectColumn), // This would be the select column
@@ -101,6 +106,12 @@ const UpdatesManager: Component = () => {
           <Show when={downloadStatus() === DOWNLOAD_STATUS.PAUSED}>
             <button class="btn" disabled={downloadStatus() === DOWNLOAD_STATUS.DOWNLOADING} onClick={() => handleDonwloadResume(downloadId() as string)}>
               <IconPlayerPlayFilled />
+            </button>
+          </Show>
+
+          <Show when={downloadStatus() === DOWNLOAD_STATUS.DOWNLOADING || downloadStatus() === DOWNLOAD_STATUS.PAUSED}>
+            <button class="btn" onClick={() => handleDonwloadCancel(downloadId() as string)}>
+              <IconPlayerStopFilled />
             </button>
           </Show>
         </div>
@@ -213,6 +224,17 @@ const UpdatesManager: Component = () => {
     }: DownloadData & { filename: string }) => {
       setDownloadStatus(DOWNLOAD_STATUS.COMPLETED)
       // setDownloadId(id)
+    })
+    window.electronApi.ipcRenderer.on(CHANNELS.DOWNLOAD_CANCEL, (_, {
+      id,
+      filename
+    }: DownloadData & { filename: string }) => {
+      setDownloadStatus(DOWNLOAD_STATUS.CANCEL)
+      // setDownloadId(id)
+      setDownloadProgress(0)
+      setDownloadReceivedBytes(0)
+      setDownloadRateBPS(0)
+      setTimeRemainingSeconds(0)
     })
   }, [])
 

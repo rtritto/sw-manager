@@ -98,6 +98,10 @@ ipcMain.on(CHANNELS.DOWNLOAD_RESUME, (_, id: string): void => {
   manager.resumeDownload(id)
 })
 
+ipcMain.on(CHANNELS.DOWNLOAD_CANCEL, (_, id: string): void => {
+  manager.cancelDownload(id)
+})
+
 ipcMain.on(CHANNELS.DOWNLOAD_BY_URL, async (_, downloadUrl: string): Promise<void> => {
   // mainWindow.webContents.downloadURL(downloadUrl)
 
@@ -125,6 +129,12 @@ ipcMain.on(CHANNELS.DOWNLOAD_BY_URL, async (_, downloadUrl: string): Promise<voi
       },
       onDownloadCompleted: ({ id, item }) => {
         mainWindow.webContents.send(CHANNELS.DOWNLOAD_COMPLETED, {
+          id,
+          filename: item.getFilename()
+        })
+      },
+      onDownloadCancelled: ({ id, item }) => {
+        mainWindow.webContents.send(CHANNELS.DOWNLOAD_CANCEL, {
           id,
           filename: item.getFilename()
         })

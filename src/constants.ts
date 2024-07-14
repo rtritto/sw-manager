@@ -8,6 +8,7 @@ export const CHANNELS = {
   RESTART_APP: 'restart_app',
   CHECK_FOR_UPDATE: 'check_for_update',
   DOWNLOAD_BY_URL: 'download_by_url',
+  DOWNLOAD_CANCEL: 'download-cancel',
   DOWNLOAD_COMPLETED: 'download-completed',
   DOWNLOAD_PAUSE: 'download-pause',
   DOWNLOAD_PROGRESS: 'download-progress',
