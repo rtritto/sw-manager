@@ -24,7 +24,7 @@ const APP_TO_CHECK = [
   // 'DB'
 ]
 
-const getUseRequest = ({ website }) => {
+const getUseRequest = ({ website }: Info) => {
   switch (website) {
     case 'FileCatchers':
     case 'FCPortables':

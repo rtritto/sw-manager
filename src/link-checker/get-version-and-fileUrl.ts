@@ -17,9 +17,7 @@ const getHTML = async (url: string): Promise<HTMLElement> => {
 const getFilteredVersion = (currentVersion: string, newestVersions: string[]): string => {
   const dotNumberLen = currentVersion.split('.').length
 
-  const filteredVersions = newestVersions.filter((v) => v.split('.').length === dotNumberLen)
-
-  const [filteredVersion] = filteredVersions
+  const filteredVersion = newestVersions.find((v) => v.split('.').length === dotNumberLen)!
 
   return filteredVersion
 }
