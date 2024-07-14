@@ -87,11 +87,11 @@ const UpdatesManager: Component = () => {
   const columns = createMemo<ColumnDef<Record<string, unknown>, any>[]>(() => [
     columnHelper.accessor('id', selectColumn), // This would be the select column
     // Other required columns
-    columnHelper.accessor(info => info, {
+    columnHelper.accessor((info) => info, {
       id: 'download',
-      // header: () => 'Download',
-      header: () => '',
-      cell: info => (
+      // header: 'Download',
+      header: '',
+      cell: (info) => (
         <div class="btn-group btn-group-horizontal flex">
           <button class="btn" disabled={downloadFilename() !== ''} onClick={() => handleDownload(info.getValue() as Info)}>
             <IconDownload />
@@ -120,21 +120,21 @@ const UpdatesManager: Component = () => {
     }),
     columnHelper.accessor('imageUrl', {
       id: 'imageUrl',
-      header: () => `App (Total: ${infos().length})`,
+      header: `App (Total: ${infos().length})`,
       cell: info => <img src={info.getValue() as string} />
     }),
     columnHelper.accessor('currentVersion', {
       id: 'currentVersion',
-      header: () => 'Current Version'
+      header: 'Current Version'
     }),
     columnHelper.accessor('newVersion', {
       id: 'newVersion',
-      header: () => 'New Version'
+      header: 'New Version'
     }),
-    columnHelper.accessor(() => { }, {
+    columnHelper.accessor('', {
       id: 'progress',
-      // header: () => 'Download Status',
-      header: () => 'Progress',
+      // header: 'Download Status',
+      header: 'Progress',
       cell: () => (
         <Show when={downloadFilename() !== ''}>
           <div>
@@ -151,37 +151,37 @@ const UpdatesManager: Component = () => {
         </Show>
       )
     }),
-    columnHelper.accessor(() => { }, {
+    columnHelper.accessor('', {
       id: 'size',
-      header: () => 'Size',
+      header: 'Size',
       cell: () => (
         <Show when={downloadFilename() !== ''}>
           <div>
             <Show when={downloadFilename() && (downloadStatus() === DOWNLOAD_STATUS.DOWNLOADING || downloadStatus() === DOWNLOAD_STATUS.PAUSED)}>
-              <span>{convertBytes(downloadReceivedBytes())}</span>
+              <span class="whitespace-nowrap">{convertBytes(downloadReceivedBytes())}</span>
 
               <div class="my-0 h-0.5 divider divider-neutral" />
             </Show>
 
-            <span>{convertBytes(downloadFilesize())}</span>
+            <span class="whitespace-nowrap">{convertBytes(downloadFilesize())}</span>
           </div>
         </Show>
       )
     }),
-    columnHelper.accessor(() => { }, {
+    columnHelper.accessor('', {
       id: 'speed',
-      // header: () => 'Transfer Rate',
-      header: () => 'Speed',
+      // header: 'Transfer Rate',
+      header: 'Speed',
       cell: () => (
         <Show when={downloadFilename() && downloadStatus() === DOWNLOAD_STATUS.DOWNLOADING}>
           <div>{convertBytes(downloadRateBPS())}/s</div>
         </Show>
       )
     }),
-    columnHelper.accessor(() => { }, {
+    columnHelper.accessor('', {
       id: 'eta',
-      // header: () => 'Time Left',
-      header: () => 'ETA',
+      // header: 'Time Left',
+      header: 'ETA',
       cell: () => (
         <Show when={downloadFilename() && downloadStatus() === DOWNLOAD_STATUS.DOWNLOADING}>
           <div>{convertSecondsToDHMS(timeRemainingSeconds())}</div>

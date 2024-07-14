@@ -3,11 +3,6 @@ import { createSolidTable, flexRender, getCoreRowModel, getFilteredRowModel, get
 import type { ColumnDef, ColumnFilter, ColumnSort, RowSelectionState, Row as TanstackRow } from '@tanstack/solid-table'
 import { For, Show, createSignal, mergeProps, type Component } from 'solid-js'
 
-const Size = {
-  XS: 48,
-  SM: 24
-}
-
 const Table: Component<{ columnData: Record<string, unknown>[], columns: ColumnDef<Record<string, unknown>, any>[] }> = (props) => {
   const merged = mergeProps({
     enableRowSelection: () => true
@@ -55,16 +50,17 @@ const Table: Component<{ columnData: Record<string, unknown>[], columns: ColumnD
                 <th colSpan={header.colSpan}>
                   <Show when={!header.isPlaceholder}>
                     <div
-                      class={`${header.column.getCanSort() ? "cursor-pointer select-none" : ""} flex items-center gap-x-2 p-4`}
+                      class={`${header.column.getCanSort() ? 'cursor-pointer select-none' : ''} flex items-center gap-x-2 p-4`}
                       onClick={header.column.getToggleSortingHandler()}
                     >
                       {flexRender(header.column.columnDef.header, header.getContext())}
+
                       {{
-                        asc: <IconSortAscending size={Size.XS} />,
-                        desc: <IconSortDescending size={Size.XS} />,
+                        asc: <IconSortAscending />,
+                        desc: <IconSortDescending />,
                       }[header.column.getIsSorted() as string]
                         ?? (header.column.getCanSort() ? (
-                          <IconDots size={Size.SM} />
+                          <IconDots />
                         ) : null)}
                     </div>
                   </Show>
@@ -73,6 +69,7 @@ const Table: Component<{ columnData: Record<string, unknown>[], columns: ColumnD
             </tr>
           )}</For>
         </thead>
+
         <tbody>
           <For each={solidTable.getRowModel().rows}>{(row) => (
             // <tr class="border-b border-b-gray-200 hover:bg-gray-50">
