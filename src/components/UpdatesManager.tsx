@@ -209,9 +209,7 @@ const UpdatesManager: Component = () => {
       percentCompleted,
       receivedBytes
     }: DownloadData & { receivedBytes: number }) => {
-      if (downloadStatus() !== DOWNLOAD_STATUS.PAUSED) {
-        setDownloadStatus(DOWNLOAD_STATUS.DOWNLOADING)
-      }
+      setDownloadStatus(DOWNLOAD_STATUS.DOWNLOADING)
       // setDownloadId(id)
       setDownloadProgress(percentCompleted)
       setDownloadReceivedBytes(receivedBytes)

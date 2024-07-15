@@ -45,7 +45,7 @@
     "bytes": "^3.1.2",
     "daisyui": "^4.12.10",
     "electron": "^31.2.0",
-    "electron-dl-manager": "^3.0.0",
+    "electron-dl-manager": "^3.0.1",
     "electron-log": "^5.1.5",
     "electron-updater": "^6.2.1",
     "eslint": "8.57.0",
