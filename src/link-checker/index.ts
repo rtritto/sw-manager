@@ -27,7 +27,7 @@ const APP_TO_CHECK = [
 const getUseRequest = ({ website }: Info) => {
   switch (website) {
     case 'FileCatchers':
-    case 'FCPortables':
+    case 'FCPortables': {
       return {
         useRequest: true,
         options: {
@@ -40,6 +40,7 @@ const getUseRequest = ({ website }: Info) => {
           })
         }
       }
+    }
     case 'GitHub': {
       return {
         useRequest: false,
@@ -123,7 +124,7 @@ export const main = async () => {
     const SECTION = getLabel(label, APP_MAP)
 
     if (SECTION) {
-      console.log('LABEL: ', label)
+      // console.log('LABEL:', label)
       createFoder(path.join(OUTPUT_FOLDER, label))
       results[label] = {}
 
@@ -154,18 +155,17 @@ export const main = async () => {
               const dirsList = fs.readdirSync(path.join(OUTPUT_FOLDER, label), { withFileTypes: true })
               const [start, end] = appName.split('<VERSION>')
               for (const dir of dirsList) {
-                if (dir.isDirectory() === true) {
-                  if (
-                    dir.name !== appFolder
-                    && dir.name.startsWith(start)
-                    && dir.name.endsWith(end)
-                  ) {
-                    // const newVersionOld = `${applyRegex(appName, { version: APP_MAP[label][appName].version })}`
-                    const oldVersionFolder = path.join(OUTPUT_FOLDER, label, /* newVersionOld */dir.name)
-                    if (fs.existsSync(oldVersionFolder) === true) {
-                      fs.rmSync(oldVersionFolder, { recursive: true })
-                      // console.log(`oldVersionFolder Delete: ${oldVersionFolder}`)
-                    }
+                if (
+                  dir.isDirectory() === true
+                  && dir.name !== appFolder
+                  && dir.name.startsWith(start)
+                  && dir.name.endsWith(end)
+                ) {
+                  // const newVersionOld = `${applyRegex(appName, { version: APP_MAP[label][appName].version })}`
+                  const oldVersionFolder = path.join(OUTPUT_FOLDER, label, /* newVersionOld */dir.name)
+                  if (fs.existsSync(oldVersionFolder) === true) {
+                    fs.rmSync(oldVersionFolder, { recursive: true })
+                    // console.log(`oldVersionFolder Delete: ${oldVersionFolder}`)
                   }
                 }
               }
@@ -219,10 +219,6 @@ export const main = async () => {
   }
 
   // console.log(JSON.stringify(results, null, 2))
-}
-
-export const getDownloadLinks = async () => {
-
 }
 
 // main()

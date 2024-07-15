@@ -11,10 +11,14 @@
     "module": "CommonJS",
     "moduleResolution": "Node",
     "noEmit": true,
+    "noImplicitAny": false,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
     "outDir": "dist",
     "resolveJsonModule": true,
     "skipLibCheck": true,
     "strict": true,
+    "sourceMap": false,
     "target": "ESNext"
   },
   "exclude": [
