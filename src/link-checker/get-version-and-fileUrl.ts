@@ -37,12 +37,14 @@ export const getVersion = async (obj: NestedConfig): Promise<Info> => {
   // }
 
   let titleVersion: string | undefined
-  let imageUrl: string | undefined = obj.imageUrl
+  // eslint-disable-next-line prefer-const
+  let { imageUrl } = obj
   let fileUrl: string | undefined
   switch (website) {
     case 'FileCatchers':
     case 'FCPortables': {
-      const html = await getHTML(obj.url!)
+      const { url } = obj
+      const html = await getHTML(url!)
       const title = html.querySelector('title')
       const title_raw = title?.rawText
       titleVersion = title_raw?.match(REGEX_GET_VERSION)?.at(0)
@@ -61,7 +63,8 @@ export const getVersion = async (obj: NestedConfig): Promise<Info> => {
       break
     }
     case 'PortableApps': {
-      const html = await getHTML(obj.url!)
+      const { url } = obj
+      const html = await getHTML(url!)
       const downloadInfo = html!.querySelector('p.download-info')
       // const [downloadInfoCN] = downloadInfo.childNodes
       // return downloadInfoCN.rawText  // Version <VERSION> for Windows Multilingual
@@ -88,13 +91,14 @@ export const getVersion = async (obj: NestedConfig): Promise<Info> => {
         .querySelector('strong')
       const strongCN = strong!.childNodes.at(0)
       const rawVersion = strongCN!.rawText
-      titleVersion = applyVersionOption(rawVersion, obj.versionOptions?.title!) as string
+      const { versionOptions } = obj
+      titleVersion = applyVersionOption(rawVersion, versionOptions?.title) as string
       // if (imageUrl === undefined) {
       //   imageUrl = html.querySelector('img.fl')!.getAttribute('src')
       // }
       const { download } = obj
       if (download) {
-        fileUrl = applyRegex(download, { version: applyVersionOption(rawVersion, obj.versionOptions?.download!) as string })
+        fileUrl = applyRegex(download, { version: applyVersionOption(rawVersion, versionOptions?.download) as string })
       } else {
         throw new Error('Softpedia: missing download')
       }
@@ -145,7 +149,8 @@ export const getVersion = async (obj: NestedConfig): Promise<Info> => {
           throw new Error('Missing tags')
         }
         const responseTags = await responseTagsRaw.body.json() as GithubTags
-        const firstTag = responseTags.at(obj.tagNumber ?? 0)!
+        const { tagNumber } = obj
+        const firstTag = responseTags.at(tagNumber ?? 0)!
         const tag = firstTag.name
         const responseTagRaw = await request(`https://api.github.com/repos/${owner}/${repo}/releases/tags/${tag}`, {
           headers: {
@@ -166,9 +171,8 @@ export const getVersion = async (obj: NestedConfig): Promise<Info> => {
         throw new Error('Missing tag_name')
       }
       titleVersion = data.tag_name?.match(REGEX_GET_VERSION)?.at(0)!
-      const { download } = obj
-      fileUrl = download
-        ? applyRegex(download, { version: titleVersion })
+      fileUrl = 'download' in obj
+        ? applyRegex(obj.download!, { version: titleVersion })
         : data.assets[obj.assetNumber!].browser_download_url
       break
     }
@@ -219,7 +223,7 @@ export const getDownloadLink = async (info: Info): Promise<string> => {
           // 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:92.0) Gecko/20100101 Firefox/92.0',
           // Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
           // 'Accept-Language': 'en-US,en;q=0.5',
-          'Content-Type': 'application/x-www-form-urlencoded',
+          'Content-Type': 'application/x-www-form-urlencoded'
           // 'Upgrade-Insecure-Requests': '1',
           // 'Sec-Fetch-Dest': 'document',
           // 'Sec-Fetch-Mode': 'navigate',
@@ -233,7 +237,7 @@ export const getDownloadLink = async (info: Info): Promise<string> => {
           //#endregion
         },
         body: `op=download2&id=${fileId}&rand=&referer=https%3A%2F%2Fuploadrar.com&method_free=Free+Download&adblock_detected=0`,
-        method: 'POST',
+        method: 'POST'
         //#region fetch options
         // credentials: 'include',
         // mode: 'cors',
@@ -247,10 +251,10 @@ export const getDownloadLink = async (info: Info): Promise<string> => {
     // case 'GitHub':
     // case 'VideoHelp':
     default:
-      return info.fileUrl!
+      return fileUrl!
   }
 }
 
 // TODO remove
-const getVersionAndFileUrl = async () => { }
+const getVersionAndFileUrl = async () => { return }
 export default getVersionAndFileUrl
