@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain } from 'electron'
+import { app, BrowserWindow, dialog, ipcMain } from 'electron'
 import { ElectronDownloadManager } from 'electron-dl-manager'
 import log from 'electron-log'
 import { autoUpdater } from 'electron-updater'
@@ -80,6 +80,13 @@ ipcMain.on(CHANNELS.RESTART_APP, () => {
 })
 
 
+ipcMain.handle(CHANNELS.SELECT_DOWNLOAD_FOLDER, async () => {
+  const { filePaths } = await dialog.showOpenDialog(mainWindow, {
+    properties: ['openDirectory']
+  })
+  return filePaths.at(0)
+})
+
 ipcMain.handle(CHANNELS.CHECK_FOR_UPDATE, async () => {
   const _infos = await getInfos(APP_MAP.SO)
   for (const info in _infos.errors) {
@@ -121,7 +128,7 @@ ipcMain.on(CHANNELS.DOWNLOAD_BY_URL, async (_, downloadUrlInfos: DownloadUrlInfo
     url: downloadUrl,
     directory,
     // enable Save As
-    saveDialogOptions: {},
+    ...directory === undefined && { saveDialogOptions: {} },
     callbacks: {
       onDownloadStarted: ({ id, item, resolvedFilename }) => {
         mainWindow.webContents.send(CHANNELS.DOWNLOAD_STARTED, {

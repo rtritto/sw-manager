@@ -11,6 +11,7 @@ import { CHANNELS } from './constants'
 contextBridge.exposeInMainWorld('electronApi', {
   // https://github.com/davidgs/on-air-desktop/blob/main/src/main/preload.ts
   ...electronAPI,
+  selectDownloadFolder: () => ipcRenderer.invoke(CHANNELS.SELECT_DOWNLOAD_FOLDER),
   checkForUpdate: () => ipcRenderer.invoke(CHANNELS.CHECK_FOR_UPDATE),
   singleDownload: (info: Info) => ipcRenderer.invoke(CHANNELS.SINGLE_DOWNLOAD, info)
 })
