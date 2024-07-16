@@ -13,6 +13,7 @@ const selectColumn = {
   header: (props: { table: TanstackTable<Record<string, unknown>> }) => (
     <Checkbox
       {...{
+        disabled: props.table.getRowCount() === 0,
         checked: props.table.getIsAllRowsSelected(),
         indeterminate: !props.table.getIsAllRowsSelected() && props.table.getIsSomeRowsSelected(),
         onChange: props.table.getToggleAllRowsSelectedHandler()
