@@ -1,25 +1,25 @@
-export const CHANNELS = {
+export enum CHANNELS {
   // import(electron-updater).UpdaterEvents
-  ERROR: 'error',
-  UPDATE_AVAILABLE: 'update-available',
-  UPDATE_DOWNLOADED: 'update-downloaded',
-  UPDATE_NOT_AVAILABLE: 'update-not-available',
+  ERROR = 'error',
+  UPDATE_AVAILABLE = 'update-available',
+  UPDATE_DOWNLOADED = 'update-downloaded',
+  UPDATE_NOT_AVAILABLE = 'update-not-available',
   // Custom Channels
-  RESTART_APP: 'restart_app',
-  CHECK_FOR_UPDATE: 'check_for_update',
-  DOWNLOAD_BY_URL: 'download_by_url',
-  DOWNLOAD_CANCEL: 'download-cancel',
-  DOWNLOAD_COMPLETED: 'download-completed',
-  DOWNLOAD_PAUSE: 'download-pause',
-  DOWNLOAD_PROGRESS: 'download-progress',
-  DOWNLOAD_RESUME: 'download-resume',
-  DOWNLOAD_STARTED: 'download-started',
-  SINGLE_DOWNLOAD: 'single_download',
-  UPDATE_ERROR: 'update_error'
-} as const
+  RESTART_APP = 'restart_app',
+  CHECK_FOR_UPDATE = 'check_for_update',
+  DOWNLOAD_BY_URL = 'download_by_url',
+  DOWNLOAD_CANCEL = 'download-cancel',
+  DOWNLOAD_COMPLETED = 'download-completed',
+  DOWNLOAD_PAUSE = 'download-pause',
+  DOWNLOAD_PROGRESS = 'download-progress',
+  DOWNLOAD_RESUME = 'download-resume',
+  DOWNLOAD_STARTED = 'download-started',
+  SINGLE_DOWNLOAD = 'single_download',
+  UPDATE_ERROR = 'update_error'
+}
 
-export const EVENTS = {
-  ACTIVATE: 'activate',
-  READY: 'ready',
-  WINDOW_ALL_CLOSED: 'window-all-closed'
-} as const
+export enum EVENTS {
+  ACTIVATE = 'activate',
+  READY = 'ready',
+  WINDOW_ALL_CLOSED = 'window-all-closed'
+}
