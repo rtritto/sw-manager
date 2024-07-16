@@ -61,7 +61,12 @@ const UpdatesManager: Component = () => {
   }>({})
   const [infos, setInfos] = createSignal<Info[]>([])
   const [rowSelection, setRowSelection] = useAtom(rowSelectionAtom)
-  const directory = useAtomValue(directoryAtom)
+  const [directory, setDirectory] = useAtom(directoryAtom)
+
+  const handleSelectDownlaod = async () => {
+    const selectedDownloadFolder = await window.electronApi.selectDownloadFolder()
+    setDirectory(selectedDownloadFolder)
+  }
 
   const handleCheckForUpdate = async () => {
     const _infos = await window.electronApi.checkForUpdate()
@@ -292,6 +297,10 @@ const UpdatesManager: Component = () => {
 
   return (
     <div>
+      <button class="btn" onClick={handleSelectDownlaod}>Select Download folder</button>
+
+      <div>Download Folder: {directory()}</div>
+
       <button class="btn" onClick={handleCheckForUpdate}>Check For Update</button>
 
       <div class="btn-group btn-group-horizontal flex">

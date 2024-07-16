@@ -15,6 +15,7 @@ export enum CHANNELS {
   DOWNLOAD_RESUME = 'download-resume',
   DOWNLOAD_STARTED = 'download-started',
   SINGLE_DOWNLOAD = 'single_download',
+  SELECT_DOWNLOAD_FOLDER = 'single_download_folder',
   UPDATE_ERROR = 'update_error'
 }
 

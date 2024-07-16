@@ -4,10 +4,11 @@ type Channels = ValueOf<typeof import('./constants').CHANNELS>
 
 interface Window {
   electronApi: import('@electron-toolkit/preload').ElectronAPI & {
+    selectDownloadFolder: () => Promise<string>
     checkForUpdate: () => Promise<{
-      results: InfoResult,
+      results: InfoResult
       error: Error
-    }>,
+    }>
     singleDownload: (info: Info) => Promise<string>
   }
 }
