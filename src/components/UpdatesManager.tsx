@@ -48,10 +48,16 @@ const DOWNLOAD_STATUS = {
 }
 
 const UpdatesManager: Component = () => {
-  const [downloadId, setDownloadId] = createSignal('')
   const [downloadStatus, setDownloadStatus] = createSignal('')
-  const [downloadFilename, setDownloadFilename] = createSignal('')
-  const [downloadFilesize, setDownloadFilesize] = createSignal(0)
+  const [downloadInfoStart, setDownloadInfoStart] = createSignal<{
+    fileId: string
+    fileName: string
+    fileSize: number
+  }>({
+    fileId: '',
+    fileName: '',
+    fileSize: 0
+  })
   const [downloadInfoProgress, setDownloadInfoProgress] = createSignal<{
     downloadRateBytesPerSecond: number
     estimatedTimeRemainingSeconds: number
@@ -100,24 +106,24 @@ const UpdatesManager: Component = () => {
       header: '',
       cell: (info) => (
         <div class="btn-group btn-group-horizontal flex">
-          <button class="btn" disabled={downloadFilename() !== ''} onClick={() => handleDownload(info.getValue() as Info)}>
+          <button class="btn" disabled={downloadInfoStart().fileName !== ''} onClick={() => handleDownload(info.getValue() as Info)}>
             <IconDownload />
           </button>
 
           <Show when={downloadStatus() === DOWNLOAD_STATUS.DOWNLOADING}>
-            <button class="btn" disabled={downloadStatus() === DOWNLOAD_STATUS.PAUSED} onClick={() => handleDonwloadPause(downloadId() as string)}>
+            <button class="btn" disabled={downloadStatus() === DOWNLOAD_STATUS.PAUSED} onClick={() => handleDonwloadPause(downloadInfoStart().fileId)}>
               <IconPlayerPauseFilled />
             </button>
           </Show>
 
           <Show when={downloadStatus() === DOWNLOAD_STATUS.PAUSED}>
-            <button class="btn" disabled={downloadStatus() === DOWNLOAD_STATUS.DOWNLOADING} onClick={() => handleDonwloadResume(downloadId() as string)}>
+            <button class="btn" disabled={downloadStatus() === DOWNLOAD_STATUS.DOWNLOADING} onClick={() => handleDonwloadResume(downloadInfoStart().fileId)}>
               <IconPlayerPlayFilled />
             </button>
           </Show>
 
           <Show when={downloadStatus() === DOWNLOAD_STATUS.DOWNLOADING || downloadStatus() === DOWNLOAD_STATUS.PAUSED}>
-            <button class="btn" onClick={() => handleDonwloadCancel(downloadId() as string)}>
+            <button class="btn" onClick={() => handleDonwloadCancel(downloadInfoStart().fileId)}>
               <IconPlayerStopFilled />
             </button>
           </Show>
@@ -143,9 +149,9 @@ const UpdatesManager: Component = () => {
       // header: 'Download Status',
       header: 'Progress',
       cell: () => (
-        <Show when={downloadFilename() !== ''}>
+        <Show when={downloadInfoStart().fileName !== ''}>
           <div>
-            {downloadFilename()}
+            {downloadInfoStart().fileName}
 
             <div class="my-0 h-0.5 divider divider-neutral" />
 
@@ -162,15 +168,15 @@ const UpdatesManager: Component = () => {
       id: 'size',
       header: 'Size',
       cell: () => (
-        <Show when={downloadFilename() !== ''}>
+        <Show when={downloadInfoStart().fileName !== ''}>
           <div>
-            <Show when={downloadFilename() && (downloadStatus() === DOWNLOAD_STATUS.DOWNLOADING || downloadStatus() === DOWNLOAD_STATUS.PAUSED)}>
+            <Show when={downloadInfoStart().fileName && (downloadStatus() === DOWNLOAD_STATUS.DOWNLOADING || downloadStatus() === DOWNLOAD_STATUS.PAUSED)}>
               <span class="whitespace-nowrap">{convertBytes(downloadInfoProgress().receivedBytes)}</span>
 
               <div class="my-0 h-0.5 divider divider-neutral" />
             </Show>
 
-            <span class="whitespace-nowrap">{convertBytes(downloadFilesize())}</span>
+            <span class="whitespace-nowrap">{convertBytes(downloadInfoStart().fileSize)}</span>
           </div>
         </Show>
       )
@@ -180,7 +186,7 @@ const UpdatesManager: Component = () => {
       // header: 'Transfer Rate',
       header: 'Speed',
       cell: () => (
-        <Show when={downloadFilename() && downloadStatus() === DOWNLOAD_STATUS.DOWNLOADING}>
+        <Show when={downloadInfoStart().fileName && downloadStatus() === DOWNLOAD_STATUS.DOWNLOADING}>
           <div>{convertBytes(downloadInfoProgress().downloadRateBytesPerSecond)}/s</div>
         </Show>
       )
@@ -190,7 +196,7 @@ const UpdatesManager: Component = () => {
       // header: 'Time Left',
       header: 'ETA',
       cell: () => (
-        <Show when={downloadFilename() && downloadStatus() === DOWNLOAD_STATUS.DOWNLOADING}>
+        <Show when={downloadInfoStart().fileName && downloadStatus() === DOWNLOAD_STATUS.DOWNLOADING}>
           <div>{convertSecondsToDHMS(downloadInfoProgress().estimatedTimeRemainingSeconds)}</div>
         </Show>
       )
@@ -205,19 +211,19 @@ const UpdatesManager: Component = () => {
       totalBytes
     }: DownloadData & { totalBytes: number }) => {
       setDownloadStatus(DOWNLOAD_STATUS.STARTED)
-      setDownloadId(id)
-      setDownloadFilename(resolvedFilename)
-      setDownloadFilesize(totalBytes)
+      setDownloadInfoStart({
+        fileId: id,
+        fileName: resolvedFilename,
+        fileSize: totalBytes
+      })
     })
     window.electronApi.ipcRenderer.on(CHANNELS.DOWNLOAD_PROGRESS, (_, {
-      id,
       downloadRateBytesPerSecond,
       estimatedTimeRemainingSeconds,
       percentCompleted,
       receivedBytes
     }: DownloadData & { receivedBytes: number }) => {
       setDownloadStatus(DOWNLOAD_STATUS.DOWNLOADING)
-      // setDownloadId(id)
       setDownloadInfoProgress({
         downloadRateBytesPerSecond,
         estimatedTimeRemainingSeconds,
@@ -225,19 +231,11 @@ const UpdatesManager: Component = () => {
         receivedBytes
       })
     })
-    window.electronApi.ipcRenderer.on(CHANNELS.DOWNLOAD_COMPLETED, (_, {
-      id,
-      filename
-    }: DownloadData & { filename: string }) => {
+    window.electronApi.ipcRenderer.on(CHANNELS.DOWNLOAD_COMPLETED, (_, __: DownloadData & { filename: string }) => {
       setDownloadStatus(DOWNLOAD_STATUS.COMPLETED)
-      // setDownloadId(id)
     })
-    window.electronApi.ipcRenderer.on(CHANNELS.DOWNLOAD_CANCEL, (_, {
-      id,
-      filename
-    }: DownloadData & { filename: string }) => {
+    window.electronApi.ipcRenderer.on(CHANNELS.DOWNLOAD_CANCEL, (_, __: DownloadData & { filename: string }) => {
       setDownloadStatus(DOWNLOAD_STATUS.CANCEL)
-      // setDownloadId(id)
       setDownloadInfoProgress({
         downloadRateBytesPerSecond: 0,
         estimatedTimeRemainingSeconds: 0,
