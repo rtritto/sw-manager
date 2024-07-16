@@ -73,7 +73,7 @@ const Table: Component<{ columnData: Record<string, unknown>[], columns: ColumnD
         <tbody>
           <For each={solidTable.getRowModel().rows}>{(row) => (
             // <tr class="border-b border-b-gray-200 hover:bg-gray-50">
-            <tr class="hover:bg-gray-600">
+            <tr id={row.id} class="hover:bg-gray-600">
               <For each={row.getVisibleCells()}>{(cell) => (
                 <td class="p-4 text-right">
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}

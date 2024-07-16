@@ -105,7 +105,7 @@ ipcMain.on(CHANNELS.DOWNLOAD_CANCEL, (_, id: string): void => {
   manager.cancelDownload(id)
 })
 
-ipcMain.on(CHANNELS.DOWNLOAD_BY_URL, async (_, downloadUrl: string): Promise<void> => {
+ipcMain.on(CHANNELS.DOWNLOAD_BY_URL, async (_, downloadUrl: string, rowId: string): Promise<void> => {
   // mainWindow.webContents.downloadURL(downloadUrl)
 
   await manager.download({
@@ -116,6 +116,7 @@ ipcMain.on(CHANNELS.DOWNLOAD_BY_URL, async (_, downloadUrl: string): Promise<voi
     callbacks: {
       onDownloadStarted: ({ id, item, resolvedFilename }) => {
         mainWindow.webContents.send(CHANNELS.DOWNLOAD_STARTED, {
+          rowId,
           id,
           resolvedFilename,
           totalBytes: item.getTotalBytes()
@@ -123,6 +124,7 @@ ipcMain.on(CHANNELS.DOWNLOAD_BY_URL, async (_, downloadUrl: string): Promise<voi
       },
       onDownloadProgress: ({ id, downloadRateBytesPerSecond, estimatedTimeRemainingSeconds, item, percentCompleted }) => {
         mainWindow.webContents.send(CHANNELS.DOWNLOAD_PROGRESS, {
+          rowId,
           id,
           downloadRateBytesPerSecond,
           estimatedTimeRemainingSeconds,
@@ -131,10 +133,10 @@ ipcMain.on(CHANNELS.DOWNLOAD_BY_URL, async (_, downloadUrl: string): Promise<voi
         })
       },
       onDownloadCompleted: ({ id }) => {
-        mainWindow.webContents.send(CHANNELS.DOWNLOAD_COMPLETED, { id })
+        mainWindow.webContents.send(CHANNELS.DOWNLOAD_COMPLETED, { rowId, id })
       },
       onDownloadCancelled: ({ id }) => {
-        mainWindow.webContents.send(CHANNELS.DOWNLOAD_CANCEL, { id })
+        mainWindow.webContents.send(CHANNELS.DOWNLOAD_CANCEL, { rowId, id })
       }
     }
   })
