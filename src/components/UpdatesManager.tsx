@@ -28,7 +28,7 @@ const convertSecondsToDHMS = (seconds: number): string => {
   const m = Math.floor(seconds % MINUTE / SECOND)
   const s = Math.floor(seconds % SECOND)
 
-  const eta = []
+  const eta: string[] = []
   if (d > 0) eta.push(`${d}d`)
   if (h > 0) eta.push(`${h}h`)
   if (m > 0) eta.push(`${m}m`)
@@ -52,10 +52,17 @@ const UpdatesManager: Component = () => {
   const [downloadStatus, setDownloadStatus] = createSignal('')
   const [downloadFilename, setDownloadFilename] = createSignal('')
   const [downloadFilesize, setDownloadFilesize] = createSignal(0)
-  const [downloadReceivedBytes, setDownloadReceivedBytes] = createSignal(0)
-  const [downloadProgress, setDownloadProgress] = createSignal(0)
-  const [downloadRateBPS, setDownloadRateBPS] = createSignal(0)
-  const [timeRemainingSeconds, setTimeRemainingSeconds] = createSignal(0)
+  const [downloadInfoProgress, setDownloadInfoProgress] = createSignal<{
+    downloadRateBytesPerSecond: number
+    estimatedTimeRemainingSeconds: number
+    percentCompleted: number
+    receivedBytes: number
+  }>({
+    downloadRateBytesPerSecond: 0,
+    estimatedTimeRemainingSeconds: 0,
+    percentCompleted: 0,
+    receivedBytes: 0
+  })
   // const [infos, setInfos] = useAtom(infosAtom)
   const [infos, setInfos] = createSignal<Info[]>([])
 
@@ -143,9 +150,9 @@ const UpdatesManager: Component = () => {
             <div class="my-0 h-0.5 divider divider-neutral" />
 
             <div class="flex items-center">
-              <progress class={`progress ${downloadStatus() === DOWNLOAD_STATUS.DOWNLOADING ? 'progress-info' : (downloadStatus() === DOWNLOAD_STATUS.PAUSED ? 'progress-warning' : 'progress-accent')} w-56`} value={downloadProgress()} max="100" />
+              <progress class={`progress ${downloadStatus() === DOWNLOAD_STATUS.DOWNLOADING ? 'progress-info' : (downloadStatus() === DOWNLOAD_STATUS.PAUSED ? 'progress-warning' : 'progress-accent')} w-56`} value={downloadInfoProgress().percentCompleted} max="100" />
 
-              <span class="whitespace-nowrap px-2">{convertProgress(downloadProgress())}%</span>
+              <span class="whitespace-nowrap px-2">{convertProgress(downloadInfoProgress().percentCompleted)}%</span>
             </div>
           </div>
         </Show>
@@ -158,7 +165,7 @@ const UpdatesManager: Component = () => {
         <Show when={downloadFilename() !== ''}>
           <div>
             <Show when={downloadFilename() && (downloadStatus() === DOWNLOAD_STATUS.DOWNLOADING || downloadStatus() === DOWNLOAD_STATUS.PAUSED)}>
-              <span class="whitespace-nowrap">{convertBytes(downloadReceivedBytes())}</span>
+              <span class="whitespace-nowrap">{convertBytes(downloadInfoProgress().receivedBytes)}</span>
 
               <div class="my-0 h-0.5 divider divider-neutral" />
             </Show>
@@ -174,7 +181,7 @@ const UpdatesManager: Component = () => {
       header: 'Speed',
       cell: () => (
         <Show when={downloadFilename() && downloadStatus() === DOWNLOAD_STATUS.DOWNLOADING}>
-          <div>{convertBytes(downloadRateBPS())}/s</div>
+          <div>{convertBytes(downloadInfoProgress().downloadRateBytesPerSecond)}/s</div>
         </Show>
       )
     }),
@@ -184,7 +191,7 @@ const UpdatesManager: Component = () => {
       header: 'ETA',
       cell: () => (
         <Show when={downloadFilename() && downloadStatus() === DOWNLOAD_STATUS.DOWNLOADING}>
-          <div>{convertSecondsToDHMS(timeRemainingSeconds())}</div>
+          <div>{convertSecondsToDHMS(downloadInfoProgress().estimatedTimeRemainingSeconds)}</div>
         </Show>
       )
     })
@@ -211,10 +218,12 @@ const UpdatesManager: Component = () => {
     }: DownloadData & { receivedBytes: number }) => {
       setDownloadStatus(DOWNLOAD_STATUS.DOWNLOADING)
       // setDownloadId(id)
-      setDownloadProgress(percentCompleted)
-      setDownloadReceivedBytes(receivedBytes)
-      setDownloadRateBPS(downloadRateBytesPerSecond)
-      setTimeRemainingSeconds(estimatedTimeRemainingSeconds)
+      setDownloadInfoProgress({
+        downloadRateBytesPerSecond,
+        estimatedTimeRemainingSeconds,
+        percentCompleted,
+        receivedBytes
+      })
     })
     window.electronApi.ipcRenderer.on(CHANNELS.DOWNLOAD_COMPLETED, (_, {
       id,
@@ -229,10 +238,12 @@ const UpdatesManager: Component = () => {
     }: DownloadData & { filename: string }) => {
       setDownloadStatus(DOWNLOAD_STATUS.CANCEL)
       // setDownloadId(id)
-      setDownloadProgress(0)
-      setDownloadReceivedBytes(0)
-      setDownloadRateBPS(0)
-      setTimeRemainingSeconds(0)
+      setDownloadInfoProgress({
+        downloadRateBytesPerSecond: 0,
+        estimatedTimeRemainingSeconds: 0,
+        percentCompleted: 0,
+        receivedBytes: 0
+      })
     })
   })
 
