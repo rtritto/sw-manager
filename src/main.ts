@@ -105,12 +105,21 @@ ipcMain.on(CHANNELS.DOWNLOAD_CANCEL, (_, id: string): void => {
   manager.cancelDownload(id)
 })
 
-ipcMain.on(CHANNELS.DOWNLOAD_BY_URL, async (_, downloadUrl: string, rowId: string): Promise<void> => {
+type DownloadUrlInfo = {
+  downloadUrl: string
+  rowId: string
+}
+
+ipcMain.on(CHANNELS.DOWNLOAD_BY_URL, async (_, downloadUrlInfos: DownloadUrlInfo[], directory?: string): Promise<void> => {
   // mainWindow.webContents.downloadURL(downloadUrl)
 
-  await manager.download({
+  await Promise.all(downloadUrlInfos.map(({
+    downloadUrl,
+    rowId
+  }) => manager.download({
     window: mainWindow,
     url: downloadUrl,
+    directory,
     // enable Save As
     saveDialogOptions: {},
     callbacks: {
@@ -139,7 +148,7 @@ ipcMain.on(CHANNELS.DOWNLOAD_BY_URL, async (_, downloadUrl: string, rowId: strin
         mainWindow.webContents.send(CHANNELS.DOWNLOAD_CANCEL, { rowId, id })
       }
     }
-  })
+  })))
 })
 
 // Check for Update when App launch
