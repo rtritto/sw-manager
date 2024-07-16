@@ -1,7 +1,10 @@
 import { IconSortAscending, IconSortDescending, IconDots } from '@tabler/icons-solidjs'
 import { createSolidTable, flexRender, getCoreRowModel, getFilteredRowModel, getSortedRowModel } from '@tanstack/solid-table'
-import type { ColumnDef, ColumnFilter, ColumnSort, RowSelectionState, Row as TanstackRow } from '@tanstack/solid-table'
+import type { ColumnDef, ColumnFilter, ColumnSort, Row as TanstackRow } from '@tanstack/solid-table'
 import { For, Show, createSignal, mergeProps, type Component } from 'solid-js'
+import { useAtom } from 'solid-jotai'
+
+import { rowSelectionAtom } from '../store/atoms'
 
 const Table: Component<{ columnData: Record<string, unknown>[], columns: ColumnDef<Record<string, unknown>, any>[] }> = (props) => {
   const merged = mergeProps({
@@ -9,7 +12,7 @@ const Table: Component<{ columnData: Record<string, unknown>[], columns: ColumnD
   }, props)
 
   const [sorting, sortingSet] = createSignal<ColumnSort[]>()
-  const [rowSelection, rowSelectionSet] = createSignal<RowSelectionState>()
+  const [rowSelection, rowSelectionSet] = useAtom(rowSelectionAtom)
   const [columnFilters, setColumnFilters] = createSignal<ColumnFilter[]>()
 
   const solidTable = createSolidTable({

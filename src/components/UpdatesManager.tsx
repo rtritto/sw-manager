@@ -1,15 +1,17 @@
-import { type ColumnDef, createColumnHelper } from '@tanstack/solid-table'
+import { createColumnHelper } from '@tanstack/solid-table'
+import type { ColumnDef } from '@tanstack/solid-table'
 import { IconDownload, IconPlayerPauseFilled, IconPlayerPlayFilled, IconPlayerStopFilled } from '@tabler/icons-solidjs'
 import bytes from 'bytes'
 import type { DownloadData } from 'electron-dl-manager'
-// import { useAtom } from 'solid-jotai'
+import { useAtom, useAtomValue } from 'solid-jotai'
 import { createEffect, createMemo, createSignal, Show } from 'solid-js'
 import { createStore } from 'solid-js/store'
 
 // import { infosAtom } from '../store/atoms'
-import { CHANNELS } from '../constants'
+import { CHANNELS, DOWNLOAD_STATUS } from '../constants'
 import Table from '../components/Table'
 import selectColumn from './selectColumn'
+import { directoryAtom, rowSelectionAtom } from '../store/atoms'
 
 const convertProgress = (progress: number): string => {
   if (progress === 100) {
@@ -40,14 +42,6 @@ const convertSecondsToDHMS = (seconds: number): string => {
 
 const convertBytes = (bytesToConvert: number): string => bytes(bytesToConvert, { fixedDecimals: true, unitSeparator: ' ' })
 
-enum DOWNLOAD_STATUS {
-  STARTED = CHANNELS.DOWNLOAD_STARTED,
-  DOWNLOADING = CHANNELS.DOWNLOAD_PROGRESS,
-  PAUSED = CHANNELS.DOWNLOAD_PAUSE,
-  COMPLETED = CHANNELS.DOWNLOAD_COMPLETED,
-  CANCEL = CHANNELS.DOWNLOAD_CANCEL
-}
-
 const UpdatesManager: Component = () => {
   const [downloadStatus, setDownloadStatus] = createStore<{ [rowId: string]: ValueOf<typeof DOWNLOAD_STATUS> }>({})
   const [downloadInfoStart, setDownloadInfoStart] = createStore<{
@@ -65,17 +59,35 @@ const UpdatesManager: Component = () => {
       receivedBytes: number
     }
   }>({})
-  // const [infos, setInfos] = useAtom(infosAtom)
   const [infos, setInfos] = createSignal<Info[]>([])
+  const [rowSelection, setRowSelection] = useAtom(rowSelectionAtom)
+  const directory = useAtomValue(directoryAtom)
 
   const handleCheckForUpdate = async () => {
     const _infos = await window.electronApi.checkForUpdate()
+    setRowSelection({})
     setInfos(Object.values(_infos.results))
   }
 
+  const handleDownloadSelected = async () => {
+    const rowSelectionIndexes = Object.keys(rowSelection())
+    const downloadUrlInfos = await Promise.all(
+      rowSelectionIndexes.map((rowId: string) =>
+        window.electronApi.singleDownload(infos()[parseInt(rowId, 10)]).then((downloadUrl) => ({
+          downloadUrl,
+          rowId
+        }))
+      )
+    )
+    window.electronApi.ipcRenderer.send(CHANNELS.DOWNLOAD_BY_URL, downloadUrlInfos, directory())
+  }
+
   const handleDownload = async (info: Info, rowId: string) => {
-    const _downloadLink = await window.electronApi.singleDownload({ ...info })
-    window.electronApi.ipcRenderer.send(CHANNELS.DOWNLOAD_BY_URL, _downloadLink, rowId)
+    const downloadLink = await window.electronApi.singleDownload({ ...info })
+    window.electronApi.ipcRenderer.send(CHANNELS.DOWNLOAD_BY_URL, [{
+      downloadLink,
+      rowId
+    }], directory())
   }
 
   const handleDonwloadPause = (id: string, rowId: string) => {
@@ -144,7 +156,9 @@ const UpdatesManager: Component = () => {
     }),
     columnHelper.accessor('imageUrl', {
       id: 'imageUrl',
-      header: `App (Total: ${infos().length})`,
+      // TODO fix length always 0
+      // header: `App (Total: ${infos().length})`,
+      header: 'App',
       cell: info => <img src={info.getValue() as string} />
     }),
     columnHelper.accessor('currentVersion', {
@@ -279,6 +293,10 @@ const UpdatesManager: Component = () => {
   return (
     <div>
       <button class="btn" onClick={handleCheckForUpdate}>Check For Update</button>
+
+      <div class="btn-group btn-group-horizontal flex">
+        <button class="btn" onClick={handleDownloadSelected}>Download Selected</button>
+      </div>
 
       <Table columnData={infos()} columns={columns()} />
     </div>
