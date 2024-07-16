@@ -130,17 +130,11 @@ ipcMain.on(CHANNELS.DOWNLOAD_BY_URL, async (_, downloadUrl: string): Promise<voi
           receivedBytes: item.getReceivedBytes()
         })
       },
-      onDownloadCompleted: ({ id, item }) => {
-        mainWindow.webContents.send(CHANNELS.DOWNLOAD_COMPLETED, {
-          id,
-          filename: item.getFilename()
-        })
+      onDownloadCompleted: ({ id }) => {
+        mainWindow.webContents.send(CHANNELS.DOWNLOAD_COMPLETED, { id })
       },
-      onDownloadCancelled: ({ id, item }) => {
-        mainWindow.webContents.send(CHANNELS.DOWNLOAD_CANCEL, {
-          id,
-          filename: item.getFilename()
-        })
+      onDownloadCancelled: ({ id }) => {
+        mainWindow.webContents.send(CHANNELS.DOWNLOAD_CANCEL, { id })
       }
     }
   })

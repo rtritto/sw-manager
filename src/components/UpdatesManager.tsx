@@ -231,10 +231,10 @@ const UpdatesManager: Component = () => {
         receivedBytes
       })
     })
-    window.electronApi.ipcRenderer.on(CHANNELS.DOWNLOAD_COMPLETED, (_, __: DownloadData & { filename: string }) => {
+    window.electronApi.ipcRenderer.on(CHANNELS.DOWNLOAD_COMPLETED, (_, __: DownloadData) => {
       setDownloadStatus(DOWNLOAD_STATUS.COMPLETED)
     })
-    window.electronApi.ipcRenderer.on(CHANNELS.DOWNLOAD_CANCEL, (_, __: DownloadData & { filename: string }) => {
+    window.electronApi.ipcRenderer.on(CHANNELS.DOWNLOAD_CANCEL, (_, __: DownloadData) => {
       setDownloadStatus(DOWNLOAD_STATUS.CANCEL)
       setDownloadInfoProgress({
         downloadRateBytesPerSecond: 0,
