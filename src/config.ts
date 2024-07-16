@@ -19,7 +19,7 @@ let APP_MAP: Config = {
       website: 'Softpedia',
     },
     'TomVPN <VERSION> Portable': {
-      url: 'https://www.fcportables.com/tomvpn-portable',
+      url: 'https://www.filecatchers.com/tomvpn-portable',
       urlTmp: 'https://www.softpedia.com/get/Internet/Secure-Browsing-VPN/TomVPN.shtml',
       imageUrl: 'https://windows-cdn.softpedia.com/screenshots/ico/TomVPN.png',
       version: '2.3.8',
