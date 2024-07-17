@@ -120,42 +120,41 @@ type DownloadUrlInfo = {
 ipcMain.on(CHANNELS.DOWNLOAD_BY_URL, async (_, downloadUrlInfos: DownloadUrlInfo[], directory?: string): Promise<void> => {
   // mainWindow.webContents.downloadURL(downloadUrl)
 
-  await Promise.all(downloadUrlInfos.map(({
-    downloadUrl,
-    rowId
-  }) => manager.download({
-    window: mainWindow,
-    url: downloadUrl,
-    directory,
-    // enable Save As
-    ...directory === undefined && { saveDialogOptions: {} },
-    callbacks: {
-      onDownloadStarted: ({ id, item, resolvedFilename }) => {
-        mainWindow.webContents.send(CHANNELS.DOWNLOAD_STARTED, {
-          rowId,
-          id,
-          resolvedFilename,
-          totalBytes: item.getTotalBytes()
-        })
-      },
-      onDownloadProgress: ({ id, downloadRateBytesPerSecond, estimatedTimeRemainingSeconds, item, percentCompleted }) => {
-        mainWindow.webContents.send(CHANNELS.DOWNLOAD_PROGRESS, {
-          rowId,
-          id,
-          downloadRateBytesPerSecond,
-          estimatedTimeRemainingSeconds,
-          percentCompleted,
-          receivedBytes: item.getReceivedBytes()
-        })
-      },
-      onDownloadCompleted: ({ id }) => {
-        mainWindow.webContents.send(CHANNELS.DOWNLOAD_COMPLETED, { rowId, id })
-      },
-      onDownloadCancelled: ({ id }) => {
-        mainWindow.webContents.send(CHANNELS.DOWNLOAD_CANCEL, { rowId, id })
+  for (const { downloadUrl, rowId } of downloadUrlInfos) {
+    await manager.download({
+      window: mainWindow,
+      url: downloadUrl,
+      directory,
+      // enable Save As
+      ...directory === undefined && { saveDialogOptions: {} },
+      callbacks: {
+        onDownloadStarted: ({ id, item, resolvedFilename }) => {
+          mainWindow.webContents.send(CHANNELS.DOWNLOAD_STARTED, {
+            rowId,
+            id,
+            resolvedFilename,
+            totalBytes: item.getTotalBytes()
+          })
+        },
+        onDownloadProgress: ({ id, downloadRateBytesPerSecond, estimatedTimeRemainingSeconds, item, percentCompleted }) => {
+          mainWindow.webContents.send(CHANNELS.DOWNLOAD_PROGRESS, {
+            rowId,
+            id,
+            downloadRateBytesPerSecond,
+            estimatedTimeRemainingSeconds,
+            percentCompleted,
+            receivedBytes: item.getReceivedBytes()
+          })
+        },
+        onDownloadCompleted: ({ id }) => {
+          mainWindow.webContents.send(CHANNELS.DOWNLOAD_COMPLETED, { rowId, id })
+        },
+        onDownloadCancelled: ({ id }) => {
+          mainWindow.webContents.send(CHANNELS.DOWNLOAD_CANCEL, { rowId, id })
+        }
       }
-    }
-  })))
+    })
+  }
 })
 
 // Check for Update when App launch
