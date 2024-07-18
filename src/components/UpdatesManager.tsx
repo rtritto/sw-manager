@@ -125,52 +125,52 @@ const UpdatesManager: Component = () => {
   const columns = createMemo<ColumnDef<Record<string, unknown>, any>[]>(() => [
     columnHelper.accessor('id', selectColumn), // This would be the select column
     // Other required columns
-    columnHelper.accessor((info) => info, {
-      id: 'download',
-      // header: 'Download',
-      header: '',
-      cell: (info) => (
-        <div class="btn-group btn-group-horizontal items-center flex">
-          <button
-            class="btn" disabled={info.row.id in downloadInfoStart ? downloadInfoStart[info.row.id].fileName !== '' : false}
-            onClick={() => handleDownload(info.getValue() as Info, info.row.id, directory())}
-          >
-            <IconDownload />
-          </button>
+    // columnHelper.accessor((info) => info, {
+    //   id: 'download',
+    //   // header: 'Download',
+    //   header: '',
+    //   cell: (info) => (
+    //     <div class="btn-group btn-group-horizontal items-center flex">
+    //       <button
+    //         class="btn" disabled={info.row.id in downloadInfoStart ? downloadInfoStart[info.row.id].fileName !== '' : false}
+    //         onClick={() => handleDownload(info.getValue() as Info, info.row.id, directory())}
+    //       >
+    //         <IconDownload />
+    //       </button>
 
-          <Show when={info.row.id in downloadInfoStart ? downloadStatus[info.row.id] === DOWNLOAD_STATUS.DOWNLOADING : false}>
-            <button
-              class="btn"
-              disabled={downloadStatus[info.row.id] === DOWNLOAD_STATUS.PAUSED}
-              onClick={() => handleDonwloadPause(downloadInfoStart[info.row.id].fileId, info.row.id)}
-            >
-              <IconPlayerPauseFilled />
-            </button>
-          </Show>
+    //       <Show when={info.row.id in downloadInfoStart ? downloadStatus[info.row.id] === DOWNLOAD_STATUS.DOWNLOADING : false}>
+    //         <button
+    //           class="btn"
+    //           disabled={downloadStatus[info.row.id] === DOWNLOAD_STATUS.PAUSED}
+    //           onClick={() => handleDonwloadPause(downloadInfoStart[info.row.id].fileId, info.row.id)}
+    //         >
+    //           <IconPlayerPauseFilled />
+    //         </button>
+    //       </Show>
 
-          <Show when={info.row.id in downloadInfoStart ? downloadStatus[info.row.id] === DOWNLOAD_STATUS.PAUSED : false}>
-            <button
-              class="btn"
-              disabled={downloadStatus[info.row.id] === DOWNLOAD_STATUS.DOWNLOADING}
-              onClick={() => handleDonwloadResume(downloadInfoStart[info.row.id].fileId, info.row.id)}
-            >
-              <IconPlayerPlayFilled />
-            </button>
-          </Show>
+    //       <Show when={info.row.id in downloadInfoStart ? downloadStatus[info.row.id] === DOWNLOAD_STATUS.PAUSED : false}>
+    //         <button
+    //           class="btn"
+    //           disabled={downloadStatus[info.row.id] === DOWNLOAD_STATUS.DOWNLOADING}
+    //           onClick={() => handleDonwloadResume(downloadInfoStart[info.row.id].fileId, info.row.id)}
+    //         >
+    //           <IconPlayerPlayFilled />
+    //         </button>
+    //       </Show>
 
-          <Show
-            when={info.row.id in downloadInfoStart
-              ? (downloadStatus[info.row.id] === DOWNLOAD_STATUS.DOWNLOADING || downloadStatus[info.row.id] === DOWNLOAD_STATUS.PAUSED)
-              : false}
-          >
-            <button class="btn" onClick={() => handleDonwloadCancel(downloadInfoStart[info.row.id].fileId)}>
-              <IconPlayerStopFilled />
-            </button>
-          </Show>
-        </div>
-      ),
-      enableSorting: false
-    }),
+    //       <Show
+    //         when={info.row.id in downloadInfoStart
+    //           ? (downloadStatus[info.row.id] === DOWNLOAD_STATUS.DOWNLOADING || downloadStatus[info.row.id] === DOWNLOAD_STATUS.PAUSED)
+    //           : false}
+    //       >
+    //         <button class="btn" onClick={() => handleDonwloadCancel(downloadInfoStart[info.row.id].fileId)}>
+    //           <IconPlayerStopFilled />
+    //         </button>
+    //       </Show>
+    //     </div>
+    //   ),
+    //   enableSorting: false
+    // }),
     columnHelper.accessor('imageUrl', {
       id: 'imageUrl',
       // TODO fix length always 0
