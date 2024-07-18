@@ -1,9 +1,9 @@
 import { createColumnHelper } from '@tanstack/solid-table'
 import type { ColumnDef } from '@tanstack/solid-table'
-import { IconDownload, IconPlayerPauseFilled, IconPlayerPlayFilled, IconPlayerStopFilled } from '@tabler/icons-solidjs'
+import { IconDownload, IconPlayerPauseFilled, IconPlayerPlayFilled, IconPlayerStopFilled, IconSearch } from '@tabler/icons-solidjs'
 import bytes from 'bytes'
 import type { DownloadData } from 'electron-dl-manager'
-import { useAtom, useAtomValue } from 'solid-jotai'
+import { useAtom } from 'solid-jotai'
 import { createEffect, createMemo, createSignal, Show } from 'solid-js'
 import { createStore } from 'solid-js/store'
 
@@ -74,25 +74,37 @@ const UpdatesManager: Component = () => {
     setInfos(Object.values(_infos.results))
   }
 
-  const handleDownloadSelected = async () => {
-    const rowSelectionIndexes = Object.keys(rowSelection())
-    const downloadUrlInfos = await Promise.all(
-      rowSelectionIndexes.map((rowId: string) =>
-        window.electronApi.singleDownload(infos()[parseInt(rowId, 10)]).then((downloadUrl) => ({
-          downloadUrl,
-          rowId
-        }))
-      )
+  const handleDownloadSelected = async (rowIds: string[], directory?: string) => {
+    await Promise.all(
+      rowIds.map(async (rowId: string) => handleDownload(infos()[parseInt(rowId, 10)], rowId, directory))
     )
-    window.electronApi.ipcRenderer.send(CHANNELS.DOWNLOAD_BY_URL, downloadUrlInfos, directory())
   }
 
-  const handleDownload = async (info: Info, rowId: string) => {
+  const handlePauseSelected = async (rowIds: string[]) => {
+    await Promise.all(
+      rowIds.map(async (rowId: string) => handleDonwloadPause(downloadInfoStart[rowId].fileId, rowId))
+    )
+  }
+
+  const handleResumeSelected = async (rowIds: string[]) => {
+    await Promise.all(
+      rowIds.map(async (rowId: string) => handleDonwloadResume(downloadInfoStart[rowId].fileId, rowId))
+    )
+  }
+
+  const handleCancelSelected = async (rowIds: string[]) => {
+    await Promise.all(
+      rowIds.map(async (rowId: string) => handleDonwloadCancel(downloadInfoStart[rowId].fileId))
+    )
+  }
+
+  const handleDownload = async (info: Info, rowId: string, directory?: string) => {
     const downloadLink = await window.electronApi.singleDownload({ ...info })
-    window.electronApi.ipcRenderer.send(CHANNELS.DOWNLOAD_BY_URL, [{
+    window.electronApi.ipcRenderer.send(CHANNELS.DOWNLOAD_BY_URL, {
       downloadLink,
-      rowId
-    }], directory())
+      rowId,
+      directory
+    })
   }
 
   const handleDonwloadPause = (id: string, rowId: string) => {
@@ -118,10 +130,10 @@ const UpdatesManager: Component = () => {
       // header: 'Download',
       header: '',
       cell: (info) => (
-        <div class="btn-group btn-group-horizontal flex">
+        <div class="btn-group btn-group-horizontal items-center flex">
           <button
             class="btn" disabled={info.row.id in downloadInfoStart ? downloadInfoStart[info.row.id].fileName !== '' : false}
-            onClick={() => handleDownload(info.getValue() as Info, info.row.id)}
+            onClick={() => handleDownload(info.getValue() as Info, info.row.id, directory())}
           >
             <IconDownload />
           </button>
@@ -297,14 +309,56 @@ const UpdatesManager: Component = () => {
 
   return (
     <div>
-      <button class="btn" onClick={handleSelectDownlaod}>Select Download folder</button>
+      <div class="btn-group btn-group-horizontal items-center flex">
+        <button class="btn" onClick={handleSelectDownlaod}>Select Download Folder</button>
 
-      <div>Download Folder: {directory()}</div>
+        <button class="btn" disabled={directory() === undefined} onClick={() => setDirectory(undefined)}>Reset Download folder</button>
 
-      <button class="btn" onClick={handleCheckForUpdate}>Check For Update</button>
+        <div>Download Folder: {directory()}</div>
+      </div>
 
-      <div class="btn-group btn-group-horizontal flex">
-        <button class="btn" onClick={handleDownloadSelected}>Download Selected</button>
+      <div class="btn-group btn-group-horizontal items-center flex">
+        <button class="btn" onClick={handleCheckForUpdate}>
+          <IconSearch />
+        </button>
+
+        <div class="tooltip" data-tip="Download Selected">
+          <button
+            class="btn"
+            disabled={(Object.keys(rowSelection()).length === 0) || (Object.keys(rowSelection()).some((rowId) =>
+              (rowId in downloadStatus) === false || downloadStatus[rowId] === DOWNLOAD_STATUS.COMPLETED
+            ) === false)}
+            onClick={() => handleDownloadSelected(Object.keys(rowSelection()), directory())}
+          >
+            <IconDownload />
+          </button>
+
+          <button
+            class="btn"
+            disabled={Object.values(downloadStatus).includes(DOWNLOAD_STATUS.DOWNLOADING) === false}
+            onClick={() => handlePauseSelected(Object.keys(rowSelection()))}
+          >
+            <IconPlayerPauseFilled />
+          </button>
+
+          <button
+            class="btn"
+            disabled={Object.values(downloadStatus).includes(DOWNLOAD_STATUS.PAUSED) === false}
+            onClick={() => handleResumeSelected(Object.keys(rowSelection()))}
+          >
+            <IconPlayerPlayFilled />
+          </button>
+
+          <button
+            class="btn"
+            disabled={Object.values(downloadStatus).some((status) =>
+              status === DOWNLOAD_STATUS.DOWNLOADING || status === DOWNLOAD_STATUS.PAUSED
+            ) === false}
+            onClick={() => handleCancelSelected(Object.keys(rowSelection()))}
+          >
+            <IconPlayerStopFilled />
+          </button>
+        </div>
       </div>
 
       <Table columnData={infos()} columns={columns()} />
