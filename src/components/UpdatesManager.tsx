@@ -69,8 +69,8 @@ const UpdatesManager: Component = () => {
   const [isDirectoryDisabled, setIsDirectoryDisabled] = createSignal<boolean>(false)
 
   const handleSelectDownlaodsFolder = async () => {
-    const selectedDownloadFolder = await window.electronApi.selectDownloadFolder()
-    setDirectory(selectedDownloadFolder === undefined ? window.electronApi.downloadsFolder : selectedDownloadFolder)
+    const _selectedDownloadFolder = await window.electronApi.selectDownloadFolder()
+    setDirectory(_selectedDownloadFolder === undefined ? window.electronApi.downloadsFolder : _selectedDownloadFolder)
   }
 
   const handleCheckForUpdate = async () => {
@@ -79,105 +79,43 @@ const UpdatesManager: Component = () => {
     setInfos(Object.values(_infos.results))
   }
 
+  // eslint-disable-next-line unicorn/consistent-function-scoping
   const handleDownloadSelected = async (infos: Info[], rowIds: string[], directory?: string) => {
     await Promise.all(
-      rowIds.map(async (rowId: string) => handleDownload(infos[Number.parseInt(rowId, 10)], rowId, directory))
+      rowIds.map((rowId: string) => window.electronApi.singleDownload({ ...infos[Number.parseInt(rowId, 10)] }).then((downloadLink) => {
+        window.electronApi.ipcRenderer.send(CHANNELS.DOWNLOAD_BY_URL, {
+          downloadLink,
+          rowId,
+          directory
+        })
+      }))
     )
   }
 
-  const handlePauseSelected = async (downloadInfoStart: DownloadInfoStart, rowIds: string[]) => {
-    await Promise.all(
-      rowIds.map(async (rowId: string) => handleDonwloadPause(downloadInfoStart[rowId].fileId, rowId))
-    )
+  const handlePauseSelected = (downloadInfoStart: DownloadInfoStart, rowIds: string[]) => {
+    for (const rowId of rowIds) {
+      window.electronApi.ipcRenderer.send(CHANNELS.DOWNLOAD_PAUSE, downloadInfoStart[rowId].fileId)
+      setDownloadStatus(rowId, DOWNLOAD_STATUS.PAUSED)
+    }
   }
 
-  const handleResumeSelected = async (downloadInfoStart: DownloadInfoStart, rowIds: string[]) => {
-    await Promise.all(
-      rowIds.map(async (rowId: string) => handleDonwloadResume(downloadInfoStart[rowId].fileId, rowId))
-    )
+  const handleResumeSelected = (downloadInfoStart: DownloadInfoStart, rowIds: string[]) => {
+    for (const rowId of rowIds) {
+      window.electronApi.ipcRenderer.send(CHANNELS.DOWNLOAD_RESUME, downloadInfoStart[rowId].fileId)
+      setDownloadStatus(rowId, DOWNLOAD_STATUS.DOWNLOADING)
+    }
   }
 
-  const handleCancelSelected = async (downloadInfoStart: DownloadInfoStart, rowIds: string[]) => {
-    await Promise.all(
-      rowIds.map(async (rowId: string) => handleDonwloadCancel(downloadInfoStart[rowId].fileId))
-    )
-  }
-
-  // eslint-disable-next-line unicorn/consistent-function-scoping
-  const handleDownload = async (info: Info, rowId: string, directory?: string) => {
-    const downloadLink = await window.electronApi.singleDownload({ ...info })
-    window.electronApi.ipcRenderer.send(CHANNELS.DOWNLOAD_BY_URL, {
-      downloadLink,
-      rowId,
-      directory
-    })
-  }
-
-  const handleDonwloadPause = (id: string, rowId: string) => {
-    window.electronApi.ipcRenderer.send(CHANNELS.DOWNLOAD_PAUSE, id)
-    setDownloadStatus(rowId, DOWNLOAD_STATUS.PAUSED)
-  }
-
-  const handleDonwloadResume = (id: string, rowId: string) => {
-    window.electronApi.ipcRenderer.send(CHANNELS.DOWNLOAD_RESUME, id)
-    setDownloadStatus(rowId, DOWNLOAD_STATUS.DOWNLOADING)
-  }
-
-  // eslint-disable-next-line unicorn/consistent-function-scoping
-  const handleDonwloadCancel = (id: string) => {
-    window.electronApi.ipcRenderer.send(CHANNELS.DOWNLOAD_CANCEL, id)
+  const handleCancelSelected = (downloadInfoStart: DownloadInfoStart, rowIds: string[]) => {
+    for (const rowId of rowIds) {
+      window.electronApi.ipcRenderer.send(CHANNELS.DOWNLOAD_CANCEL, downloadInfoStart[rowId].fileId)
+    }
   }
 
   const columnHelper = createColumnHelper<Record<string, unknown>>()
   const columns = createMemo<ColumnDef<Record<string, unknown>, any>[]>(() => [
     columnHelper.accessor('id', selectColumn), // This would be the select column
     // Other required columns
-    // columnHelper.accessor((info) => info, {
-    //   id: 'download',
-    //   // header: 'Download',
-    //   header: '',
-    //   cell: (info) => (
-    //     <div class="btn-group btn-group-horizontal items-center flex">
-    //       <button
-    //         class="btn" disabled={info.row.id in downloadInfoStart ? downloadInfoStart[info.row.id].fileName !== '' : false}
-    //         onClick={() => handleDownload(info.getValue() as Info, info.row.id, isDirectoryDisabled() === true ? undefined : directory())}
-    //       >
-    //         <IconDownload />
-    //       </button>
-
-    //       <Show when={info.row.id in downloadInfoStart ? downloadStatus[info.row.id] === DOWNLOAD_STATUS.DOWNLOADING : false}>
-    //         <button
-    //           class="btn"
-    //           disabled={downloadStatus[info.row.id] === DOWNLOAD_STATUS.PAUSED}
-    //           onClick={() => handleDonwloadPause(downloadInfoStart[info.row.id].fileId, info.row.id)}
-    //         >
-    //           <IconPlayerPauseFilled />
-    //         </button>
-    //       </Show>
-
-    //       <Show when={info.row.id in downloadInfoStart ? downloadStatus[info.row.id] === DOWNLOAD_STATUS.PAUSED : false}>
-    //         <button
-    //           class="btn"
-    //           disabled={downloadStatus[info.row.id] === DOWNLOAD_STATUS.DOWNLOADING}
-    //           onClick={() => handleDonwloadResume(downloadInfoStart[info.row.id].fileId, info.row.id)}
-    //         >
-    //           <IconPlayerPlayFilled />
-    //         </button>
-    //       </Show>
-
-    //       <Show
-    //         when={info.row.id in downloadInfoStart
-    //           ? (downloadStatus[info.row.id] === DOWNLOAD_STATUS.DOWNLOADING || downloadStatus[info.row.id] === DOWNLOAD_STATUS.PAUSED)
-    //           : false}
-    //       >
-    //         <button class="btn" onClick={() => handleDonwloadCancel(downloadInfoStart[info.row.id].fileId)}>
-    //           <IconPlayerStopFilled />
-    //         </button>
-    //       </Show>
-    //     </div>
-    //   ),
-    //   enableSorting: false
-    // }),
     columnHelper.accessor('imageUrl', {
       id: 'imageUrl',
       // TODO fix length always 0
