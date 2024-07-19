@@ -56,6 +56,8 @@ const createWindow = () => {
   mainWindow.webContents.openDevTools()
 
   mainWindow.maximize()
+
+  mainWindow.removeMenu()
 }
 
 const sendStatusToWindow = (text: string) => {
