@@ -81,7 +81,7 @@ const UpdatesManager: Component = () => {
 
   // eslint-disable-next-line unicorn/consistent-function-scoping
   const handleDownloadSelected = async (infos: Info[], rowIds: string[], directory?: string) => {
-    await Promise.all(
+    await Promise.allSettled(
       rowIds.map((rowId: string) => window.electronApi.singleDownload({ ...infos[Number.parseInt(rowId, 10)] }).then((downloadLink) => {
         window.electronApi.ipcRenderer.send(CHANNELS.DOWNLOAD_BY_URL, {
           downloadLink,
