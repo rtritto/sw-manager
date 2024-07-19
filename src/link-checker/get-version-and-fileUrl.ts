@@ -104,10 +104,10 @@ export const getVersion = async (obj: NestedConfig): Promise<Info> => {
       }
       break
       // TODO
-
+      const { id } = obj
       const fd = new FormData()
       fd.append('t', 15)
-      fd.append('id', obj.id!)
+      fd.append('id', id!)
       fd.append('tsf', 0)
       const htmlDlInfo = await request('https://www.softpedia.com/_xaja/dlinfo.php?skipa=0', {
         body: fd,
@@ -115,7 +115,8 @@ export const getVersion = async (obj: NestedConfig): Promise<Info> => {
       }).then((res) => res.body.text())
       const rootDlInfo = parse(htmlDlInfo, PARSE_OPTIONS)
       const muhscroll = rootDlInfo.querySelector('#muhscroll')
-      const div = muhscroll!.querySelector(`div.dllinkbox2:nth-child(${obj.childNumber!})`)
+      const { childNumber } = obj
+      const div = muhscroll!.querySelector(`div.dllinkbox2:nth-child(${childNumber!})`)
       const a = div!.querySelector('a')
       const href = a!.getAttribute('href')
 
@@ -170,7 +171,7 @@ export const getVersion = async (obj: NestedConfig): Promise<Info> => {
       if (!data.tag_name) {
         throw new Error('Missing tag_name')
       }
-      titleVersion = data.tag_name?.match(REGEX_GET_VERSION)?.at(0)!
+      titleVersion = data.tag_name.match(REGEX_GET_VERSION)!.at(0)!
       fileUrl = 'download' in obj
         ? applyRegex(obj.download!, { version: titleVersion })
         : data.assets[obj.assetNumber!].browser_download_url
@@ -244,14 +245,15 @@ export const getDownloadLink = async (info: Info): Promise<string> => {
         // referrer: fileUrl!
         //#endregion
       }).then((res) => res.body.text())
-      return htmlUploadrar.match(/<a href="([^"]+"?uploadrar.com:[^"]+)"/)?.at(1)!
+      return htmlUploadrar.match(/<a href="([^"]+"?uploadrar.com:[^"]+)"/)!.at(1)!
     }
     // case 'PortableApps':
     // case 'Softpedia':
     // case 'GitHub':
     // case 'VideoHelp':
-    default:
+    default: {
       return fileUrl!
+    }
   }
 }
 
