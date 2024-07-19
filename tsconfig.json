@@ -8,6 +8,11 @@
     "isolatedModules": true,
     "jsx": "preserve",
     "jsxImportSource": "solid-js",
+    "lib": [
+      "DOM",
+      "DOM.Iterable",
+      "ESNext"
+    ],
     "module": "CommonJS",
     "moduleResolution": "Node",
     "noEmit": true,
@@ -22,6 +27,7 @@
     "target": "ESNext"
   },
   "exclude": [
+    "**/dist",
     "node_modules"
   ]
 }
