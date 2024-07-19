@@ -9,7 +9,8 @@ interface Window {
       results: InfoResult
       error: Error
     }>
-    singleDownload: (info: Info) => Promise<string>
+    singleDownload: (info: Info) => Promise<string>,
+    downloadsFolder: string
   }
 }
 
