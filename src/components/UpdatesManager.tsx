@@ -335,7 +335,7 @@ const UpdatesManager: Component = () => {
           <button
             class="btn"
             disabled={(Object.keys(rowSelection()).length === 0) || (Object.keys(rowSelection()).some((rowId) =>
-              (rowId in downloadStatus) === false || downloadStatus[rowId] === DOWNLOAD_STATUS.COMPLETED
+              (rowId in downloadStatus) === false || downloadStatus[rowId] === DOWNLOAD_STATUS.COMPLETED || downloadStatus[rowId] === DOWNLOAD_STATUS.CANCEL
             ) === false)}
             onClick={() => handleDownloadSelected(Object.keys(rowSelection()), isDirectoryDisabled() === true ? undefined : directory())}
           >
