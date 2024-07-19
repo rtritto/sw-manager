@@ -34,6 +34,7 @@ const createWindow = () => {
     // autoHideMenuBar: true,
     // icon: 'icon.ico',
     webPreferences: {
+      additionalArguments: [`--downloads-folder=${app.getPath('downloads')}`],
       preload: path.join(import.meta.dirname, 'preload.mjs')
       // devTools: false
       // enableRemoteModule: true,  // deprecated and replaced with @electron/remote (or ipcRenderer.invoke, see README)

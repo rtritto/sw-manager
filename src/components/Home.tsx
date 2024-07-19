@@ -1,8 +1,16 @@
 import { Show } from 'solid-js'
-import { useAtom, useAtomValue } from 'solid-jotai'
-import { messageAtom, showNotificationAtom, showRestartButtonAtom } from '../store/atoms'
+import { Provider, useAtom, useAtomValue } from 'solid-jotai'
+import { useHydrateAtoms } from 'solid-jotai/utils'
+
+import { directoryAtom, messageAtom, showNotificationAtom, showRestartButtonAtom } from '../store/atoms'
 import { CHANNELS } from '../constants'
 import UpdatesManager from './UpdatesManager'
+
+const HydrateAtoms = ({ initialValues, children }) => {
+  // initialising on state with prop on render here
+  useHydrateAtoms(initialValues)
+  return children
+}
 
 const Home: Component = () => {
   const [showNotification, setShowNotification] = useAtom(showNotificationAtom)
@@ -35,7 +43,11 @@ const Home: Component = () => {
         </div>
       </Show>
 
-      <UpdatesManager />
+      <Provider>
+        <HydrateAtoms initialValues={[[directoryAtom, window.electronApi.downloadsFolder]]}>
+          <UpdatesManager />
+        </HydrateAtoms>
+      </Provider>
     </div>
   )
 }

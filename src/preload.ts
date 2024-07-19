@@ -13,7 +13,8 @@ contextBridge.exposeInMainWorld('electronApi', {
   ...electronAPI,
   selectDownloadFolder: () => ipcRenderer.invoke(CHANNELS.SELECT_DOWNLOAD_FOLDER),
   checkForUpdate: () => ipcRenderer.invoke(CHANNELS.CHECK_FOR_UPDATE),
-  singleDownload: (info: Info) => ipcRenderer.invoke(CHANNELS.SINGLE_DOWNLOAD, info)
+  singleDownload: (info: Info) => ipcRenderer.invoke(CHANNELS.SINGLE_DOWNLOAD, info),
+  downloadsFolder: process.argv.find(value => value.startsWith('--downloads-folder='))!.split('=').at(1)
 })
 
 const setShowNotification = useSetAtom(showNotificationAtom)
