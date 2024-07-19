@@ -62,10 +62,11 @@ const UpdatesManager: Component = () => {
   const [infos, setInfos] = createSignal<Info[]>([])
   const [rowSelection, setRowSelection] = useAtom(rowSelectionAtom)
   const [directory, setDirectory] = useAtom(directoryAtom)
+  const [isDirectoryDisabled, setIsDirectoryDisabled] = createSignal<boolean>(false)
 
-  const handleSelectDownlaod = async () => {
+  const handleSelectDownlaodsFolder = async () => {
     const selectedDownloadFolder = await window.electronApi.selectDownloadFolder()
-    setDirectory(selectedDownloadFolder)
+    setDirectory(selectedDownloadFolder === undefined ? window.electronApi.downloadsFolder : selectedDownloadFolder)
   }
 
   const handleCheckForUpdate = async () => {
@@ -133,7 +134,7 @@ const UpdatesManager: Component = () => {
     //     <div class="btn-group btn-group-horizontal items-center flex">
     //       <button
     //         class="btn" disabled={info.row.id in downloadInfoStart ? downloadInfoStart[info.row.id].fileName !== '' : false}
-    //         onClick={() => handleDownload(info.getValue() as Info, info.row.id, directory())}
+    //         onClick={() => handleDownload(info.getValue() as Info, info.row.id, isDirectoryDisabled() === true ? undefined : directory())}
     //       >
     //         <IconDownload />
     //       </button>
@@ -310,11 +311,19 @@ const UpdatesManager: Component = () => {
   return (
     <div>
       <div class="btn-group btn-group-horizontal items-center flex">
-        <button class="btn" onClick={handleSelectDownlaod}>Select Download Folder</button>
+        <span class="whitespace-nowrap font-bold m-1">Downloads Folder:</span>
 
-        <button class="btn" disabled={directory() === undefined} onClick={() => setDirectory(undefined)}>Reset Download folder</button>
+        <input type="text m-1" class="input input-bordered w-full max-w-xs" value={directory()} disabled={isDirectoryDisabled()} />
 
-        <div>Download Folder: {directory()}</div>
+        <button class="btn m-1" onClick={handleSelectDownlaodsFolder}>Change</button>
+
+        <div class="form-control">
+          <label class="label cursor-pointer">
+            <input class="checkbox m-1" type="checkbox" onClick={() => setIsDirectoryDisabled(!isDirectoryDisabled())} />
+
+            <span class="label-text m-1">Disable Folder<br />to enable "Save as"</span>
+          </label>
+        </div>
       </div>
 
       <div class="btn-group btn-group-horizontal items-center flex">
@@ -328,7 +337,7 @@ const UpdatesManager: Component = () => {
             disabled={(Object.keys(rowSelection()).length === 0) || (Object.keys(rowSelection()).some((rowId) =>
               (rowId in downloadStatus) === false || downloadStatus[rowId] === DOWNLOAD_STATUS.COMPLETED
             ) === false)}
-            onClick={() => handleDownloadSelected(Object.keys(rowSelection()), directory())}
+            onClick={() => handleDownloadSelected(Object.keys(rowSelection()), isDirectoryDisabled() === true ? undefined : directory())}
           >
             <IconDownload />
           </button>
