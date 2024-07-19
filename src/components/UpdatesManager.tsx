@@ -42,6 +42,10 @@ const convertSecondsToDHMS = (seconds: number): string => {
 
 const convertBytes = (bytesToConvert: number): string => bytes(bytesToConvert, { fixedDecimals: true, unitSeparator: ' ' })
 
+type DownloadStatus = {
+  [rowId: string]: ValueOf<typeof DOWNLOAD_STATUS>
+}
+
 type DownloadInfoStart = {
   [rowId: string]: {
     fileId: string
@@ -60,7 +64,7 @@ type DownloadInfoProgress = {
 }
 
 const UpdatesManager: Component = () => {
-  const [downloadStatus, setDownloadStatus] = createStore<{ [rowId: string]: ValueOf<typeof DOWNLOAD_STATUS> }>({})
+  const [downloadStatus, setDownloadStatus] = createStore<DownloadStatus>({})
   const [downloadInfoStart, setDownloadInfoStart] = createStore<DownloadInfoStart>({})
   const [downloadInfoProgress, setDownloadInfoProgress] = createStore<DownloadInfoProgress>({})
   const [infos, setInfos] = createSignal<Info[]>([])
@@ -80,35 +84,45 @@ const UpdatesManager: Component = () => {
   }
 
   // eslint-disable-next-line unicorn/consistent-function-scoping
-  const handleDownloadSelected = async (infos: Info[], rowIds: string[], directory?: string) => {
+  const handleDownloadSelected = async (downloadStatus: DownloadStatus, infos: Info[], rowIds: string[], directory?: string) => {
     await Promise.allSettled(
-      rowIds.map((rowId: string) => window.electronApi.singleDownload({ ...infos[Number.parseInt(rowId, 10)] }).then((downloadLink) => {
-        window.electronApi.ipcRenderer.send(CHANNELS.DOWNLOAD_BY_URL, {
-          downloadLink,
-          rowId,
-          directory
-        })
-      }))
+      rowIds.map((rowId: string) => {
+        if ((rowId in downloadStatus) === false || downloadStatus[rowId] === DOWNLOAD_STATUS.CANCEL) {
+          return window.electronApi.singleDownload({ ...infos[Number.parseInt(rowId, 10)] }).then((downloadLink) => {
+            window.electronApi.ipcRenderer.send(CHANNELS.DOWNLOAD_BY_URL, {
+              downloadLink,
+              rowId,
+              directory
+            })
+          })
+        }
+      })
     )
   }
 
-  const handlePauseSelected = (downloadInfoStart: DownloadInfoStart, rowIds: string[]) => {
+  const handlePauseSelected = (downloadStatus: DownloadStatus, downloadInfoStart: DownloadInfoStart, rowIds: string[]) => {
     for (const rowId of rowIds) {
-      window.electronApi.ipcRenderer.send(CHANNELS.DOWNLOAD_PAUSE, downloadInfoStart[rowId].fileId)
-      setDownloadStatus(rowId, DOWNLOAD_STATUS.PAUSED)
+      if (downloadStatus[rowId] === DOWNLOAD_STATUS.DOWNLOADING) {
+        window.electronApi.ipcRenderer.send(CHANNELS.DOWNLOAD_PAUSE, downloadInfoStart[rowId].fileId)
+        setDownloadStatus(rowId, DOWNLOAD_STATUS.PAUSED)
+      }
     }
   }
 
-  const handleResumeSelected = (downloadInfoStart: DownloadInfoStart, rowIds: string[]) => {
+  const handleResumeSelected = (downloadStatus: DownloadStatus, downloadInfoStart: DownloadInfoStart, rowIds: string[]) => {
     for (const rowId of rowIds) {
-      window.electronApi.ipcRenderer.send(CHANNELS.DOWNLOAD_RESUME, downloadInfoStart[rowId].fileId)
-      setDownloadStatus(rowId, DOWNLOAD_STATUS.DOWNLOADING)
+      if (downloadStatus[rowId] === DOWNLOAD_STATUS.PAUSED) {
+        window.electronApi.ipcRenderer.send(CHANNELS.DOWNLOAD_RESUME, downloadInfoStart[rowId].fileId)
+        setDownloadStatus(rowId, DOWNLOAD_STATUS.DOWNLOADING)
+      }
     }
   }
 
-  const handleCancelSelected = (downloadInfoStart: DownloadInfoStart, rowIds: string[]) => {
+  const handleCancelSelected = (downloadStatus: DownloadStatus, downloadInfoStart: DownloadInfoStart, rowIds: string[]) => {
     for (const rowId of rowIds) {
-      window.electronApi.ipcRenderer.send(CHANNELS.DOWNLOAD_CANCEL, downloadInfoStart[rowId].fileId)
+      if (downloadStatus[rowId] === DOWNLOAD_STATUS.DOWNLOADING || downloadStatus[rowId] === DOWNLOAD_STATUS.PAUSED) {
+        window.electronApi.ipcRenderer.send(CHANNELS.DOWNLOAD_CANCEL, downloadInfoStart[rowId].fileId)
+      }
     }
   }
 
@@ -265,7 +279,7 @@ const UpdatesManager: Component = () => {
           <label class="label cursor-pointer">
             <input class="checkbox m-1" type="checkbox" onClick={() => setIsDirectoryDisabled(!isDirectoryDisabled())} />
 
-            <span class="label-text m-1">Disable Folder<br />to enable "Save as"</span>
+            <span class="label-text m-1">Disable "Save in Folder"<br />and enable "Save as"</span>
           </label>
         </div>
       </div>
@@ -279,35 +293,39 @@ const UpdatesManager: Component = () => {
           <button
             class="btn"
             disabled={(Object.keys(rowSelection()).length === 0) || (Object.keys(rowSelection()).some((rowId) =>
-              (rowId in downloadStatus) === false || downloadStatus[rowId] === DOWNLOAD_STATUS.COMPLETED || downloadStatus[rowId] === DOWNLOAD_STATUS.CANCEL
+              (rowId in downloadStatus) === false || downloadStatus[rowId] === DOWNLOAD_STATUS.CANCEL
             ) === false)}
-            onClick={() => handleDownloadSelected(infos(), Object.keys(rowSelection()), isDirectoryDisabled() === true ? undefined : directory())}
+            onClick={() => handleDownloadSelected(downloadStatus, infos(), Object.keys(rowSelection()), isDirectoryDisabled() === true ? undefined : directory())}
           >
             <IconDownload />
           </button>
 
           <button
             class="btn"
-            disabled={Object.values(downloadStatus).includes(DOWNLOAD_STATUS.DOWNLOADING) === false}
-            onClick={() => handlePauseSelected(downloadInfoStart, Object.keys(rowSelection()))}
+            disabled={(Object.keys(rowSelection()).length === 0) || (Object.keys(rowSelection()).some((rowId) =>
+              (rowId in downloadStatus) === true && downloadStatus[rowId] === DOWNLOAD_STATUS.DOWNLOADING
+            ) === false)}
+            onClick={() => handlePauseSelected(downloadStatus, downloadInfoStart, Object.keys(rowSelection()))}
           >
             <IconPlayerPauseFilled />
           </button>
 
           <button
             class="btn"
-            disabled={Object.values(downloadStatus).includes(DOWNLOAD_STATUS.PAUSED) === false}
-            onClick={() => handleResumeSelected(downloadInfoStart, Object.keys(rowSelection()))}
+            disabled={(Object.keys(rowSelection()).length === 0) || (Object.keys(rowSelection()).some((rowId) =>
+              (rowId in downloadStatus) === true && downloadStatus[rowId] === DOWNLOAD_STATUS.PAUSED
+            ) === false)}
+            onClick={() => handleResumeSelected(downloadStatus, downloadInfoStart, Object.keys(rowSelection()))}
           >
             <IconPlayerPlayFilled />
           </button>
 
           <button
             class="btn"
-            disabled={Object.values(downloadStatus).some((status) =>
-              status === DOWNLOAD_STATUS.DOWNLOADING || status === DOWNLOAD_STATUS.PAUSED
-            ) === false}
-            onClick={() => handleCancelSelected(downloadInfoStart, Object.keys(rowSelection()))}
+            disabled={(Object.keys(rowSelection()).length === 0) || (Object.keys(rowSelection()).some((rowId) =>
+              (rowId in downloadStatus) === true && (downloadStatus[rowId] === DOWNLOAD_STATUS.DOWNLOADING || downloadStatus[rowId] === DOWNLOAD_STATUS.PAUSED)
+            ) === false)}
+            onClick={() => handleCancelSelected(downloadStatus, downloadInfoStart, Object.keys(rowSelection()))}
           >
             <IconPlayerStopFilled />
           </button>
