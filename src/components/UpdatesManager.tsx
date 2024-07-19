@@ -42,23 +42,27 @@ const convertSecondsToDHMS = (seconds: number): string => {
 
 const convertBytes = (bytesToConvert: number): string => bytes(bytesToConvert, { fixedDecimals: true, unitSeparator: ' ' })
 
+type DownloadInfoStart = {
+  [rowId: string]: {
+    fileId: string
+    fileName: string
+    fileSize: number
+  }
+}
+
+type DownloadInfoProgress = {
+  [rowId: string]: {
+    downloadRateBytesPerSecond: number
+    estimatedTimeRemainingSeconds: number
+    percentCompleted: number
+    receivedBytes: number
+  }
+}
+
 const UpdatesManager: Component = () => {
   const [downloadStatus, setDownloadStatus] = createStore<{ [rowId: string]: ValueOf<typeof DOWNLOAD_STATUS> }>({})
-  const [downloadInfoStart, setDownloadInfoStart] = createStore<{
-    [rowId: string]: {
-      fileId: string
-      fileName: string
-      fileSize: number
-    }
-  }>({})
-  const [downloadInfoProgress, setDownloadInfoProgress] = createStore<{
-    [rowId: string]: {
-      downloadRateBytesPerSecond: number
-      estimatedTimeRemainingSeconds: number
-      percentCompleted: number
-      receivedBytes: number
-    }
-  }>({})
+  const [downloadInfoStart, setDownloadInfoStart] = createStore<DownloadInfoStart>({})
+  const [downloadInfoProgress, setDownloadInfoProgress] = createStore<DownloadInfoProgress>({})
   const [infos, setInfos] = createSignal<Info[]>([])
   const [rowSelection, setRowSelection] = useAtom(rowSelectionAtom)
   const [directory, setDirectory] = useAtom(directoryAtom)
@@ -75,30 +79,31 @@ const UpdatesManager: Component = () => {
     setInfos(Object.values(_infos.results))
   }
 
-  const handleDownloadSelected = async (rowIds: string[], directory?: string) => {
+  const handleDownloadSelected = async (infos: Info[], rowIds: string[], directory?: string) => {
     await Promise.all(
-      rowIds.map(async (rowId: string) => handleDownload(infos()[parseInt(rowId, 10)], rowId, directory))
+      rowIds.map(async (rowId: string) => handleDownload(infos[Number.parseInt(rowId, 10)], rowId, directory))
     )
   }
 
-  const handlePauseSelected = async (rowIds: string[]) => {
+  const handlePauseSelected = async (downloadInfoStart: DownloadInfoStart, rowIds: string[]) => {
     await Promise.all(
       rowIds.map(async (rowId: string) => handleDonwloadPause(downloadInfoStart[rowId].fileId, rowId))
     )
   }
 
-  const handleResumeSelected = async (rowIds: string[]) => {
+  const handleResumeSelected = async (downloadInfoStart: DownloadInfoStart, rowIds: string[]) => {
     await Promise.all(
       rowIds.map(async (rowId: string) => handleDonwloadResume(downloadInfoStart[rowId].fileId, rowId))
     )
   }
 
-  const handleCancelSelected = async (rowIds: string[]) => {
+  const handleCancelSelected = async (downloadInfoStart: DownloadInfoStart, rowIds: string[]) => {
     await Promise.all(
       rowIds.map(async (rowId: string) => handleDonwloadCancel(downloadInfoStart[rowId].fileId))
     )
   }
 
+  // eslint-disable-next-line unicorn/consistent-function-scoping
   const handleDownload = async (info: Info, rowId: string, directory?: string) => {
     const downloadLink = await window.electronApi.singleDownload({ ...info })
     window.electronApi.ipcRenderer.send(CHANNELS.DOWNLOAD_BY_URL, {
@@ -118,6 +123,7 @@ const UpdatesManager: Component = () => {
     setDownloadStatus(rowId, DOWNLOAD_STATUS.DOWNLOADING)
   }
 
+  // eslint-disable-next-line unicorn/consistent-function-scoping
   const handleDonwloadCancel = (id: string) => {
     window.electronApi.ipcRenderer.send(CHANNELS.DOWNLOAD_CANCEL, id)
   }
@@ -337,7 +343,7 @@ const UpdatesManager: Component = () => {
             disabled={(Object.keys(rowSelection()).length === 0) || (Object.keys(rowSelection()).some((rowId) =>
               (rowId in downloadStatus) === false || downloadStatus[rowId] === DOWNLOAD_STATUS.COMPLETED || downloadStatus[rowId] === DOWNLOAD_STATUS.CANCEL
             ) === false)}
-            onClick={() => handleDownloadSelected(Object.keys(rowSelection()), isDirectoryDisabled() === true ? undefined : directory())}
+            onClick={() => handleDownloadSelected(infos(), Object.keys(rowSelection()), isDirectoryDisabled() === true ? undefined : directory())}
           >
             <IconDownload />
           </button>
@@ -345,7 +351,7 @@ const UpdatesManager: Component = () => {
           <button
             class="btn"
             disabled={Object.values(downloadStatus).includes(DOWNLOAD_STATUS.DOWNLOADING) === false}
-            onClick={() => handlePauseSelected(Object.keys(rowSelection()))}
+            onClick={() => handlePauseSelected(downloadInfoStart, Object.keys(rowSelection()))}
           >
             <IconPlayerPauseFilled />
           </button>
@@ -353,7 +359,7 @@ const UpdatesManager: Component = () => {
           <button
             class="btn"
             disabled={Object.values(downloadStatus).includes(DOWNLOAD_STATUS.PAUSED) === false}
-            onClick={() => handleResumeSelected(Object.keys(rowSelection()))}
+            onClick={() => handleResumeSelected(downloadInfoStart, Object.keys(rowSelection()))}
           >
             <IconPlayerPlayFilled />
           </button>
@@ -363,7 +369,7 @@ const UpdatesManager: Component = () => {
             disabled={Object.values(downloadStatus).some((status) =>
               status === DOWNLOAD_STATUS.DOWNLOADING || status === DOWNLOAD_STATUS.PAUSED
             ) === false}
-            onClick={() => handleCancelSelected(Object.keys(rowSelection()))}
+            onClick={() => handleCancelSelected(downloadInfoStart, Object.keys(rowSelection()))}
           >
             <IconPlayerStopFilled />
           </button>
