@@ -284,11 +284,13 @@ const UpdatesManager: Component = () => {
       </div>
 
       <div class="btn-group btn-group-horizontal items-center flex">
-        <button class="btn" onClick={handleCheckForUpdate}>
-          <IconSearch />
-        </button>
+        <div class="tooltip tooltip-bottom m-1" data-tip="Find Updates">
+          <button class="btn" onClick={handleCheckForUpdate}>
+            <IconSearch />
+          </button>
+        </div>
 
-        <div class="tooltip" data-tip="Download Selected">
+        <div class="tooltip tooltip-bottom m-1" data-tip="Download Selected">
           <button
             class="btn"
             disabled={(Object.keys(rowSelection()).length === 0) || (Object.keys(rowSelection()).some((rowId) =>
@@ -298,7 +300,9 @@ const UpdatesManager: Component = () => {
           >
             <IconDownload />
           </button>
+        </div>
 
+        <div class="tooltip tooltip-bottom m-1" data-tip="Pause Selected">
           <button
             class="btn"
             disabled={(Object.keys(rowSelection()).length === 0) || (Object.keys(rowSelection()).some((rowId) =>
@@ -308,7 +312,9 @@ const UpdatesManager: Component = () => {
           >
             <IconPlayerPauseFilled />
           </button>
+        </div>
 
+        <div class="tooltip tooltip-bottom m-1" data-tip="Resume Selected">
           <button
             class="btn"
             disabled={(Object.keys(rowSelection()).length === 0) || (Object.keys(rowSelection()).some((rowId) =>
@@ -318,7 +324,9 @@ const UpdatesManager: Component = () => {
           >
             <IconPlayerPlayFilled />
           </button>
+        </div>
 
+        <div class="tooltip tooltip-bottom m-1" data-tip="Cancel Selected">
           <button
             class="btn"
             disabled={(Object.keys(rowSelection()).length === 0) || (Object.keys(rowSelection()).some((rowId) =>
