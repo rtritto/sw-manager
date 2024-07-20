@@ -1,4 +1,4 @@
-import { Show } from 'solid-js'
+import { Show, type JSX } from 'solid-js'
 import { Provider, useAtom, useAtomValue } from 'solid-jotai'
 import { useHydrateAtoms } from 'solid-jotai/utils'
 
@@ -6,7 +6,9 @@ import { directoryAtom, messageAtom, showNotificationAtom, showRestartButtonAtom
 import { CHANNELS } from '../constants'
 import UpdatesManager from './UpdatesManager'
 
-const HydrateAtoms = ({ initialValues, children }) => {
+type InitialValues = Parameters<typeof useHydrateAtoms>[0]
+
+const HydrateAtoms = ({ initialValues, children }: { initialValues: InitialValues, children: JSX.Element }): JSX.Element => {
   // initialising on state with prop on render here
   useHydrateAtoms(initialValues)
   return children
