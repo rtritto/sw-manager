@@ -7,7 +7,6 @@ import { useAtom } from 'solid-jotai'
 import { createEffect, createMemo, createSignal, Show } from 'solid-js'
 import { createStore } from 'solid-js/store'
 
-// import { infosAtom } from '../store/atoms'
 import { CHANNELS, DOWNLOAD_STATUS } from '../constants'
 import Table from '../components/Table'
 import selectColumn from './selectColumn'
