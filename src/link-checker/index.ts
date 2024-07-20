@@ -1,6 +1,6 @@
 import fs from 'node:fs'
 import path from 'node:path'
-import { stringify as JSON5_Stringify } from 'json5'
+import JSON5 from 'json5'
 import { fetch, request, Agent } from 'undici'
 
 import applyRegex from './funcs/apply-regex'
@@ -195,7 +195,7 @@ export const main = async () => {
 
               // update config file
               APP_MAP[label][appName].version = info.newVersion
-              const updatedConfig = JSON5_Stringify(APP_MAP, null, 2, { quote: '\'' })
+              const updatedConfig = JSON5.stringify(APP_MAP, null, 2, { quote: '\'' })
               fs.writeFileSync('./src/config.ts', `let APP_MAP: Config = ${updatedConfig}\n\nexport default APP_MAP`)
               // }
             } catch (error) {
