@@ -15,7 +15,8 @@ const getHTML = async (url: string): Promise<HTMLElement> => {
       Connection: 'keep-alive',
       'Content-Type': 'text/plain; charset=UTF-8',
       'User-Agent': `UA/${Date.now().toString()}`
-    }
+    },
+    maxRedirections: 1
   }).then((res) => res.body.text())
   return parse(data, PARSE_OPTIONS)
 }
@@ -51,15 +52,20 @@ export const getVersion = async (obj: NestedConfig): Promise<Info> => {
       // if (imageUrl === undefined) {
       //   imageUrl = html.querySelector('meta[property="og:image"]')!.getAttribute('content')
       // }
-      const urlUploadrar = html
-        .querySelector('#content')!
-        .querySelector('p:last-of-type')!
-        .querySelector('a')!
-        .getAttribute('href')
-      if (!urlUploadrar) {
-        throw new Error('Missing urlUploadrar')
+      try {
+        // URL Uploadrar
+        fileUrl = html
+          .querySelector('#content')!
+          .querySelector('p:last-of-type')!
+          .querySelector('a')!
+          .getAttribute('href')
+      } catch (error) {
+        if (error instanceof TypeError) {
+          error.message = `Missing urlUploadrar; url: ${url}\n${error.message}`
+          throw error
+        }
+        throw error
       }
-      fileUrl = urlUploadrar
       break
     }
     case 'PortableApps': {
