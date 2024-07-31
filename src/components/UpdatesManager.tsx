@@ -62,7 +62,7 @@ type DownloadInfoProgress = {
   }
 }
 
-type CatergoriesCollapse = {
+type CatergoriesCollapsed = {
   [category in Category]?: boolean
 }
 
@@ -71,7 +71,7 @@ const UpdatesManager: Component = () => {
   const [downloadInfoStart, setDownloadInfoStart] = createStore<DownloadInfoStart>({})
   const [downloadInfoProgress, setDownloadInfoProgress] = createStore<DownloadInfoProgress>({})
   const [infos, setInfos] = createSignal<Infos>({})
-  const [catergoriesCollapse, setCatergoriesCollapse] = createStore<CatergoriesCollapse>({})
+  const [catergoriesCollapsed, setCatergoriesCollapsed] = createStore<CatergoriesCollapsed>({})
   const [rowSelection, setRowSelection] = useAtom(rowSelectionAtom)
   const [directory, setDirectory] = useAtom(directoryAtom)
   const [isDirectoryDisabled, setIsDirectoryDisabled] = createSignal<boolean>(false)
@@ -86,11 +86,11 @@ const UpdatesManager: Component = () => {
     setRowSelection({})
     setInfos(_infos)
     const _categories = Object.keys(_infos)
-    const _catergoriesCollapse = {}
+    const _catergoriesCollapsed = {}
     for (const category of _categories) {
-      _catergoriesCollapse[category] = true
+      _catergoriesCollapsed[category] = true
     }
-    setCatergoriesCollapse(_catergoriesCollapse)
+    setCatergoriesCollapsed(_catergoriesCollapsed)
   }
 
   // eslint-disable-next-line unicorn/consistent-function-scoping
@@ -146,8 +146,6 @@ const UpdatesManager: Component = () => {
     // Other required columns
     columnHelper.accessor('imageUrl', {
       id: 'imageUrl',
-      // TODO fix length always 0
-      // header: `App (Total: ${infos().length})`,
       header: 'App',
       cell: info => <img src={info.getValue() as string} />
     }),
@@ -356,9 +354,9 @@ const UpdatesManager: Component = () => {
 
       <For each={Object.keys(infos())}>
         {(item, index) => (
-          <div tabindex={index()} class={`collapse ${catergoriesCollapse[item] === true ? 'collapse-open' : 'collapse-close'} collapse-arrow border-base-300 bg-base-200 border`}>
+          <div tabindex={index()} class={`collapse ${catergoriesCollapsed[item] === true ? 'collapse-open' : 'collapse-close'} collapse-arrow border-base-300 bg-base-200 border`}>
             <div class="collapse-title text-xl font-medium" onClick={() => {
-              setCatergoriesCollapse(item as Category, !catergoriesCollapse[item])
+              setCatergoriesCollapsed(item as Category, !catergoriesCollapsed[item])
             }}>{item} ({Object.keys(infos()[item]).length})</div>
 
             <div class="collapse-content">
