@@ -196,7 +196,7 @@ export const main = async () => {
               // update config file
               APP_MAP[label][appName].version = info.newVersion
               const updatedConfig = JSON5.stringify(APP_MAP, null, 2, { quote: '\'' })
-              fs.writeFileSync('./src/config.ts', `let APP_MAP: Config = ${updatedConfig}\n\nexport default APP_MAP`)
+              fs.writeFileSync('./src/config.ts', `let APP_MAP = ${updatedConfig}\n\nexport default APP_MAP`)
               // }
             } catch (error) {
               error.appName = appName

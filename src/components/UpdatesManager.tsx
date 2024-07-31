@@ -4,7 +4,7 @@ import { IconDownload, IconPlayerPauseFilled, IconPlayerPlayFilled, IconPlayerSt
 import bytes from 'bytes'
 import type { DownloadData } from 'electron-dl-manager'
 import { useAtom } from 'solid-jotai'
-import { createEffect, createMemo, createSignal, Show } from 'solid-js'
+import { createEffect, createMemo, createSignal, For, Show } from 'solid-js'
 import { createStore } from 'solid-js/store'
 
 import { CHANNELS, DOWNLOAD_STATUS } from '../constants'
@@ -42,11 +42,11 @@ const convertSecondsToDHMS = (seconds: number): string => {
 const convertBytes = (bytesToConvert: number): string => bytes(bytesToConvert, { fixedDecimals: true, unitSeparator: ' ' })
 
 type DownloadStatus = {
-  [rowId: string]: ValueOf<typeof DOWNLOAD_STATUS>
+  [rowId in string]?: ValueOf<typeof DOWNLOAD_STATUS>
 }
 
 type DownloadInfoStart = {
-  [rowId: string]: {
+  [rowId in string]?: {
     fileId: string
     fileName: string
     fileSize: number
@@ -54,7 +54,7 @@ type DownloadInfoStart = {
 }
 
 type DownloadInfoProgress = {
-  [rowId: string]: {
+  [rowId in string]?: {
     downloadRateBytesPerSecond: number
     estimatedTimeRemainingSeconds: number
     percentCompleted: number
@@ -62,11 +62,16 @@ type DownloadInfoProgress = {
   }
 }
 
+type CatergoriesCollapse = {
+  [category in Category]?: boolean
+}
+
 const UpdatesManager: Component = () => {
   const [downloadStatus, setDownloadStatus] = createStore<DownloadStatus>({})
   const [downloadInfoStart, setDownloadInfoStart] = createStore<DownloadInfoStart>({})
   const [downloadInfoProgress, setDownloadInfoProgress] = createStore<DownloadInfoProgress>({})
-  const [infos, setInfos] = createSignal<Info[]>([])
+  const [infos, setInfos] = createSignal<Infos>({})
+  const [catergoriesCollapse, setCatergoriesCollapse] = createStore<CatergoriesCollapse>({})
   const [rowSelection, setRowSelection] = useAtom(rowSelectionAtom)
   const [directory, setDirectory] = useAtom(directoryAtom)
   const [isDirectoryDisabled, setIsDirectoryDisabled] = createSignal<boolean>(false)
@@ -77,17 +82,27 @@ const UpdatesManager: Component = () => {
   }
 
   const handleCheckForUpdate = async () => {
-    const _infos = await window.electronApi.checkForUpdate()
+    const _infos = await window.electronApi.checkForUpdate(['SO'])
     setRowSelection({})
-    setInfos(Object.values(_infos.results))
+    setInfos(_infos)
+    const _categories = Object.keys(_infos)
+    const _catergoriesCollapse = {}
+    for (const category of _categories) {
+      _catergoriesCollapse[category] = true
+    }
+    setCatergoriesCollapse(_catergoriesCollapse)
   }
 
   // eslint-disable-next-line unicorn/consistent-function-scoping
-  const handleDownloadSelected = async (downloadStatus: DownloadStatus, infos: Info[], rowIds: string[], directory?: string) => {
+  const handleDownloadSelected = async (downloadStatus: DownloadStatus, infos: Infos, rowIds: string[], directory?: string) => {
+    const _infos: Info[] = []
+    for (const category in infos) {
+      _infos.push(...Object.values(infos[category as Category]!))
+    }
     await Promise.allSettled(
       rowIds.map((rowId: string) => {
         if ((rowId in downloadStatus) === false || downloadStatus[rowId] === DOWNLOAD_STATUS.CANCEL) {
-          return window.electronApi.singleDownload({ ...infos[Number.parseInt(rowId, 10)] }).then((downloadLink) => {
+          return window.electronApi.singleDownload({ ..._infos[Number.parseInt(rowId, 10)] }).then((downloadLink) => {
             window.electronApi.ipcRenderer.send(CHANNELS.DOWNLOAD_BY_URL, {
               downloadLink,
               rowId,
@@ -102,7 +117,7 @@ const UpdatesManager: Component = () => {
   const handlePauseSelected = (downloadStatus: DownloadStatus, downloadInfoStart: DownloadInfoStart, rowIds: string[]) => {
     for (const rowId of rowIds) {
       if (downloadStatus[rowId] === DOWNLOAD_STATUS.DOWNLOADING) {
-        window.electronApi.ipcRenderer.send(CHANNELS.DOWNLOAD_PAUSE, downloadInfoStart[rowId].fileId)
+        window.electronApi.ipcRenderer.send(CHANNELS.DOWNLOAD_PAUSE, downloadInfoStart[rowId]!.fileId)
         setDownloadStatus(rowId, DOWNLOAD_STATUS.PAUSED)
       }
     }
@@ -111,7 +126,7 @@ const UpdatesManager: Component = () => {
   const handleResumeSelected = (downloadStatus: DownloadStatus, downloadInfoStart: DownloadInfoStart, rowIds: string[]) => {
     for (const rowId of rowIds) {
       if (downloadStatus[rowId] === DOWNLOAD_STATUS.PAUSED) {
-        window.electronApi.ipcRenderer.send(CHANNELS.DOWNLOAD_RESUME, downloadInfoStart[rowId].fileId)
+        window.electronApi.ipcRenderer.send(CHANNELS.DOWNLOAD_RESUME, downloadInfoStart[rowId]!.fileId)
         setDownloadStatus(rowId, DOWNLOAD_STATUS.DOWNLOADING)
       }
     }
@@ -120,7 +135,7 @@ const UpdatesManager: Component = () => {
   const handleCancelSelected = (downloadStatus: DownloadStatus, downloadInfoStart: DownloadInfoStart, rowIds: string[]) => {
     for (const rowId of rowIds) {
       if (downloadStatus[rowId] === DOWNLOAD_STATUS.DOWNLOADING || downloadStatus[rowId] === DOWNLOAD_STATUS.PAUSED) {
-        window.electronApi.ipcRenderer.send(CHANNELS.DOWNLOAD_CANCEL, downloadInfoStart[rowId].fileId)
+        window.electronApi.ipcRenderer.send(CHANNELS.DOWNLOAD_CANCEL, downloadInfoStart[rowId]!.fileId)
       }
     }
   }
@@ -149,9 +164,9 @@ const UpdatesManager: Component = () => {
       // header: 'Download Status',
       header: 'Progress',
       cell: (info) => (
-        <Show when={info.row.id in downloadInfoStart ? downloadInfoStart[info.row.id].fileName !== '' : false}>
+        <Show when={info.row.id in downloadInfoStart ? downloadInfoStart[info.row.id]!.fileName !== '' : false}>
           <div>
-            {downloadInfoStart[info.row.id].fileName}
+            {downloadInfoStart[info.row.id]!.fileName}
 
             <Show
               when={downloadStatus[info.row.id] === DOWNLOAD_STATUS.DOWNLOADING
@@ -165,10 +180,10 @@ const UpdatesManager: Component = () => {
                   class={`progress ${downloadStatus[info.row.id] === DOWNLOAD_STATUS.DOWNLOADING
                     ? 'progress-info'
                     : (downloadStatus[info.row.id] === DOWNLOAD_STATUS.PAUSED ? 'progress-warning' : 'progress-accent')} w-56`}
-                  value={downloadInfoProgress[info.row.id].percentCompleted} max="100"
+                  value={downloadInfoProgress[info.row.id]!.percentCompleted} max="100"
                 />
 
-                <span class="whitespace-nowrap px-2">{convertProgress(downloadInfoProgress[info.row.id].percentCompleted)}%</span>
+                <span class="whitespace-nowrap px-2">{convertProgress(downloadInfoProgress[info.row.id]!.percentCompleted)}%</span>
               </div>
             </Show>
           </div>
@@ -179,18 +194,18 @@ const UpdatesManager: Component = () => {
       id: 'size',
       header: 'Size',
       cell: (info) => (
-        <Show when={info.row.id in downloadInfoStart ? downloadInfoStart[info.row.id].fileName !== '' : false}>
+        <Show when={info.row.id in downloadInfoStart ? downloadInfoStart[info.row.id]!.fileName !== '' : false}>
           <div>
             <Show
-              when={downloadInfoStart[info.row.id].fileName
+              when={downloadInfoStart[info.row.id]!.fileName
                 && (downloadStatus[info.row.id] === DOWNLOAD_STATUS.DOWNLOADING || downloadStatus[info.row.id] === DOWNLOAD_STATUS.PAUSED)}
             >
-              <span class="whitespace-nowrap">{convertBytes(downloadInfoProgress[info.row.id].receivedBytes)}</span>
+              <span class="whitespace-nowrap">{convertBytes(downloadInfoProgress[info.row.id]!.receivedBytes)}</span>
 
               <div class="my-0 h-0.5 divider divider-neutral" />
             </Show>
 
-            <span class="whitespace-nowrap">{convertBytes(downloadInfoStart[info.row.id].fileSize)}</span>
+            <span class="whitespace-nowrap">{convertBytes(downloadInfoStart[info.row.id]!.fileSize)}</span>
           </div>
         </Show>
       )
@@ -202,10 +217,10 @@ const UpdatesManager: Component = () => {
       cell: (info) => (
         <Show
           when={info.row.id in downloadInfoStart
-            ? (downloadInfoStart[info.row.id].fileName && downloadStatus[info.row.id] === DOWNLOAD_STATUS.DOWNLOADING)
+            ? (downloadInfoStart[info.row.id]!.fileName && downloadStatus[info.row.id] === DOWNLOAD_STATUS.DOWNLOADING)
             : false}
         >
-          <div>{convertBytes(downloadInfoProgress[info.row.id].downloadRateBytesPerSecond)}/s</div>
+          <div>{convertBytes(downloadInfoProgress[info.row.id]!.downloadRateBytesPerSecond)}/s</div>
         </Show>
       )
     }),
@@ -214,8 +229,8 @@ const UpdatesManager: Component = () => {
       // header: 'Time Left',
       header: 'ETA',
       cell: (info) => (
-        <Show when={info.row.id in downloadInfoStart ? (downloadInfoStart[info.row.id].fileName && downloadStatus[info.row.id] === DOWNLOAD_STATUS.DOWNLOADING) : false}>
-          <div>{convertSecondsToDHMS(downloadInfoProgress[info.row.id].estimatedTimeRemainingSeconds)}</div>
+        <Show when={info.row.id in downloadInfoStart ? (downloadInfoStart[info.row.id]!.fileName && downloadStatus[info.row.id] === DOWNLOAD_STATUS.DOWNLOADING) : false}>
+          <div>{convertSecondsToDHMS(downloadInfoProgress[info.row.id]!.estimatedTimeRemainingSeconds)}</div>
         </Show>
       )
     })
@@ -339,7 +354,19 @@ const UpdatesManager: Component = () => {
         </div>
       </div>
 
-      <Table columnData={infos()} columns={columns()} />
+      <For each={Object.keys(infos())}>
+        {(item, index) => (
+          <div tabindex={index()} class={`collapse ${catergoriesCollapse[item] === true ? 'collapse-open' : 'collapse-close'} collapse-arrow border-base-300 bg-base-200 border`}>
+            <div class="collapse-title text-xl font-medium" onClick={() => {
+              setCatergoriesCollapse(item as Category, !catergoriesCollapse[item])
+            }}>{item} ({Object.keys(infos()[item]).length})</div>
+
+            <div class="collapse-content">
+              <Table columnData={Object.values(infos()[item])} columns={columns()} />
+            </div>
+          </div>
+        )}
+      </For>
     </div>
   )
 }

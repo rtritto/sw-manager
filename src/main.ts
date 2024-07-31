@@ -90,10 +90,14 @@ ipcMain.handle(CHANNELS.SELECT_DOWNLOAD_FOLDER, async () => {
   return filePaths.at(0)
 })
 
-ipcMain.handle(CHANNELS.CHECK_FOR_UPDATE, async () => {
-  const _infos = await getInfos(APP_MAP.SO)
-  for (const info in _infos.errors) {
-    autoUpdater.emit(CHANNELS.ERROR, _infos.errors[info] as Error)
+ipcMain.handle(CHANNELS.CHECK_FOR_UPDATE, async (_, categories: Category[]): Promise<Infos> => {
+  const _infos: Infos = {}
+  for (const category of categories) {
+    const categoryInfos = await getInfos(APP_MAP[category])
+    for (const info in categoryInfos.errors) {
+      autoUpdater.emit(CHANNELS.ERROR, categoryInfos.errors[info] as Error)
+    }
+    _infos[category] = categoryInfos.results
   }
   return _infos
 })

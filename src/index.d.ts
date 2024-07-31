@@ -2,13 +2,16 @@ type ValueOf<T> = T[keyof T]
 
 type Channels = ValueOf<typeof import('./constants').CHANNELS>
 
+type Category = keyof (typeof import('./config').default)
+
+type Config = {
+  [category in Category]: AppConfig
+}
+
 interface Window {
   electronApi: import('@electron-toolkit/preload').ElectronAPI & {
-    selectDownloadFolder: () => Promise<string>
-    checkForUpdate: () => Promise<{
-      results: InfoResult
-      error: Error
-    }>
+    selectDownloadFolder: () => Promise<string | undefined>
+    checkForUpdate: (categories: Category[]) => Promise<Infos>
     singleDownload: (info: Info) => Promise<string>,
     downloadsFolder: string
   }
@@ -55,10 +58,6 @@ type AppConfig = {
   [appName: string]: NestedConfig
 }
 
-type Config = {
-  [category: string]: AppConfig
-}
-
 type Version = {
   current: string
   newest?: string
@@ -72,7 +71,7 @@ type AppResult = {
 }
 
 type Results = {
-  [category: string]: AppResult
+  [category in Category]?: AppResult
 }
 
 type Info = {
@@ -86,6 +85,10 @@ type Info = {
 
 type InfoResult = {
   [appName: string]: Info
+}
+
+type Infos = {
+  [category in Category]?: InfoResult
 }
 
 type Component = import('solid-js').Component

@@ -11,10 +11,10 @@ import { CHANNELS } from './constants'
 contextBridge.exposeInMainWorld('electronApi', {
   // https://github.com/davidgs/on-air-desktop/blob/main/src/main/preload.ts
   ...electronAPI,
-  selectDownloadFolder: () => ipcRenderer.invoke(CHANNELS.SELECT_DOWNLOAD_FOLDER),
-  checkForUpdate: () => ipcRenderer.invoke(CHANNELS.CHECK_FOR_UPDATE),
-  singleDownload: (info: Info) => ipcRenderer.invoke(CHANNELS.SINGLE_DOWNLOAD, info),
-  downloadsFolder: process.argv.find(value => value.startsWith('--downloads-folder='))!.split('=').at(1)
+  selectDownloadFolder: (): Promise<string | undefined> => ipcRenderer.invoke(CHANNELS.SELECT_DOWNLOAD_FOLDER),
+  checkForUpdate: (categories: Category[]): Promise<Infos> => ipcRenderer.invoke(CHANNELS.CHECK_FOR_UPDATE, categories),
+  singleDownload: (info: Info): Promise<string> => ipcRenderer.invoke(CHANNELS.SINGLE_DOWNLOAD, info),
+  downloadsFolder: process.argv.find(value => value.startsWith('--downloads-folder='))!.split('=').at(1)!
 })
 
 const setShowNotification = useSetAtom(showNotificationAtom)
