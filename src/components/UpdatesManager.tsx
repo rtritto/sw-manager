@@ -299,7 +299,7 @@ const UpdatesManager: Component = () => {
 
   return (
     <div>
-      <div class="btn-group btn-group-horizontal items-center flex">
+      <div class="items-center flex">
         <span class="whitespace-nowrap font-bold m-1">Downloads Folder:</span>
 
         <input type="text m-1" class="input input-bordered w-full max-w-xs" value={directory()} disabled={isDirectoryDisabled()} />
@@ -334,7 +334,7 @@ const UpdatesManager: Component = () => {
         </For>
       </div>
 
-      <div class="btn-group btn-group-horizontal items-center flex">
+      <div class="items-center flex">
         <div class="tooltip tooltip-bottom m-1" data-tip="Find Updates">
           <button class="btn" onClick={handleCheckForUpdate}>
             <IconSearch />
