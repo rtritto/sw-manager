@@ -1,8 +1,13 @@
-import { For } from 'solid-js'
+import { useAtom } from 'solid-jotai'
+import { type Component, For } from 'solid-js'
 
 import { ALL_CATEGORIES } from '../constants'
+import { categoriesCheckedAtom } from '../store/atoms'
+import { categoriesCheckedStore } from '../store/stores'
 
-const SelectCategories = (props) => {
+const SelectCategories: Component = () => {
+  const [categoriesChecked, setCategoriesChecked] = useAtom(categoriesCheckedAtom, { store: categoriesCheckedStore })
+
   return (
     <div class="join">
       <For each={ALL_CATEGORIES}>
@@ -14,8 +19,11 @@ const SelectCategories = (props) => {
               <input
                 type="checkbox"
                 class="checkbox m-1"
-                checked={props.categoriesChecked[category] === true}
-                onClick={() => props.setCategoriesChecked(category as Category, !props.categoriesChecked[category])}
+                checked={categoriesChecked()[category as Category] === true}
+                onClick={() => setCategoriesChecked({
+                  ...categoriesChecked(),
+                  [category as Category]: !categoriesChecked()[category as Category]
+                })}
               />
             </label>
           </div>

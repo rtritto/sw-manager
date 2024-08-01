@@ -9,7 +9,8 @@ import { createStore } from 'solid-js/store'
 import { CHANNELS, DOWNLOAD_STATUS } from '../constants'
 import selectColumn from './selectColumn'
 import { convertBytes, convertProgress, convertSecondsToDHMS } from '../utils'
-import { directoryAtom, isDirectoryDisabledAtom, rowSelectionAtom } from '../store/atoms'
+import { categoriesCheckedAtom, directoryAtom, isDirectoryDisabledAtom, rowSelectionAtom } from '../store/atoms'
+import { categoriesCheckedStore } from '../store/stores'
 import Table from './Table'
 
 type DownloadStatus = {
@@ -37,11 +38,8 @@ type CatergoriesCollapsed = {
   [category in Category]?: boolean
 }
 
-const TableContainer: Component<{
-  categoriesChecked: {
-    [category in Category]: boolean
-  }
-}> = (props) => {
+const TableContainer: Component = () => {
+  const categoriesChecked = useAtomValue(categoriesCheckedAtom, { store: categoriesCheckedStore })
   const [downloadStatus, setDownloadStatus] = createStore<DownloadStatus>({})
   const [downloadInfoStart, setDownloadInfoStart] = createStore<DownloadInfoStart>({})
   const [downloadInfoProgress, setDownloadInfoProgress] = createStore<DownloadInfoProgress>({})
@@ -53,8 +51,8 @@ const TableContainer: Component<{
 
   const handleCheckForUpdate = async () => {
     const categoriesToCheck: Category[] = []
-    for (const categoryChecked in props.categoriesChecked) {
-      if (props.categoriesChecked[categoryChecked] === true) {
+    for (const categoryChecked in categoriesChecked()) {
+      if (categoriesChecked()[categoryChecked] === true) {
         categoriesToCheck.push(categoryChecked as Category)
       }
     }
