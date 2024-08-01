@@ -3,7 +3,7 @@ import type { ColumnDef } from '@tanstack/solid-table'
 import { IconDownload, IconPlayerPauseFilled, IconPlayerPlayFilled, IconPlayerStopFilled, IconSearch } from '@tabler/icons-solidjs'
 import bytes from 'bytes'
 import type { DownloadData } from 'electron-dl-manager'
-import { useAtom } from 'solid-jotai'
+import { useAtom, useAtomValue } from 'solid-jotai'
 import { createEffect, createMemo, createSignal, For, Show } from 'solid-js'
 import { createStore } from 'solid-js/store'
 
@@ -90,7 +90,7 @@ const UpdatesManager: Component = () => {
   const [infos, setInfos] = createSignal<Infos>({})
   const [catergoriesCollapsed, setCatergoriesCollapsed] = createStore<CatergoriesCollapsed>({})
   const [rowSelection, setRowSelection] = useAtom(rowSelectionAtom)
-  const [directory, setDirectory] = useAtom(directoryAtom)
+  const directory = useAtomValue(directoryAtom)
   const [isDirectoryDisabled, setIsDirectoryDisabled] = createSignal<boolean>(false)
 
   const handleCheckForUpdate = async () => {
@@ -301,7 +301,6 @@ const UpdatesManager: Component = () => {
       <DownloadFolders
         directory={directory()}
         isDirectoryDisabled={isDirectoryDisabled()}
-        setDirectory={setDirectory}
         setIsDirectoryDisabled={setIsDirectoryDisabled}
       />
 

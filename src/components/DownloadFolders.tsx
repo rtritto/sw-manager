@@ -1,15 +1,20 @@
+import { useSetAtom } from 'solid-jotai'
 import { Component } from 'solid-js'
+
+import { directoryAtom } from '../store/atoms'
 
 const DownloadFolders: Component<{
   directory?: string
   isDirectoryDisabled: boolean
-  setDirectory: (directory: string) => void
   setIsDirectoryDisabled: (isDirectoryDisabled: boolean) => void
 }> = (props) => {
+  const setDirectory = useSetAtom(directoryAtom)
+
   const handleSelectDownlaodsFolder = async () => {
     const _selectedDownloadFolder = await window.electronApi.selectDownloadFolder()
-    props.setDirectory(_selectedDownloadFolder === undefined ? window.electronApi.downloadsFolder : _selectedDownloadFolder)
+    setDirectory(_selectedDownloadFolder === undefined ? window.electronApi.downloadsFolder : _selectedDownloadFolder)
   }
+
   return (
     <div class="items-center flex">
       <span class="whitespace-nowrap font-bold m-1">Downloads Folder:</span>
