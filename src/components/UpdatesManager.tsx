@@ -71,15 +71,16 @@ type CatergoriesCollapsed = {
   [category in Category]?: boolean
 }
 
-const UpdatesManager: Component = () => {
-  const allCategories = Object.keys(APP_MAP)
-  // enable default or all categories
-  const initCategoriesToCheck = DEFAULT_CATEGORIES_SELECTED.length === 0 ? Object.keys(APP_MAP) : DEFAULT_CATEGORIES_SELECTED
-  const initCategoriesChecked = {} as CategoriesChecked
-  for (const category of initCategoriesToCheck) {
-    initCategoriesChecked[category] = true
-  }
+const allCategories = Object.keys(APP_MAP)
 
+// enable default or all categories
+const initCategoriesToCheck = DEFAULT_CATEGORIES_SELECTED.length === 0 ? allCategories : DEFAULT_CATEGORIES_SELECTED
+const initCategoriesChecked = {} as CategoriesChecked
+for (const category of initCategoriesToCheck) {
+  initCategoriesChecked[category] = true
+}
+
+const UpdatesManager: Component = () => {
   const [categoriesChecked, setCategoriesChecked] = createStore<CategoriesChecked>(initCategoriesChecked)
   const [downloadStatus, setDownloadStatus] = createStore<DownloadStatus>({})
   const [downloadInfoStart, setDownloadInfoStart] = createStore<DownloadInfoStart>({})
