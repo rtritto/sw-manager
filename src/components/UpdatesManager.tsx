@@ -9,10 +9,11 @@ import { createStore } from 'solid-js/store'
 
 import APP_MAP from '../config'
 import { CHANNELS, DEFAULT_CATEGORIES_SELECTED, DOWNLOAD_STATUS } from '../constants'
-import Table from '../components/Table'
 import selectColumn from './selectColumn'
 import { directoryAtom, rowSelectionAtom } from '../store/atoms'
-import CategoriesCheckboxes from './CategoriesCheckboxes'
+import DownloadFolders from './DownloadFolders'
+import SelectCategories from './SelectCategories'
+import Table from './Table'
 
 const convertProgress = (progress: number): string => {
   if (progress === 100) {
@@ -91,11 +92,6 @@ const UpdatesManager: Component = () => {
   const [rowSelection, setRowSelection] = useAtom(rowSelectionAtom)
   const [directory, setDirectory] = useAtom(directoryAtom)
   const [isDirectoryDisabled, setIsDirectoryDisabled] = createSignal<boolean>(false)
-
-  const handleSelectDownlaodsFolder = async () => {
-    const _selectedDownloadFolder = await window.electronApi.selectDownloadFolder()
-    setDirectory(_selectedDownloadFolder === undefined ? window.electronApi.downloadsFolder : _selectedDownloadFolder)
-  }
 
   const handleCheckForUpdate = async () => {
     const categoriesToCheck: Category[] = []
@@ -302,23 +298,18 @@ const UpdatesManager: Component = () => {
 
   return (
     <div>
-      <div class="items-center flex">
-        <span class="whitespace-nowrap font-bold m-1">Downloads Folder:</span>
+      <DownloadFolders
+        directory={directory()}
+        isDirectoryDisabled={isDirectoryDisabled()}
+        setDirectory={setDirectory}
+        setIsDirectoryDisabled={setIsDirectoryDisabled}
+      />
 
-        <input type="text m-1" class="input input-bordered w-full max-w-xs" value={directory()} disabled={isDirectoryDisabled()} />
-
-        <button class="btn m-1" onClick={handleSelectDownlaodsFolder}>Change</button>
-
-        <div class="form-control">
-          <label class="label cursor-pointer">
-            <input class="checkbox m-1" type="checkbox" onClick={() => setIsDirectoryDisabled(!isDirectoryDisabled())} />
-
-            <span class="label-text m-1">Disable "Save in Folder"<br />and enable "Save as"</span>
-          </label>
-        </div>
-      </div>
-
-      <CategoriesCheckboxes categories={allCategories} categoriesChecked={categoriesChecked} setCategoriesChecked={setCategoriesChecked} />
+      <SelectCategories
+        categories={allCategories}
+        categoriesChecked={categoriesChecked}
+        setCategoriesChecked={setCategoriesChecked}
+      />
 
       <div class="items-center flex">
         <div class="tooltip tooltip-bottom m-1" data-tip="Find Updates">

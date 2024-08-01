@@ -1,6 +1,6 @@
 import { For } from 'solid-js'
 
-const CategoriesCheckboxes = (props) => {
+const SelectCategories = (props) => {
   return (
     <div class="join">
       <For each={props.categories}>
@@ -23,4 +23,4 @@ const CategoriesCheckboxes = (props) => {
   )
 }
 
-export default CategoriesCheckboxes
+export default SelectCategories
