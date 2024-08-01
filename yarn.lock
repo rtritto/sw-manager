@@ -3667,15 +3667,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"electron-dl-manager@npm:^3.1.0":
-  version: 3.1.0
-  resolution: "electron-dl-manager@npm:3.1.0"
+"electron-dl-manager@npm:^3.1.1":
+  version: 3.1.1
+  resolution: "electron-dl-manager@npm:3.1.1"
   dependencies:
     ext-name: "npm:^5.0.0"
     unused-filename: "npm:^3.0.1"
   peerDependencies:
     electron: ">=26"
-  checksum: 10c0/21b9a37a3b49aec1182e888ead802d87cc78d1fdbcb7a7059c484f4b9f1803bed924b346a9985299b46beb68536e234ff5a9611d56db88c91d48011bc590d9d5
+  checksum: 10c0/6f06c918ccdfd38b89effe9a10df8b26084ca00ac20e031262ef4201442e022ec04356a0be0be90268eb82283bed359b2130dca37a20154f7b8cd9cf3e9b9740
   languageName: node
   linkType: hard
 
@@ -3758,9 +3758,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"electron-updater@npm:^6.3.1":
-  version: 6.3.1
-  resolution: "electron-updater@npm:6.3.1"
+"electron-updater@npm:^6.3.2":
+  version: 6.3.2
+  resolution: "electron-updater@npm:6.3.2"
   dependencies:
     builder-util-runtime: "npm:9.2.5"
     fs-extra: "npm:^10.1.0"
@@ -3770,7 +3770,7 @@ __metadata:
     lodash.isequal: "npm:^4.5.0"
     semver: "npm:^7.3.8"
     tiny-typed-emitter: "npm:^2.1.0"
-  checksum: 10c0/5e75dae09e052a29f4f886a4c95154eb42b7ce7d1f8d6572b0f7fc97abcdef33dca04e0b759f8baa0f71d5a3968c3c5307a989760b5c95a96d359a0c5b9b25f1
+  checksum: 10c0/8f2616967a869517d22177b0f1ffdd13e9df1d237c9603deecd2f762127abc46440098b2f88526246d190cd7d9224475667d54edc7a8b0b4771225bc1935f71b
   languageName: node
   linkType: hard
 
@@ -9370,10 +9370,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"undici@npm:^6.19.4":
-  version: 6.19.4
-  resolution: "undici@npm:6.19.4"
-  checksum: 10c0/d6cb7227893140abab3c216bd2817f24a34270b23be316ff9ddbdbb18e3b528e29e0a20cd33ab1bc0d3f604d652e7baf3f39f6760470b3027d83bc6270f90e43
+"undici@npm:^6.19.5":
+  version: 6.19.5
+  resolution: "undici@npm:6.19.5"
+  checksum: 10c0/ee2c0a62f3e4333bad8b20e8218c8dea4a5b4f5c8589a92897a7aeb5b321f4118bd5eea2591a4add90b6c7d8049eabd8020725b44f9a1ba0fa1f92a71ed14b14
   languageName: node
   linkType: hard
 
@@ -9904,10 +9904,10 @@ __metadata:
     bytes: "npm:^3.1.2"
     daisyui: "npm:^4.12.10"
     electron: "npm:^31.3.1"
-    electron-dl-manager: "npm:^3.1.0"
+    electron-dl-manager: "npm:^3.1.1"
     electron-log: "npm:^5.1.7"
     electron-squirrel-startup: "npm:^1.0.1"
-    electron-updater: "npm:^6.3.1"
+    electron-updater: "npm:^6.3.2"
     eslint: "npm:8.57.0"
     eslint-import-resolver-node: "npm:^0.3.9"
     eslint-import-resolver-typescript: "npm:^3.6.1"
@@ -9924,7 +9924,7 @@ __metadata:
     tailwindcss: "npm:^3.4.7"
     ts-node: "npm:^10.9.2"
     typescript: "npm:^5.5.4"
-    undici: "npm:^6.19.4"
+    undici: "npm:^6.19.5"
     vite: "npm:^5.3.5"
     vite-plugin-solid: "npm:^2.10.2"
   languageName: unknown
