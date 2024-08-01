@@ -12,6 +12,7 @@ import { CHANNELS, DEFAULT_CATEGORIES_SELECTED, DOWNLOAD_STATUS } from '../const
 import Table from '../components/Table'
 import selectColumn from './selectColumn'
 import { directoryAtom, rowSelectionAtom } from '../store/atoms'
+import CategoriesCheckboxes from './CategoriesCheckboxes'
 
 const convertProgress = (progress: number): string => {
   if (progress === 100) {
@@ -317,24 +318,7 @@ const UpdatesManager: Component = () => {
         </div>
       </div>
 
-      <div class="join">
-        <For each={allCategories}>
-          {(category) => (
-            <div class="form-control join-item">
-              <label class="label cursor-pointer">
-                <span class="label-text">{category}</span>
-
-                <input
-                  type="checkbox"
-                  class="checkbox m-1"
-                  checked={categoriesChecked[category] === true}
-                  onClick={() => setCategoriesChecked(category as Category, !categoriesChecked[category])}
-                />
-              </label>
-            </div>
-          )}
-        </For>
-      </div>
+      <CategoriesCheckboxes categories={allCategories} categoriesChecked={categoriesChecked} setCategoriesChecked={setCategoriesChecked} />
 
       <div class="items-center flex">
         <div class="tooltip tooltip-bottom m-1" data-tip="Find Updates">
