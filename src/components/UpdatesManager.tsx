@@ -7,6 +7,7 @@ import { useAtom } from 'solid-jotai'
 import { createEffect, createMemo, createSignal, For, Show } from 'solid-js'
 import { createStore } from 'solid-js/store'
 
+import APP_MAP from '../config'
 import { CHANNELS, DOWNLOAD_STATUS } from '../constants'
 import Table from '../components/Table'
 import selectColumn from './selectColumn'
@@ -62,11 +63,21 @@ type DownloadInfoProgress = {
   }
 }
 
+type CategoriesChecked = {
+  [category in Category]: boolean
+}
+
 type CatergoriesCollapsed = {
   [category in Category]?: boolean
 }
 
 const UpdatesManager: Component = () => {
+  const allCategories = Object.keys(APP_MAP)
+  const initCategoriesChecked = {} as CategoriesChecked
+  for (const category of allCategories) {
+    initCategoriesChecked[category] = true
+  }
+  const [categoriesChecked, setCategoriesChecked] = createStore<CategoriesChecked>(initCategoriesChecked)
   const [downloadStatus, setDownloadStatus] = createStore<DownloadStatus>({})
   const [downloadInfoStart, setDownloadInfoStart] = createStore<DownloadInfoStart>({})
   const [downloadInfoProgress, setDownloadInfoProgress] = createStore<DownloadInfoProgress>({})
@@ -82,6 +93,14 @@ const UpdatesManager: Component = () => {
   }
 
   const handleCheckForUpdate = async () => {
+    const categoriesToCheck: Category[] = []
+    for (const categoryChecked in categoriesChecked) {
+      if (categoriesChecked[categoryChecked] === true) {
+        categoriesToCheck.push(categoryChecked as Category)
+      }
+    }
+    // TODO
+    // const _infos = await window.electronApi.checkForUpdate(categoriesToCheck)
     const _infos = await window.electronApi.checkForUpdate(['SO'])
     setRowSelection({})
     setInfos(_infos)
@@ -294,6 +313,25 @@ const UpdatesManager: Component = () => {
             <span class="label-text m-1">Disable "Save in Folder"<br />and enable "Save as"</span>
           </label>
         </div>
+      </div>
+
+      <div class="join">
+        <For each={allCategories}>
+          {(category) => (
+            <div class="form-control join-item">
+              <label class="label cursor-pointer">
+                <span class="label-text">{category}</span>
+
+                <input
+                  type="checkbox"
+                  class="checkbox m-1"
+                  checked={categoriesChecked[category] === true}
+                  onClick={() => setCategoriesChecked(category as Category, !categoriesChecked[category])}
+                />
+              </label>
+            </div>
+          )}
+        </For>
       </div>
 
       <div class="btn-group btn-group-horizontal items-center flex">
