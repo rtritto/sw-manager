@@ -1,9 +1,11 @@
 import { For } from 'solid-js'
 
+import { ALL_CATEGORIES } from '../constants'
+
 const SelectCategories = (props) => {
   return (
     <div class="join">
-      <For each={props.categories}>
+      <For each={ALL_CATEGORIES}>
         {(category) => (
           <div class="form-control join-item">
             <label class="label cursor-pointer">

@@ -1,3 +1,5 @@
+import APP_MAP from './config'
+
 export enum CHANNELS {
   // import(electron-updater).UpdaterEvents
   ERROR = 'error',
@@ -34,3 +36,5 @@ export enum EVENTS {
 }
 
 export const DEFAULT_CATEGORIES_SELECTED = ['SO']
+
+export const ALL_CATEGORIES = Object.keys(APP_MAP)
