@@ -8,7 +8,7 @@ import { createEffect, createMemo, createSignal, For, Show } from 'solid-js'
 import { createStore } from 'solid-js/store'
 
 import APP_MAP from '../config'
-import { CHANNELS, DOWNLOAD_STATUS } from '../constants'
+import { CHANNELS, DEFAULT_CATEGORIES_SELECTED, DOWNLOAD_STATUS } from '../constants'
 import Table from '../components/Table'
 import selectColumn from './selectColumn'
 import { directoryAtom, rowSelectionAtom } from '../store/atoms'
@@ -73,10 +73,13 @@ type CatergoriesCollapsed = {
 
 const UpdatesManager: Component = () => {
   const allCategories = Object.keys(APP_MAP)
+  // enable default or all categories
+  const initCategoriesToCheck = DEFAULT_CATEGORIES_SELECTED.length === 0 ? Object.keys(APP_MAP) : DEFAULT_CATEGORIES_SELECTED
   const initCategoriesChecked = {} as CategoriesChecked
-  for (const category of allCategories) {
+  for (const category of initCategoriesToCheck) {
     initCategoriesChecked[category] = true
   }
+
   const [categoriesChecked, setCategoriesChecked] = createStore<CategoriesChecked>(initCategoriesChecked)
   const [downloadStatus, setDownloadStatus] = createStore<DownloadStatus>({})
   const [downloadInfoStart, setDownloadInfoStart] = createStore<DownloadInfoStart>({})
@@ -99,9 +102,7 @@ const UpdatesManager: Component = () => {
         categoriesToCheck.push(categoryChecked as Category)
       }
     }
-    // TODO
-    // const _infos = await window.electronApi.checkForUpdate(categoriesToCheck)
-    const _infos = await window.electronApi.checkForUpdate(['SO'])
+    const _infos = await window.electronApi.checkForUpdate(categoriesToCheck)
     setRowSelection({})
     setInfos(_infos)
     const _categories = Object.keys(_infos)

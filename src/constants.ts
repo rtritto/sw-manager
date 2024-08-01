@@ -32,3 +32,5 @@ export enum EVENTS {
   READY = 'ready',
   WINDOW_ALL_CLOSED = 'window-all-closed'
 }
+
+export const DEFAULT_CATEGORIES_SELECTED = ['SO']
