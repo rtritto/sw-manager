@@ -10,7 +10,7 @@ import { createStore } from 'solid-js/store'
 import APP_MAP from '../config'
 import { CHANNELS, DEFAULT_CATEGORIES_SELECTED, DOWNLOAD_STATUS } from '../constants'
 import selectColumn from './selectColumn'
-import { directoryAtom, rowSelectionAtom } from '../store/atoms'
+import { directoryAtom, isDirectoryDisabledAtom, rowSelectionAtom } from '../store/atoms'
 import DownloadFolders from './DownloadFolders'
 import SelectCategories from './SelectCategories'
 import Table from './Table'
@@ -91,7 +91,7 @@ const UpdatesManager: Component = () => {
   const [catergoriesCollapsed, setCatergoriesCollapsed] = createStore<CatergoriesCollapsed>({})
   const [rowSelection, setRowSelection] = useAtom(rowSelectionAtom)
   const directory = useAtomValue(directoryAtom)
-  const [isDirectoryDisabled, setIsDirectoryDisabled] = createSignal<boolean>(false)
+  const isDirectoryDisabled = useAtomValue(isDirectoryDisabledAtom)
 
   const handleCheckForUpdate = async () => {
     const categoriesToCheck: Category[] = []
@@ -298,11 +298,7 @@ const UpdatesManager: Component = () => {
 
   return (
     <div>
-      <DownloadFolders
-        directory={directory()}
-        isDirectoryDisabled={isDirectoryDisabled()}
-        setIsDirectoryDisabled={setIsDirectoryDisabled}
-      />
+      <DownloadFolders />
 
       <SelectCategories
         categories={allCategories}
