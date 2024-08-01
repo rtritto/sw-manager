@@ -6,9 +6,14 @@ import { useAtom } from 'solid-jotai'
 
 import { rowSelectionAtom } from '../store/atoms'
 
-const Table: Component<{ columnData: Record<string, unknown>[], columns: ColumnDef<Record<string, unknown>, any>[] }> = (props) => {
+const Table: Component<{
+  columnData: Record<string, unknown>[]
+  columns: ColumnDef<Record<string, unknown>, any>[]
+}> = (props) => {
   const merged = mergeProps({
-    enableRowSelection: () => true
+    // TODO check if _row is correct
+    // https://tanstack.com/table/latest/docs/api/features/row-selection#enablerowselection
+    enableRowSelection: (_row: TanstackRow<Record<string, unknown>>) => true
   }, props)
 
   const [sorting, sortingSet] = createSignal<ColumnSort[]>()

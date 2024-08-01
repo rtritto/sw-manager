@@ -3,7 +3,7 @@ import type { ColumnDef } from '@tanstack/solid-table'
 import { IconDownload, IconPlayerPauseFilled, IconPlayerPlayFilled, IconPlayerStopFilled, IconSearch } from '@tabler/icons-solidjs'
 import type { DownloadData } from 'electron-dl-manager'
 import { useAtom, useAtomValue } from 'solid-jotai'
-import { Component, createEffect, createMemo, createSignal, For, Show } from 'solid-js'
+import { createEffect, createMemo, createSignal, For, Show } from 'solid-js'
 import { createStore } from 'solid-js/store'
 
 import { CHANNELS, DOWNLOAD_STATUS } from '../constants'
