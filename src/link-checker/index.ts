@@ -103,7 +103,7 @@ export const getInfos = async (appConfigs: AppConfig) => {
     await Promise.allSettled(
       chunk.map(async (appName: string) => {
         try {
-          const info = await getVersion(appConfigs[appName])
+          const info = await getVersion(appConfigs[appName], appName)
           const { isVersionUpdated } = info
           if (isVersionUpdated === false) {
             results[appName] = info

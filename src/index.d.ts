@@ -75,6 +75,7 @@ type Results = {
 }
 
 type Info = {
+  appName: string
   website: string
   isVersionUpdated?: boolean
   currentVersion?: string
