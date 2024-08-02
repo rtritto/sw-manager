@@ -1,0 +1,22 @@
+diff --git a/dist/index.mjs b/dist/index.mjs
+index b92b533bcabe696a181e244ee4e9de22c1557c9f..e950bc1300e1fa8716c3ee4c172161af78a9b465 100644
+--- a/dist/index.mjs
++++ b/dist/index.mjs
+@@ -1352,7 +1352,7 @@ var stringify = function stringify (value, replacer, space) {
+             } else {
+                 let separator = ',\n' + indent;
+                 properties = partial.join(separator);
+-                final = '{\n' + indent + properties + ',\n' + stepback + '}';
++                final = '{\n' + indent + properties + '\n' + stepback + '}';
+             }
+         }
+ 
+@@ -1406,7 +1406,7 @@ var stringify = function stringify (value, replacer, space) {
+             } else {
+                 let separator = ',\n' + indent;
+                 let properties = partial.join(separator);
+-                final = '[\n' + indent + properties + ',\n' + stepback + ']';
++                final = '[\n' + indent + properties + '\n' + stepback + ']';
+             }
+         }
+ 
