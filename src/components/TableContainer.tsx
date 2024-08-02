@@ -9,7 +9,7 @@ import { createStore } from 'solid-js/store'
 import { CHANNELS, DOWNLOAD_STATUS } from '../constants'
 import selectColumn from './selectColumn'
 import { convertBytes, convertProgress, convertSecondsToDHMS } from '../utils'
-import { categoriesCheckedAtom, directoryAtom, isDirectoryDisabledAtom, rowSelectionAtom } from '../store/atoms'
+import { categoriesCheckedAtom, directoryAtom, isDirectoryDisabledAtom, rowSelectionAtom, isUpdateConfigEnabledAtom } from '../store/atoms'
 import { categoriesCheckedStore } from '../store/stores'
 import Table from './Table'
 
@@ -49,6 +49,7 @@ const TableContainer: Component = () => {
   const [rowSelection, setRowSelection] = useAtom(rowSelectionAtom)
   const directory = useAtomValue(directoryAtom)
   const isDirectoryDisabled = useAtomValue(isDirectoryDisabledAtom)
+  const isUpdateConfigEnabled = useAtomValue(isUpdateConfigEnabledAtom)
 
   const handleCheckForUpdate = async () => {
     const categoriesToCheck: Category[] = []
@@ -244,30 +245,34 @@ const TableContainer: Component = () => {
       setDownloadStatus(rowId, DOWNLOAD_STATUS.DOWNLOADING)
     })
     window.electronApi.ipcRenderer.on(CHANNELS.DOWNLOAD_COMPLETED, (_, { rowId }: DownloadData & { rowId: string }) => {
-      setDownloadStatus(rowId, DOWNLOAD_STATUS.COMPLETED)
-      const getCompleted = () => {
-        const completedAppNames: string[] = []
-        for (const rowId in downloadStatus) {
-          if (downloadStatus[rowId] === DOWNLOAD_STATUS.COMPLETED) {
-            completedAppNames.push(downloadInfoStart[rowId]!.appName)
-          } else {
+      setDownloadStatus(rowId, DOWNLOAD_STATUS.COMPLETED);
+      ((downloadInfoStart, downloadStatus, infos, isUpdateConfigEnabled) => {
+        if (isUpdateConfigEnabled === true) {
+          const getCompleted = () => {
+            const completedAppNames: string[] = []
+            for (const rowId in downloadStatus) {
+              if (downloadStatus[rowId] === DOWNLOAD_STATUS.COMPLETED) {
+                completedAppNames.push(downloadInfoStart[rowId]!.appName)
+              } else {
+                return
+              }
+            }
+            return completedAppNames
+          }
+          const completedAppNames = getCompleted()
+          if (completedAppNames === undefined) {
             return
           }
+          const filteredInfos: Infos = {}
+          for (const category in infos) {
+            filteredInfos[category] = {}
+            for (const completedAppName of completedAppNames) {
+              filteredInfos[category][completedAppName] = infos[category][completedAppName]
+            }
+          }
+          window.electronApi.ipcRenderer.send(CHANNELS.UPDATE_CONFIG, filteredInfos)
         }
-        return completedAppNames
-      }
-      const completedAppNames = getCompleted()
-      if (completedAppNames === undefined) {
-        return
-      }
-      const filteredInfos = {}
-      for (const category in infos()) {
-        filteredInfos[category] = {}
-        for (const completedAppName of completedAppNames) {
-          filteredInfos[category][completedAppName] = infos()[category][completedAppName]
-        }
-      }
-      window.electronApi.ipcRenderer.send(CHANNELS.UPDATE_CONFIG, filteredInfos)
+      })(downloadInfoStart, downloadStatus, infos(), isUpdateConfigEnabled())
     })
     window.electronApi.ipcRenderer.on(CHANNELS.DOWNLOAD_CANCEL, (_, { rowId }: DownloadData & { rowId: string }) => {
       setDownloadInfoProgress(rowId, {
