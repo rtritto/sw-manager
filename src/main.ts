@@ -2,6 +2,8 @@ import { app, BrowserWindow, dialog, ipcMain } from 'electron'
 import { ElectronDownloadManager } from 'electron-dl-manager'
 import log from 'electron-log'
 import { autoUpdater } from 'electron-updater'
+import JSON5 from 'json5'
+import fs from 'node:fs'
 import path from 'node:path'
 
 import { CHANNELS, EVENTS } from './constants'
@@ -126,7 +128,8 @@ ipcMain.on(CHANNELS.UPDATE_CONFIG, (_, infos: Infos): void => {
       APP_MAP[category as Category][appName].version = newVersion
     }
   }
-  // JSON.stringify(APP_MAP, null, 2)
+  const updatedConfig = JSON5.stringify(APP_MAP, null, 2, { quote: '\'' })
+  fs.writeFileSync('./src/config.ts', `let APP_MAP = ${updatedConfig}\n\nexport default APP_MAP`)
 })
 
 type DownloadUrlInfo = {
