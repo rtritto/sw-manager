@@ -18,7 +18,8 @@ export enum CHANNELS {
   DOWNLOAD_STARTED = 'download-started',
   SINGLE_DOWNLOAD = 'single_download',
   SELECT_DOWNLOAD_FOLDER = 'single_download_folder',
-  UPDATE_ERROR = 'update_error'
+  UPDATE_ERROR = 'update_error',
+  UPDATE_CONFIG = 'update_config'
 }
 
 export enum DOWNLOAD_STATUS {

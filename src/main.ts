@@ -119,13 +119,24 @@ ipcMain.on(CHANNELS.DOWNLOAD_CANCEL, (_, id: string): void => {
   manager.cancelDownload(id)
 })
 
+ipcMain.on(CHANNELS.UPDATE_CONFIG, (_, infos: Infos): void => {
+  for (const category in infos) {
+    for (const appName in infos[category as Category]) {
+      const { newVersion } = infos[category as Category]![appName]
+      APP_MAP[category as Category][appName].version = newVersion
+    }
+  }
+  // JSON.stringify(APP_MAP, null, 2)
+})
+
 type DownloadUrlInfo = {
   downloadLink: string
   rowId: string
   directory?: string
+  appName: string
 }
 
-ipcMain.on(CHANNELS.DOWNLOAD_BY_URL, async (_, { downloadLink, rowId, directory }: DownloadUrlInfo): Promise<void> => {
+ipcMain.on(CHANNELS.DOWNLOAD_BY_URL, async (_, { downloadLink, rowId, directory, appName }: DownloadUrlInfo): Promise<void> => {
   // mainWindow.webContents.downloadURL(downloadUrl)
 
   await manager.download({
@@ -140,7 +151,8 @@ ipcMain.on(CHANNELS.DOWNLOAD_BY_URL, async (_, { downloadLink, rowId, directory 
           rowId,
           id,
           resolvedFilename,
-          totalBytes: item.getTotalBytes()
+          totalBytes: item.getTotalBytes(),
+          appName
         })
       },
       onDownloadProgress: ({ id, downloadRateBytesPerSecond, estimatedTimeRemainingSeconds, item, percentCompleted }) => {

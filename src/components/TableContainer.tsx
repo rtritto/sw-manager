@@ -22,6 +22,7 @@ type DownloadInfoStart = {
     fileId: string
     fileName: string
     fileSize: number
+    appName: string
   }
 }
 
@@ -76,11 +77,13 @@ const TableContainer: Component = () => {
     await Promise.allSettled(
       rowIds.map((rowId: string) => {
         if ((rowId in downloadStatus) === false || downloadStatus[rowId] === DOWNLOAD_STATUS.CANCEL) {
-          return window.electronApi.singleDownload({ ..._infos[Number.parseInt(rowId, 10)] }).then((downloadLink) => {
+          const _info = { ..._infos[Number.parseInt(rowId, 10)] }
+          return window.electronApi.singleDownload(_info).then((downloadLink) => {
             window.electronApi.ipcRenderer.send(CHANNELS.DOWNLOAD_BY_URL, {
               downloadLink,
               rowId,
-              directory
+              directory,
+              appName: _info.appName
             })
           })
         }
@@ -214,12 +217,14 @@ const TableContainer: Component = () => {
       rowId,
       id,
       resolvedFilename,
-      totalBytes
-    }: DownloadData & { rowId: string, totalBytes: number }) => {
+      totalBytes,
+      appName
+    }: DownloadData & { rowId: string, totalBytes: number, appName: string }) => {
       setDownloadInfoStart(rowId, {
         fileId: id,
         fileName: resolvedFilename,
-        fileSize: totalBytes
+        fileSize: totalBytes,
+        appName
       })
       setDownloadStatus(rowId, DOWNLOAD_STATUS.STARTED)
     })
@@ -240,6 +245,29 @@ const TableContainer: Component = () => {
     })
     window.electronApi.ipcRenderer.on(CHANNELS.DOWNLOAD_COMPLETED, (_, { rowId }: DownloadData & { rowId: string }) => {
       setDownloadStatus(rowId, DOWNLOAD_STATUS.COMPLETED)
+      const getCompleted = () => {
+        const completedAppNames: string[] = []
+        for (const rowId in downloadStatus) {
+          if (downloadStatus[rowId] === DOWNLOAD_STATUS.COMPLETED) {
+            completedAppNames.push(downloadInfoStart[rowId]!.appName)
+          } else {
+            return
+          }
+        }
+        return completedAppNames
+      }
+      const completedAppNames = getCompleted()
+      if (completedAppNames === undefined) {
+        return
+      }
+      const filteredInfos = {}
+      for (const category in infos()) {
+        filteredInfos[category] = {}
+        for (const completedAppName of completedAppNames) {
+          filteredInfos[category][completedAppName] = infos()[category][completedAppName]
+        }
+      }
+      window.electronApi.ipcRenderer.send(CHANNELS.UPDATE_CONFIG, filteredInfos)
     })
     window.electronApi.ipcRenderer.on(CHANNELS.DOWNLOAD_CANCEL, (_, { rowId }: DownloadData & { rowId: string }) => {
       setDownloadInfoProgress(rowId, {
