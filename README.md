@@ -13,6 +13,11 @@
 - Add restart download
 - Set size for imageUrl (es: Microsoft Activation Scripts)
 - Fix version XAMP
+- Add absolute imports
+  - link-checker
+- Add black list to ignore app from config file
+- Click to Check or Uncheck
+- Click A Shift Click C to Check A - B - C
 
 # Bugs
 - Support PnP (remove patch of `@electron-forge/core-utils` and `@electron-forge/core`):
