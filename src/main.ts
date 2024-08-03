@@ -59,7 +59,9 @@ const createWindow = () => {
 
   mainWindow.maximize()
 
-  mainWindow.removeMenu()
+  if (process.env.NODE_ENV === 'production') {
+    mainWindow.removeMenu()
+  }
 }
 
 const sendStatusToWindow = (text: string) => {
