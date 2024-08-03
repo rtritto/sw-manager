@@ -1,5 +1,5 @@
 import { useAtom } from 'solid-jotai'
-import { For } from 'solid-js'
+import { For, type Component } from 'solid-js'
 
 import { ALL_CATEGORIES } from '../constants'
 import { categoriesCheckedAtom } from '../store/atoms'

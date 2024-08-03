@@ -92,8 +92,6 @@ type Infos = {
   [category in Category]?: InfoResult
 }
 
-type Component = import('solid-js').Component
-
 type CategoriesChecked = {
   [category in Category]: boolean
 }

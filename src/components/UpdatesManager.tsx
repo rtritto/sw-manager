@@ -1,3 +1,5 @@
+import type { Component } from 'solid-js'
+
 import DownloadFolders from './DownloadFolders'
 import SelectCategories from './SelectCategories'
 import TableContainer from './TableContainer'

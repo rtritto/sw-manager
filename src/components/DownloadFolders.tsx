@@ -1,4 +1,5 @@
 import { useAtom } from 'solid-jotai'
+import type { Component } from 'solid-js'
 
 import { directoryAtom, isDirectoryDisabledAtom } from '../store/atoms'
 
