@@ -13,8 +13,8 @@
       "DOM.Iterable",
       "ESNext"
     ],
-    "module": "CommonJS",
-    "moduleResolution": "Node",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
     "noEmit": true,
     "noImplicitAny": false,
     "noUnusedLocals": true,
