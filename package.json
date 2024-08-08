@@ -64,6 +64,7 @@
     "typescript": "^5.5.4",
     "undici": "^6.19.5",
     "vite": "^5.3.5",
+    "vite-plugin-require": "^1.2.14",
     "vite-plugin-solid": "^2.10.2"
   },
   "shouldBeDependencies": [
