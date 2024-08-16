@@ -9286,6 +9286,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"sw-download-checker@github:rtritto/sw-download-checker":
+  version: 1.0.0
+  resolution: "sw-download-checker@https://github.com/rtritto/sw-download-checker.git#commit=7ef0baf9eb022e5e77868fe064052e3381ae447c"
+  dependencies:
+    html-entities: "npm:^2.5.2"
+    node-html-parser: "npm:^6.1.13"
+    undici: "npm:^6.19.5"
+  checksum: 10c0/817c39efbe0e056a44ff35e40ab890dc2bf283fb1611b24930feee9962de585568a47e3b8610c9c7bcfcac3df9ba1fafc2942f859f403027ee83ef4f67572ef2
+  languageName: node
+  linkType: hard
+
 "table@npm:^6.0.9":
   version: 6.8.2
   resolution: "table@npm:6.8.2"
@@ -9798,7 +9809,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"undici@npm:^6.19.7":
+"undici@npm:^6.19.5, undici@npm:^6.19.7":
   version: 6.19.7
   resolution: "undici@npm:6.19.7"
   checksum: 10c0/801d1e66d5bccdd3fcc9ecf1c95b83a593e4867b89e21ed725e35bd4d572b3d3ce1d7feab2a4f2046f65923de70bfafb69ac148c633d1ab30a948d6fec24475a
@@ -10441,6 +10452,7 @@ __metadata:
     postcss: "npm:^8.4.41"
     solid-jotai: "npm:^0.2.2"
     solid-js: "npm:^1.8.21"
+    sw-download-checker: "github:rtritto/sw-download-checker"
     tailwindcss: "npm:^3.4.10"
     ts-node: "npm:^10.9.2"
     typescript: "npm:^5.5.4"

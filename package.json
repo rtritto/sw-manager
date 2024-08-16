@@ -59,6 +59,7 @@
     "postcss": "^8.4.41",
     "solid-jotai": "^0.2.2",
     "solid-js": "^1.8.21",
+    "sw-download-checker": "github:rtritto/sw-download-checker",
     "tailwindcss": "^3.4.10",
     "ts-node": "^10.9.2",
     "typescript": "^5.5.4",

@@ -1,4 +1,5 @@
-import applyRegex from '../link-checker/funcs/apply-regex'
+import { applyRegex } from 'sw-download-checker'
+
 import { editMessageText, sendDocument, sendMessage } from './api'
 
 const HASH_TAG = '#'

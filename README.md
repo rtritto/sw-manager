@@ -14,7 +14,6 @@
 - Set size for imageUrl (es: Microsoft Activation Scripts)
 - Fix version XAMP
 - Add absolute imports
-  - link-checker
 - Add black list to ignore app from config file
 - Click to Check or Uncheck
 - Click A Shift Click C to Check A - B - C
