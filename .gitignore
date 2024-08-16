@@ -9,3 +9,5 @@
 
 # Vite
 .vite/
+
+.env

@@ -52,6 +52,7 @@ type NestedConfig = {
   website: string
   websiteTmp?: string
   comment?: string
+  telegram?: Telegram
 }
 
 type AppConfig = {
@@ -72,6 +73,16 @@ type AppResult = {
 
 type Results = {
   [category in Category]?: AppResult
+}
+
+type Telegram = {
+  messageId?: number
+  tags?: string[]
+}
+
+type DocumentInfo = {
+  path: string
+  name: string
 }
 
 type Info = {

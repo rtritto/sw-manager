@@ -6,6 +6,7 @@ import { useAtom, useAtomValue } from 'solid-jotai'
 import { createEffect, createMemo, createSignal, For, Show, type Component } from 'solid-js'
 import { createStore } from 'solid-js/store'
 
+import APP_MAP from '../config'
 import { CHANNELS, DOWNLOAD_STATUS } from '../constants'
 import selectColumn from './selectColumn'
 import { convertBytes, convertProgress, convertSecondsToDHMS } from '../utils'
@@ -246,7 +247,7 @@ const TableContainer: Component = () => {
     })
     window.electronApi.ipcRenderer.on(CHANNELS.DOWNLOAD_COMPLETED, (_, { rowId }: DownloadData & { rowId: string }) => {
       setDownloadStatus(rowId, DOWNLOAD_STATUS.COMPLETED);
-      ((downloadInfoStart, downloadStatus, infos, isUpdateConfigEnabled) => {
+      ((downloadInfoStart, downloadStatus, infos, isUpdateConfigEnabled, directory) => {
         if (isUpdateConfigEnabled === true) {
           const getCompleted = () => {
             const completedAppNames: string[] = []
@@ -270,9 +271,25 @@ const TableContainer: Component = () => {
               filteredInfos[category][completedAppName] = infos[category][completedAppName]
             }
           }
-          window.electronApi.ipcRenderer.send(CHANNELS.UPDATE_CONFIG, filteredInfos)
+
+          const filteredConfig = {} as Config
+          for (const category in filteredInfos) {
+            filteredConfig[category as Category] = {}
+            for (const appName in filteredInfos[category as Category]) {
+              // Update APP_MAP
+              const { newVersion } = filteredInfos[category as Category]![appName]
+              APP_MAP[category as Category][appName].version = newVersion
+
+              // Get filtered Config
+              filteredConfig[category as Category][appName] = APP_MAP[category as Category][appName]
+            }
+          }
+
+          window.electronApi.ipcRenderer.send(CHANNELS.UPDATE_TELEGRAM, filteredConfig, directory)
+
+          window.electronApi.ipcRenderer.send(CHANNELS.UPDATE_CONFIG, APP_MAP)
         }
-      })(downloadInfoStart, downloadStatus, infos(), isUpdateConfigEnabled())
+      })(downloadInfoStart, downloadStatus, infos(), isUpdateConfigEnabled(), directory())
     })
     window.electronApi.ipcRenderer.on(CHANNELS.DOWNLOAD_CANCEL, (_, { rowId }: DownloadData & { rowId: string }) => {
       setDownloadInfoProgress(rowId, {
