@@ -10,6 +10,8 @@ import { CHANNELS, EVENTS } from './constants'
 import { getInfos } from './link-checker'
 import { getDownloadLink } from './link-checker/get-version-and-fileUrl'
 import APP_MAP from './config'
+import { createTemplate, updateTextMessage, uploadDocument } from './telegram/manager'
+import applyRegex from './link-checker/funcs/apply-regex'
 
 try {
   // Handle creating/removing shortcuts on Windows when installing/uninstalling.
@@ -123,14 +125,29 @@ ipcMain.on(CHANNELS.DOWNLOAD_CANCEL, (_, id: string): void => {
   manager.cancelDownload(id)
 })
 
-ipcMain.on(CHANNELS.UPDATE_CONFIG, (_, infos: Infos): void => {
-  for (const category in infos) {
-    for (const appName in infos[category as Category]) {
-      const { newVersion } = infos[category as Category]![appName]
-      APP_MAP[category as Category][appName].version = newVersion
+ipcMain.on(CHANNELS.UPDATE_TELEGRAM, async (_, config: Config, saveFolder: string): Promise<void> => {
+  for (const category in config) {
+    const appConfigs = config[category as Category]
+    for (const appName in appConfigs) {
+      const appConfig = config[category as Category][appName]
+
+      const template = createTemplate(appConfig, appName, category as Category)
+      await updateTextMessage(appConfig, template)
+
+      const documentFolder = path.join(saveFolder, category as Category, applyRegex(appName, { version: appConfig.version }))
+      const documentName = fs.readdirSync(documentFolder).at(0)!
+      const documentPath = path.join(documentFolder, documentName)
+      const documentInfo: DocumentInfo = {
+        path: documentPath,
+        name: documentName
+      }
+      await uploadDocument(appConfig, documentInfo)
     }
   }
-  const updatedConfig = JSON5.stringify(APP_MAP, null, 2, { quote: '\'' })
+})
+
+ipcMain.on(CHANNELS.UPDATE_CONFIG, (_, config: Config): void => {
+  const updatedConfig = JSON5.stringify(config, null, 2, { quote: '\'' })
   fs.writeFileSync('./src/config.ts', `let APP_MAP = ${updatedConfig}\n\nexport default APP_MAP`)
 })
 
