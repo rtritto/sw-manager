@@ -3,15 +3,13 @@ import { ElectronDownloadManager } from 'electron-dl-manager'
 import log from 'electron-log'
 import { autoUpdater } from 'electron-updater'
 import JSON5 from 'json5'
+import { applyRegex, getDownloadLink, getInfos } from 'sw-download-checker'
 import fs from 'node:fs'
 import path from 'node:path'
 
 import { CHANNELS, EVENTS } from './constants'
-import { getInfos } from './link-checker'
-import { getDownloadLink } from './link-checker/get-version-and-fileUrl'
 import APP_MAP from './config'
 import { createTemplate, updateTextMessage, uploadDocument } from './telegram/manager'
-import applyRegex from './link-checker/funcs/apply-regex'
 
 try {
   // Handle creating/removing shortcuts on Windows when installing/uninstalling.
