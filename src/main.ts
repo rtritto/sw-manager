@@ -98,8 +98,10 @@ ipcMain.handle(CHANNELS.CHECK_FOR_UPDATE, async (_, categories: Category[]): Pro
   const _infos: Infos = {}
   for (const category of categories) {
     const categoryInfos = await getInfos(APP_MAP[category])
-    for (const info in categoryInfos.errors) {
-      autoUpdater.emit(CHANNELS.ERROR, categoryInfos.errors[info] as Error)
+    for (const appName in categoryInfos.errors) {
+      const appError = categoryInfos.errors[appName] as Error
+      appError.message = `${appName} - ${appError.message}`
+      autoUpdater.emit(CHANNELS.ERROR, appError)
     }
     _infos[category] = categoryInfos.results
   }
