@@ -201,15 +201,6 @@ let APP_MAP = {
     }
   },
   Downloader: {
-    'Crunchyroll Downloader <VERSION> Portable': {
-      urlTmp: 'https://www.softpedia.com/get/Internet/Download-Managers/hama-Crunchyroll-Downloader.shtml',
-      imageUrl: 'https://windows-cdn.softpedia.com/screenshots/ico/hama-Crunchyroll-Downloader.png',
-      owner: 'hama3254',
-      repo: 'Crunchyroll-Downloader-v3.0',
-      assetNumber: 0,
-      version: '3',
-      website: 'GitHub'
-    },
     'qBittorrent <VERSION> Portable': {
       url: 'https://portableapps.com/apps/internet/qbittorrent_portable',
       imageUrl: 'https://windows-cdn.softpedia.com/screenshots/ico/qBittorrent.png',
