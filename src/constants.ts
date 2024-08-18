@@ -1,5 +1,7 @@
 import APP_MAP from './config'
 
+export const DOWNLOAD_FOLDER = 'SWManagerDownloads'
+
 export enum CHANNELS {
   // import(electron-updater).UpdaterEvents
   ERROR = 'error',

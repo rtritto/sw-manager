@@ -7,7 +7,7 @@ import { applyRegex, getDownloadLink, getInfos } from 'sw-download-checker'
 import fs from 'node:fs'
 import path from 'node:path'
 
-import { CHANNELS, EVENTS } from './constants'
+import { CHANNELS, DOWNLOAD_FOLDER, EVENTS } from './constants'
 import APP_MAP from './config'
 import { createTemplate, updateTextMessage, uploadDocument } from './telegram/manager'
 
@@ -36,7 +36,8 @@ const createWindow = () => {
     // autoHideMenuBar: true,
     // icon: 'icon.ico',
     webPreferences: {
-      additionalArguments: [`--downloads-folder=${app.getPath('downloads')}`],
+      // Append DOWNLOAD_FOLDER
+      additionalArguments: [`--downloads-folder=${path.join(app.getPath('downloads'), DOWNLOAD_FOLDER)}`],
       preload: path.join(import.meta.dirname, 'preload.mjs')
       // devTools: false
       // enableRemoteModule: true,  // deprecated and replaced with @electron/remote (or ipcRenderer.invoke, see README)
@@ -91,7 +92,10 @@ ipcMain.handle(CHANNELS.SELECT_DOWNLOAD_FOLDER, async () => {
   const { filePaths } = await dialog.showOpenDialog(mainWindow, {
     properties: ['openDirectory']
   })
-  return filePaths.at(0)
+  const selectedDownloadFolder = filePaths.at(0)
+  const downloadFolder = selectedDownloadFolder === undefined ? window.electronApi.downloadsFolder : selectedDownloadFolder
+  // Append DOWNLOAD_FOLDER
+  return path.join(downloadFolder, DOWNLOAD_FOLDER)
 })
 
 ipcMain.handle(CHANNELS.CHECK_FOR_UPDATE, async (_, categories: Category[]): Promise<Infos> => {
