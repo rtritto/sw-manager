@@ -305,6 +305,7 @@ const TableContainer: Component = () => {
           }
 
           if (isUpdateTelegramEnabled() === true) {
+            // APP_MAP[category][appName].telegram.message_id can be created
             window.electronApi.ipcRenderer.send(CHANNELS.UPDATE_TELEGRAM, filteredConfig, directory())
           }
           if (isUpdateConfigEnabled() === true) {
