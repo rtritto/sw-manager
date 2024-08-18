@@ -1,14 +1,16 @@
 import { IconSortAscending, IconSortDescending, IconDots } from '@tabler/icons-solidjs'
 import { createSolidTable, flexRender, getCoreRowModel, getFilteredRowModel, getSortedRowModel } from '@tanstack/solid-table'
-import type { ColumnDef, ColumnFilter, ColumnSort, Row as TanstackRow } from '@tanstack/solid-table'
-import { For, Show, createSignal, mergeProps, type Component } from 'solid-js'
+import type { ColumnDef, ColumnFilter, ColumnSort, RowSelectionState, Row as TanstackRow } from '@tanstack/solid-table'
 import { useAtom } from 'solid-jotai'
+import { For, Show, createSignal, mergeProps, onCleanup, type Component } from 'solid-js'
 
-import { rowSelectionAtom } from '../store/atoms'
+import { checkedAppNamesAtom } from '../store/atoms'
+import { checkedAppNamesStore } from '../store/stores'
 
 const Table: Component<{
   columnData: Record<string, unknown>[]
   columns: ColumnDef<Record<string, unknown>, any>[]
+  item: string
 }> = (props) => {
   const merged = mergeProps({
     // TODO check if _row is correct
@@ -17,8 +19,9 @@ const Table: Component<{
   }, props)
 
   const [sorting, sortingSet] = createSignal<ColumnSort[]>()
-  const [rowSelection, rowSelectionSet] = useAtom(rowSelectionAtom)
+  const [rowSelection, setRowSelection] = createSignal<RowSelectionState>()
   const [columnFilters, setColumnFilters] = createSignal<ColumnFilter[]>()
+  const [checkedAppNames, setCheckedAppNames] = useAtom(checkedAppNamesAtom, { store: checkedAppNamesStore })
 
   const solidTable = createSolidTable({
     get data() {
@@ -43,7 +46,28 @@ const Table: Component<{
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     onSortingChange: sortingSet,
-    onRowSelectionChange: rowSelectionSet
+    onRowSelectionChange: (row) => {
+      setRowSelection(row as RowSelectionState)
+      const v = Object.keys(rowSelection()!)
+      const o = v.length === 0
+        ? (({
+          // remove category
+          [props.item as Category]: _,
+          ...rest
+        }) => rest)(checkedAppNames())
+        : {
+          ...checkedAppNames(),
+          [props.item as Category]: v.map((rs) => merged.columnData[Number.parseInt(rs, 10)].appName)
+        }
+      setCheckedAppNames(o as CheckedAppNames)
+    }
+  })
+
+  onCleanup(() => {
+    setCheckedAppNames((({
+      [props.item as Category]: _,
+      ...rest
+    }) => rest)(checkedAppNames()) as CheckedAppNames)
   })
 
   return (

@@ -1,7 +1,6 @@
 import { createColumnHelper } from '@tanstack/solid-table'
 import type { ColumnDef } from '@tanstack/solid-table'
 import { IconDownload, IconPlayerPauseFilled, IconPlayerPlayFilled, IconPlayerStopFilled, IconSearch } from '@tabler/icons-solidjs'
-import type { DownloadData } from 'electron-dl-manager'
 import { useAtom, useAtomValue } from 'solid-jotai'
 import { createEffect, createMemo, createSignal, For, Show, type Component } from 'solid-js'
 import { createStore } from 'solid-js/store'
@@ -10,29 +9,29 @@ import APP_MAP from '../config'
 import { CHANNELS, DOWNLOAD_STATUS } from '../constants'
 import selectColumn from './selectColumn'
 import { convertBytes, convertProgress, convertSecondsToDHMS } from '../utils'
-import { categoriesCheckedAtom, directoryAtom, isDirectoryDisabledAtom, rowSelectionAtom, isUpdateConfigEnabledAtom } from '../store/atoms'
-import { categoriesCheckedStore } from '../store/stores'
+import { categoriesCheckedAtom, checkedAppNamesAtom, directoryAtom, isDirectoryDisabledAtom, isUpdateConfigEnabledAtom } from '../store/atoms'
+import { categoriesCheckedStore, checkedAppNamesStore } from '../store/stores'
 import Table from './Table'
 
 type DownloadStatus = {
-  [rowId in string]?: ValueOf<typeof DOWNLOAD_STATUS>
+  [appName in string]?: ValueOf<typeof DOWNLOAD_STATUS>
 }
 
 type DownloadInfoStart = {
-  [rowId in string]?: {
+  [appName in string]?: {
     fileId: string
     fileName: string
     fileSize: number
-    appName: string
+    appName: AppName
   }
 }
 
 type DownloadInfoProgress = {
-  [rowId in string]?: {
-    downloadRateBytesPerSecond: number
-    estimatedTimeRemainingSeconds: number
-    percentCompleted: number
-    receivedBytes: number
+  [appName in string]?: {
+    downloadRateBytesPerSecond: DownloadData['downloadRateBytesPerSecond']
+    estimatedTimeRemainingSeconds: DownloadData['estimatedTimeRemainingSeconds']
+    percentCompleted: DownloadData['percentCompleted']
+    receivedBytes: ReturnType<DownloadItem['getReceivedBytes']>
   }
 }
 
@@ -40,14 +39,84 @@ type CatergoriesCollapsed = {
   [category in Category]?: boolean
 }
 
+const disabledDownloadSelected = (checkedAppNames: CheckedAppNames, downloadStatus: DownloadStatus): boolean => {
+  const keys = Object.keys(checkedAppNames)
+  if (keys.length === 0) {
+    return true
+  }
+  for (const key of keys) {
+    const appNames = checkedAppNames[key]
+    for (const appName of appNames) {
+      if (appName in downloadStatus === false || downloadStatus[appName] === DOWNLOAD_STATUS.CANCEL) {
+        return false
+      }
+    }
+  }
+  return true
+}
+
+const disabledPauseSelected = (checkedAppNames: CheckedAppNames, downloadStatus: DownloadStatus): boolean => {
+  const keys = Object.keys(checkedAppNames)
+  if (keys.length === 0) {
+    return true
+  }
+  for (const key of keys) {
+    const appNames = checkedAppNames[key]
+    for (const appName of appNames) {
+      if (downloadStatus[appName] === DOWNLOAD_STATUS.DOWNLOADING) {
+        return false
+      }
+    }
+  }
+  return true
+}
+
+const disabledResumeSelected = (checkedAppNames: CheckedAppNames, downloadStatus: DownloadStatus): boolean => {
+  const keys = Object.keys(checkedAppNames)
+  if (keys.length === 0) {
+    return true
+  }
+  for (const key of keys) {
+    const appNames = checkedAppNames[key]
+    for (const appName of appNames) {
+      if (downloadStatus[appName] === DOWNLOAD_STATUS.PAUSED) {
+        return false
+      }
+    }
+  }
+  return true
+}
+
+const disabledCancelSelected = (checkedAppNames: CheckedAppNames, downloadStatus: DownloadStatus): boolean => {
+  const keys = Object.keys(checkedAppNames)
+  if (keys.length === 0) {
+    return true
+  }
+  for (const key of keys) {
+    const appNames = checkedAppNames[key]
+    for (const appName of appNames) {
+      if (downloadStatus[appName] === DOWNLOAD_STATUS.DOWNLOADING || downloadStatus[appName] === DOWNLOAD_STATUS.PAUSED) {
+        return false
+      }
+    }
+  }
+  return true
+}
+
+type CellInfo = {
+  row: {
+    original: Info
+  }
+}
+
 const TableContainer: Component = () => {
   const categoriesChecked = useAtomValue(categoriesCheckedAtom, { store: categoriesCheckedStore })
+  const [checkedAppNames, setCheckedAppNames] = useAtom(checkedAppNamesAtom, { store: checkedAppNamesStore })
   const [downloadStatus, setDownloadStatus] = createStore<DownloadStatus>({})
   const [downloadInfoStart, setDownloadInfoStart] = createStore<DownloadInfoStart>({})
   const [downloadInfoProgress, setDownloadInfoProgress] = createStore<DownloadInfoProgress>({})
   const [infos, setInfos] = createSignal<Infos>({})
   const [catergoriesCollapsed, setCatergoriesCollapsed] = createStore<CatergoriesCollapsed>({})
-  const [rowSelection, setRowSelection] = useAtom(rowSelectionAtom)
   const directory = useAtomValue(directoryAtom)
   const isDirectoryDisabled = useAtomValue(isDirectoryDisabledAtom)
   const isUpdateConfigEnabled = useAtomValue(isUpdateConfigEnabledAtom)
@@ -60,7 +129,7 @@ const TableContainer: Component = () => {
       }
     }
     const _infos = await window.electronApi.checkForUpdate(categoriesToCheck)
-    setRowSelection({})
+    setCheckedAppNames({} as CheckedAppNames)
     setInfos(_infos)
     const _categories = Object.keys(_infos)
     const _catergoriesCollapsed = {}
@@ -71,50 +140,53 @@ const TableContainer: Component = () => {
   }
 
   // eslint-disable-next-line unicorn/consistent-function-scoping
-  const handleDownloadSelected = async (downloadStatus: DownloadStatus, infos: Infos, rowIds: string[], directory?: string) => {
-    const _infos: Info[] = []
-    for (const category in infos) {
-      _infos.push(...Object.values(infos[category as Category]!))
-    }
+  const handleDownloadSelected = async (downloadStatus: DownloadStatus, infos: Infos, checkedAppNames: CheckedAppNames, directory?: string) => {
     await Promise.allSettled(
-      rowIds.map((rowId: string) => {
-        if ((rowId in downloadStatus) === false || downloadStatus[rowId] === DOWNLOAD_STATUS.CANCEL) {
-          const _info = { ..._infos[Number.parseInt(rowId, 10)] }
-          return window.electronApi.singleDownload(_info).then((downloadLink) => {
+      Object.keys(checkedAppNames).map((category) => checkedAppNames[category as Category].map((appName) => {
+        if ((appName in downloadStatus) === false || downloadStatus[appName] === DOWNLOAD_STATUS.CANCEL) {
+          return window.electronApi.singleDownload(infos[category as Category]![appName]).then((downloadLink) => {
             window.electronApi.ipcRenderer.send(CHANNELS.DOWNLOAD_BY_URL, {
+              appName,
               downloadLink,
-              rowId,
-              directory,
-              appName: _info.appName
-            })
+              directory
+            } as DownloadByUrlArgs)
           })
         }
-      })
+      }))
     )
   }
 
-  const handlePauseSelected = (downloadStatus: DownloadStatus, downloadInfoStart: DownloadInfoStart, rowIds: string[]) => {
-    for (const rowId of rowIds) {
-      if (downloadStatus[rowId] === DOWNLOAD_STATUS.DOWNLOADING) {
-        window.electronApi.ipcRenderer.send(CHANNELS.DOWNLOAD_PAUSE, downloadInfoStart[rowId]!.fileId)
-        setDownloadStatus(rowId, DOWNLOAD_STATUS.PAUSED)
+  const handlePauseSelected = (downloadStatus: DownloadStatus, downloadInfoStart: DownloadInfoStart, checkedAppNames: CheckedAppNames) => {
+    const appNamesList = Object.values(checkedAppNames)
+    for (const appNames of appNamesList) {
+      for (const appName of appNames) {
+        if (downloadStatus[appName] === DOWNLOAD_STATUS.DOWNLOADING) {
+          window.electronApi.ipcRenderer.send(CHANNELS.DOWNLOAD_PAUSE, downloadInfoStart[appName]!.fileId)
+          setDownloadStatus(appName, DOWNLOAD_STATUS.PAUSED)
+        }
       }
     }
   }
 
-  const handleResumeSelected = (downloadStatus: DownloadStatus, downloadInfoStart: DownloadInfoStart, rowIds: string[]) => {
-    for (const rowId of rowIds) {
-      if (downloadStatus[rowId] === DOWNLOAD_STATUS.PAUSED) {
-        window.electronApi.ipcRenderer.send(CHANNELS.DOWNLOAD_RESUME, downloadInfoStart[rowId]!.fileId)
-        setDownloadStatus(rowId, DOWNLOAD_STATUS.DOWNLOADING)
+  const handleResumeSelected = (downloadStatus: DownloadStatus, downloadInfoStart: DownloadInfoStart, checkedAppNames: CheckedAppNames) => {
+    const appNamesList = Object.values(checkedAppNames)
+    for (const appNames of appNamesList) {
+      for (const appName of appNames) {
+        if (downloadStatus[appName] === DOWNLOAD_STATUS.PAUSED) {
+          window.electronApi.ipcRenderer.send(CHANNELS.DOWNLOAD_RESUME, downloadInfoStart[appName]!.fileId)
+          setDownloadStatus(appName, DOWNLOAD_STATUS.DOWNLOADING)
+        }
       }
     }
   }
 
-  const handleCancelSelected = (downloadStatus: DownloadStatus, downloadInfoStart: DownloadInfoStart, rowIds: string[]) => {
-    for (const rowId of rowIds) {
-      if (downloadStatus[rowId] === DOWNLOAD_STATUS.DOWNLOADING || downloadStatus[rowId] === DOWNLOAD_STATUS.PAUSED) {
-        window.electronApi.ipcRenderer.send(CHANNELS.DOWNLOAD_CANCEL, downloadInfoStart[rowId]!.fileId)
+  const handleCancelSelected = (downloadStatus: DownloadStatus, downloadInfoStart: DownloadInfoStart, checkedAppNames: CheckedAppNames) => {
+    const appNamesList = Object.values(checkedAppNames)
+    for (const appNames of appNamesList) {
+      for (const appName of appNames) {
+        if (downloadStatus[appName] === DOWNLOAD_STATUS.DOWNLOADING || downloadStatus[appName] === DOWNLOAD_STATUS.PAUSED) {
+          window.electronApi.ipcRenderer.send(CHANNELS.DOWNLOAD_CANCEL, downloadInfoStart[appName]!.fileId)
+        }
       }
     }
   }
@@ -140,120 +212,131 @@ const TableContainer: Component = () => {
       id: 'progress',
       // header: 'Download Status',
       header: 'Progress',
-      cell: (info) => (
-        <Show when={info.row.id in downloadInfoStart ? downloadInfoStart[info.row.id]!.fileName !== '' : false}>
-          <div>
-            {downloadInfoStart[info.row.id]!.fileName}
+      cell: (info: CellInfo) => {
+        const { row: { original: { appName } } } = info
+        return (
+          <Show when={appName in downloadInfoStart ? downloadInfoStart[appName]!.fileName !== '' : false}>
+            <div>
+              {downloadInfoStart[appName]!.fileName}
 
-            <Show
-              when={downloadStatus[info.row.id] === DOWNLOAD_STATUS.DOWNLOADING
-                || downloadStatus[info.row.id] === DOWNLOAD_STATUS.PAUSED
-                || downloadStatus[info.row.id] === DOWNLOAD_STATUS.COMPLETED}
-            >
-              <div class="my-0 h-0.5 divider divider-neutral" />
+              <Show
+                when={downloadStatus[appName] === DOWNLOAD_STATUS.DOWNLOADING
+                  || downloadStatus[appName] === DOWNLOAD_STATUS.PAUSED
+                  || downloadStatus[appName] === DOWNLOAD_STATUS.COMPLETED}
+              >
+                <div class="my-0 h-0.5 divider divider-neutral" />
 
-              <div class="flex items-center">
-                <progress
-                  class={`progress ${downloadStatus[info.row.id] === DOWNLOAD_STATUS.DOWNLOADING
-                    ? 'progress-info'
-                    : (downloadStatus[info.row.id] === DOWNLOAD_STATUS.PAUSED ? 'progress-warning' : 'progress-accent')} w-56`}
-                  value={downloadInfoProgress[info.row.id]!.percentCompleted} max="100"
-                />
+                <div class="flex items-center">
+                  <progress
+                    class={`progress ${downloadStatus[appName] === DOWNLOAD_STATUS.DOWNLOADING
+                      ? 'progress-info'
+                      : (downloadStatus[appName] === DOWNLOAD_STATUS.PAUSED ? 'progress-warning' : 'progress-accent')} w-56`}
+                    value={downloadInfoProgress[appName]!.percentCompleted} max="100"
+                  />
 
-                <span class="whitespace-nowrap px-2">{convertProgress(downloadInfoProgress[info.row.id]!.percentCompleted)}%</span>
-              </div>
-            </Show>
-          </div>
-        </Show>
-      )
+                  <span class="whitespace-nowrap px-2">{convertProgress(downloadInfoProgress[appName]!.percentCompleted)}%</span>
+                </div>
+              </Show>
+            </div>
+          </Show>
+        )
+      }
     }),
     columnHelper.accessor('', {
       id: 'size',
       header: 'Size',
-      cell: (info) => (
-        <Show when={info.row.id in downloadInfoStart ? downloadInfoStart[info.row.id]!.fileName !== '' : false}>
-          <div>
-            <Show
-              when={downloadInfoStart[info.row.id]!.fileName
-                && (downloadStatus[info.row.id] === DOWNLOAD_STATUS.DOWNLOADING || downloadStatus[info.row.id] === DOWNLOAD_STATUS.PAUSED)}
-            >
-              <span class="whitespace-nowrap">{convertBytes(downloadInfoProgress[info.row.id]!.receivedBytes)}</span>
+      cell: (info: CellInfo) => {
+        const { row: { original: { appName } } } = info
+        return (
+          <Show when={appName in downloadInfoStart ? downloadInfoStart[appName]!.fileName !== '' : false}>
+            <div>
+              <Show
+                when={downloadInfoStart[appName]!.fileName
+                  && (downloadStatus[appName] === DOWNLOAD_STATUS.DOWNLOADING || downloadStatus[appName] === DOWNLOAD_STATUS.PAUSED)}
+              >
+                <span class="whitespace-nowrap">{convertBytes(downloadInfoProgress[appName]!.receivedBytes)}</span>
 
-              <div class="my-0 h-0.5 divider divider-neutral" />
-            </Show>
+                <div class="my-0 h-0.5 divider divider-neutral" />
+              </Show>
 
-            <span class="whitespace-nowrap">{convertBytes(downloadInfoStart[info.row.id]!.fileSize)}</span>
-          </div>
-        </Show>
-      )
+              <span class="whitespace-nowrap">{convertBytes(downloadInfoStart[appName]!.fileSize)}</span>
+            </div>
+          </Show>
+        )
+      }
     }),
     columnHelper.accessor('', {
       id: 'speed',
       // header: 'Transfer Rate',
       header: 'Speed',
-      cell: (info) => (
-        <Show
-          when={info.row.id in downloadInfoStart
-            ? (downloadInfoStart[info.row.id]!.fileName && downloadStatus[info.row.id] === DOWNLOAD_STATUS.DOWNLOADING)
-            : false}
-        >
-          <div>{convertBytes(downloadInfoProgress[info.row.id]!.downloadRateBytesPerSecond)}/s</div>
-        </Show>
-      )
+      cell: (info: CellInfo) => {
+        const { row: { original: { appName } } } = info
+        return (
+          <Show
+            when={appName in downloadInfoStart
+              ? (downloadInfoStart[appName]!.fileName && downloadStatus[appName] === DOWNLOAD_STATUS.DOWNLOADING)
+              : false}
+          >
+            <div>{convertBytes(downloadInfoProgress[appName]!.downloadRateBytesPerSecond)}/s</div>
+          </Show>
+        )
+      }
     }),
     columnHelper.accessor('', {
       id: 'eta',
       // header: 'Time Left',
       header: 'ETA',
-      cell: (info) => (
-        <Show when={info.row.id in downloadInfoStart ? (downloadInfoStart[info.row.id]!.fileName && downloadStatus[info.row.id] === DOWNLOAD_STATUS.DOWNLOADING) : false}>
-          <div>{convertSecondsToDHMS(downloadInfoProgress[info.row.id]!.estimatedTimeRemainingSeconds)}</div>
-        </Show>
-      )
+      cell: (info: CellInfo) => {
+        const { row: { original: { appName } } } = info
+        return (
+          <Show when={appName in downloadInfoStart ? (downloadInfoStart[appName]!.fileName && downloadStatus[appName] === DOWNLOAD_STATUS.DOWNLOADING) : false}>
+            <div>{convertSecondsToDHMS(downloadInfoProgress[appName]!.estimatedTimeRemainingSeconds)}</div>
+          </Show>
+        )
+      }
     })
   ])
 
   createEffect(() => {
     // Listen for the event
     window.electronApi.ipcRenderer.on(CHANNELS.DOWNLOAD_STARTED, (_, {
-      rowId,
+      appName,
       id,
       resolvedFilename,
-      totalBytes,
-      appName
-    }: DownloadData & { rowId: string, totalBytes: number, appName: string }) => {
-      setDownloadInfoStart(rowId, {
+      totalBytes
+    }: DownloadStartedArgs) => {
+      setDownloadInfoStart(appName, {
         fileId: id,
         fileName: resolvedFilename,
         fileSize: totalBytes,
         appName
       })
-      setDownloadStatus(rowId, DOWNLOAD_STATUS.STARTED)
+      setDownloadStatus(appName, DOWNLOAD_STATUS.STARTED)
     })
     window.electronApi.ipcRenderer.on(CHANNELS.DOWNLOAD_PROGRESS, (_, {
-      rowId,
+      appName,
       downloadRateBytesPerSecond,
       estimatedTimeRemainingSeconds,
       percentCompleted,
       receivedBytes
-    }: DownloadData & { rowId: string, receivedBytes: number }) => {
-      setDownloadInfoProgress(rowId, {
+    }: DownloadProgressArgs) => {
+      setDownloadInfoProgress(appName, {
         downloadRateBytesPerSecond,
         estimatedTimeRemainingSeconds,
         percentCompleted,
         receivedBytes
       })
-      setDownloadStatus(rowId, DOWNLOAD_STATUS.DOWNLOADING)
+      setDownloadStatus(appName, DOWNLOAD_STATUS.DOWNLOADING)
     })
-    window.electronApi.ipcRenderer.on(CHANNELS.DOWNLOAD_COMPLETED, (_, { rowId }: DownloadData & { rowId: string }) => {
-      setDownloadStatus(rowId, DOWNLOAD_STATUS.COMPLETED);
+    window.electronApi.ipcRenderer.on(CHANNELS.DOWNLOAD_COMPLETED, (_, { appName }: DownloadCompletedArgs) => {
+      setDownloadStatus(appName, DOWNLOAD_STATUS.COMPLETED);
       ((downloadInfoStart, downloadStatus, infos, isUpdateConfigEnabled, directory) => {
         if (isUpdateConfigEnabled === true) {
           const getCompleted = () => {
             const completedAppNames: string[] = []
-            for (const rowId in downloadStatus) {
-              if (downloadStatus[rowId] === DOWNLOAD_STATUS.COMPLETED) {
-                completedAppNames.push(downloadInfoStart[rowId]!.appName)
+            for (const appName in downloadStatus) {
+              if (downloadStatus[appName] === DOWNLOAD_STATUS.COMPLETED) {
+                completedAppNames.push(downloadInfoStart[appName]!.appName)
               } else {
                 return
               }
@@ -291,14 +374,14 @@ const TableContainer: Component = () => {
         }
       })(downloadInfoStart, downloadStatus, infos(), isUpdateConfigEnabled(), directory())
     })
-    window.electronApi.ipcRenderer.on(CHANNELS.DOWNLOAD_CANCEL, (_, { rowId }: DownloadData & { rowId: string }) => {
-      setDownloadInfoProgress(rowId, {
+    window.electronApi.ipcRenderer.on(CHANNELS.DOWNLOAD_CANCEL, (_, { appName }: DownloadCancelArgs) => {
+      setDownloadInfoProgress(appName, {
         downloadRateBytesPerSecond: 0,
         estimatedTimeRemainingSeconds: 0,
         percentCompleted: 0,
         receivedBytes: 0
       })
-      setDownloadStatus(rowId, DOWNLOAD_STATUS.CANCEL)
+      setDownloadStatus(appName, DOWNLOAD_STATUS.CANCEL)
     })
   })
 
@@ -314,10 +397,8 @@ const TableContainer: Component = () => {
         <div class="tooltip tooltip-bottom m-1" data-tip="Download Selected">
           <button
             class="btn"
-            disabled={(Object.keys(rowSelection()).length === 0) || (Object.keys(rowSelection()).some((rowId) =>
-              (rowId in downloadStatus) === false || downloadStatus[rowId] === DOWNLOAD_STATUS.CANCEL
-            ) === false)}
-            onClick={() => handleDownloadSelected(downloadStatus, infos(), Object.keys(rowSelection()), isDirectoryDisabled() === true ? undefined : directory())}
+            disabled={disabledDownloadSelected(checkedAppNames(), downloadStatus)}
+            onClick={() => handleDownloadSelected(downloadStatus, infos(), checkedAppNames(), isDirectoryDisabled() === true ? undefined : directory())}
           >
             <IconDownload />
           </button>
@@ -326,10 +407,8 @@ const TableContainer: Component = () => {
         <div class="tooltip tooltip-bottom m-1" data-tip="Pause Selected">
           <button
             class="btn"
-            disabled={(Object.keys(rowSelection()).length === 0) || (Object.keys(rowSelection()).some((rowId) =>
-              (rowId in downloadStatus) === true && downloadStatus[rowId] === DOWNLOAD_STATUS.DOWNLOADING
-            ) === false)}
-            onClick={() => handlePauseSelected(downloadStatus, downloadInfoStart, Object.keys(rowSelection()))}
+            disabled={disabledPauseSelected(checkedAppNames(), downloadStatus)}
+            onClick={() => handlePauseSelected(downloadStatus, downloadInfoStart, checkedAppNames())}
           >
             <IconPlayerPauseFilled />
           </button>
@@ -338,10 +417,8 @@ const TableContainer: Component = () => {
         <div class="tooltip tooltip-bottom m-1" data-tip="Resume Selected">
           <button
             class="btn"
-            disabled={(Object.keys(rowSelection()).length === 0) || (Object.keys(rowSelection()).some((rowId) =>
-              (rowId in downloadStatus) === true && downloadStatus[rowId] === DOWNLOAD_STATUS.PAUSED
-            ) === false)}
-            onClick={() => handleResumeSelected(downloadStatus, downloadInfoStart, Object.keys(rowSelection()))}
+            disabled={disabledResumeSelected(checkedAppNames(), downloadStatus)}
+            onClick={() => handleResumeSelected(downloadStatus, downloadInfoStart, checkedAppNames())}
           >
             <IconPlayerPlayFilled />
           </button>
@@ -350,10 +427,8 @@ const TableContainer: Component = () => {
         <div class="tooltip tooltip-bottom m-1" data-tip="Cancel Selected">
           <button
             class="btn"
-            disabled={(Object.keys(rowSelection()).length === 0) || (Object.keys(rowSelection()).some((rowId) =>
-              (rowId in downloadStatus) === true && (downloadStatus[rowId] === DOWNLOAD_STATUS.DOWNLOADING || downloadStatus[rowId] === DOWNLOAD_STATUS.PAUSED)
-            ) === false)}
-            onClick={() => handleCancelSelected(downloadStatus, downloadInfoStart, Object.keys(rowSelection()))}
+            disabled={disabledCancelSelected(checkedAppNames(), downloadStatus)}
+            onClick={() => handleCancelSelected(downloadStatus, downloadInfoStart, checkedAppNames())}
           >
             <IconPlayerStopFilled />
           </button>
@@ -368,7 +443,7 @@ const TableContainer: Component = () => {
             }}>{item} ({Object.keys(infos()[item]).length})</div>
 
             <div class="collapse-content">
-              <Table columnData={Object.values(infos()[item])} columns={columns()} />
+              <Table columnData={Object.values(infos()[item])} columns={columns()} item={item} />
             </div>
           </div>
         )}

@@ -4,6 +4,10 @@ type Channels = ValueOf<typeof import('./constants').CHANNELS>
 
 type Category = keyof (typeof import('./config').default)
 
+type DownloadData = import('electron-dl-manager').DownloadData
+
+type DownloadItem = import('electron').DownloadItem
+
 type Config = {
   [category in Category]: AppConfig
 }
@@ -56,7 +60,7 @@ type NestedConfig = {
 }
 
 type AppConfig = {
-  [appName: string]: NestedConfig
+  [appName: AppName]: NestedConfig
 }
 
 type Version = {
@@ -66,7 +70,7 @@ type Version = {
 }
 
 type AppResult = {
-  [appName: string]: {
+  [appName: AppName]: {
     version: Version
   }
 }
@@ -85,8 +89,10 @@ type DocumentInfo = {
   name: string
 }
 
+type AppName = string
+
 type Info = {
-  appName: string
+  appName: AppName
   website: string
   isVersionUpdated?: boolean
   currentVersion?: string
@@ -96,7 +102,7 @@ type Info = {
 }
 
 type InfoResult = {
-  [appName: string]: Info
+  [appName: AppName]: Info
 }
 
 type Infos = {
@@ -105,4 +111,39 @@ type Infos = {
 
 type CategoriesChecked = {
   [category in Category]: boolean
+}
+
+type CheckedAppNames = {
+  [category in Category]: AppName[]
+}
+
+type DownloadByUrlArgs = {
+  appName: AppName
+  downloadLink: string
+  directory?: string
+}
+
+type DownloadStartedArgs = {
+  appName: AppName
+  id: DownloadData['id']
+  resolvedFilename: DownloadData['resolvedFilename']
+  totalBytes: ReturnType<DownloadItem['getReceivedBytes']>
+}
+
+type DownloadProgressArgs = {
+  appName: AppName
+  downloadRateBytesPerSecond: DownloadData['downloadRateBytesPerSecond']
+  estimatedTimeRemainingSeconds: DownloadData['estimatedTimeRemainingSeconds']
+  percentCompleted: DownloadData['percentCompleted']
+  receivedBytes: ReturnType<DownloadItem['getReceivedBytes']>
+}
+
+type DownloadCompletedArgs = {
+  appName: AppName
+  id: DownloadData['id']
+}
+
+type DownloadCancelArgs = {
+  appName: AppName
+  id: DownloadData['id']
 }

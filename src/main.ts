@@ -151,14 +151,7 @@ ipcMain.on(CHANNELS.UPDATE_CONFIG, (_, config: Config): void => {
   fs.writeFileSync('./src/config.ts', `let APP_MAP = ${updatedConfig}\n\nexport default APP_MAP`)
 })
 
-type DownloadUrlInfo = {
-  downloadLink: string
-  rowId: string
-  directory?: string
-  appName: string
-}
-
-ipcMain.on(CHANNELS.DOWNLOAD_BY_URL, async (_, { downloadLink, rowId, directory, appName }: DownloadUrlInfo): Promise<void> => {
+ipcMain.on(CHANNELS.DOWNLOAD_BY_URL, async (_, { appName, downloadLink, directory }: DownloadByUrlArgs): Promise<void> => {
   // mainWindow.webContents.downloadURL(downloadUrl)
 
   await manager.download({
@@ -170,28 +163,27 @@ ipcMain.on(CHANNELS.DOWNLOAD_BY_URL, async (_, { downloadLink, rowId, directory,
     callbacks: {
       onDownloadStarted: ({ id, item, resolvedFilename }) => {
         mainWindow.webContents.send(CHANNELS.DOWNLOAD_STARTED, {
-          rowId,
+          appName,
           id,
           resolvedFilename,
-          totalBytes: item.getTotalBytes(),
-          appName
-        })
+          totalBytes: item.getTotalBytes()
+        } as DownloadStartedArgs)
       },
       onDownloadProgress: ({ id, downloadRateBytesPerSecond, estimatedTimeRemainingSeconds, item, percentCompleted }) => {
         mainWindow.webContents.send(CHANNELS.DOWNLOAD_PROGRESS, {
-          rowId,
+          appName,
           id,
           downloadRateBytesPerSecond,
           estimatedTimeRemainingSeconds,
           percentCompleted,
           receivedBytes: item.getReceivedBytes()
-        })
+        } as DownloadProgressArgs)
       },
       onDownloadCompleted: ({ id }) => {
-        mainWindow.webContents.send(CHANNELS.DOWNLOAD_COMPLETED, { rowId, id })
+        mainWindow.webContents.send(CHANNELS.DOWNLOAD_COMPLETED, { appName, id } as DownloadCompletedArgs)
       },
       onDownloadCancelled: ({ id }) => {
-        mainWindow.webContents.send(CHANNELS.DOWNLOAD_CANCEL, { rowId, id })
+        mainWindow.webContents.send(CHANNELS.DOWNLOAD_CANCEL, { appName, id } as DownloadCancelArgs)
       }
     }
   })
