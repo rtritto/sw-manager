@@ -331,7 +331,7 @@ const TableContainer: Component = () => {
     window.electronApi.ipcRenderer.on(CHANNELS.DOWNLOAD_COMPLETED, (_, { appName }: DownloadCompletedArgs) => {
       setDownloadStatus(appName, DOWNLOAD_STATUS.COMPLETED);
       ((downloadInfoStart, downloadStatus, infos, isUpdateConfigEnabled, directory) => {
-        if (isUpdateConfigEnabled === true) {
+        if (isUpdateConfigEnabled() === true) {
           const getCompleted = () => {
             const completedAppNames: string[] = []
             for (const appName in downloadStatus) {
@@ -348,10 +348,10 @@ const TableContainer: Component = () => {
             return
           }
           const filteredInfos: Infos = {}
-          for (const category in infos) {
+          for (const category in infos()) {
             filteredInfos[category] = {}
             for (const completedAppName of completedAppNames) {
-              filteredInfos[category][completedAppName] = infos[category][completedAppName]
+              filteredInfos[category][completedAppName] = infos()[category][completedAppName]
             }
           }
 
@@ -368,11 +368,11 @@ const TableContainer: Component = () => {
             }
           }
 
-          window.electronApi.ipcRenderer.send(CHANNELS.UPDATE_TELEGRAM, filteredConfig, directory)
+          window.electronApi.ipcRenderer.send(CHANNELS.UPDATE_TELEGRAM, filteredConfig, directory())
 
           window.electronApi.ipcRenderer.send(CHANNELS.UPDATE_CONFIG, APP_MAP)
         }
-      })(downloadInfoStart, downloadStatus, infos(), isUpdateConfigEnabled(), directory())
+      })(downloadInfoStart, downloadStatus, infos, isUpdateConfigEnabled, directory)
     })
     window.electronApi.ipcRenderer.on(CHANNELS.DOWNLOAD_CANCEL, (_, { appName }: DownloadCancelArgs) => {
       setDownloadInfoProgress(appName, {
