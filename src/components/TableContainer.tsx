@@ -8,7 +8,7 @@ import { createStore } from 'solid-js/store'
 import APP_MAP from '../config'
 import { CHANNELS, DOWNLOAD_STATUS } from '../constants'
 import { convertBytes, convertProgress, convertSecondsToDHMS } from '../utils'
-import { categoriesCheckedAtom, checkedAppNamesAtom, directoryAtom, isDirectoryDisabledAtom, isUpdateConfigEnabledAtom } from '../store/atoms'
+import { categoriesCheckedAtom, checkedAppNamesAtom, directoryAtom, isDirectoryDisabledAtom, isUpdateConfigEnabledAtom, isUpdateTelegramEnabledAtom } from '../store/atoms'
 import { categoriesCheckedStore, checkedAppNamesStore } from '../store/stores'
 import selectColumn from './selectColumn'
 import Table from './Table'
@@ -53,6 +53,7 @@ const TableContainer: Component = () => {
   const directory = useAtomValue(directoryAtom)
   const isDirectoryDisabled = useAtomValue(isDirectoryDisabledAtom)
   const isUpdateConfigEnabled = useAtomValue(isUpdateConfigEnabledAtom)
+  const isUpdateTelegramEnabled = useAtomValue(isUpdateTelegramEnabledAtom)
 
   const handleCheckForUpdate = async () => {
     const categoriesToCheck: Category[] = []
@@ -263,8 +264,8 @@ const TableContainer: Component = () => {
     })
     window.electronApi.ipcRenderer.on(CHANNELS.DOWNLOAD_COMPLETED, (_, { appName }: DownloadCompletedArgs) => {
       setDownloadStatus(appName, DOWNLOAD_STATUS.COMPLETED);
-      ((downloadInfoStart, downloadStatus, infos, isUpdateConfigEnabled, directory) => {
-        if (isUpdateConfigEnabled() === true) {
+      ((downloadInfoStart, downloadStatus, infos, isUpdateConfigEnabled, isUpdateTelegramEnabled, directory) => {
+        if (isUpdateTelegramEnabled() === true || isUpdateConfigEnabled() === true) {
           const getCompleted = () => {
             const completedAppNames: string[] = []
             for (const appName in downloadStatus) {
@@ -301,11 +302,14 @@ const TableContainer: Component = () => {
             }
           }
 
-          window.electronApi.ipcRenderer.send(CHANNELS.UPDATE_TELEGRAM, filteredConfig, directory())
-
-          window.electronApi.ipcRenderer.send(CHANNELS.UPDATE_CONFIG, APP_MAP)
+          if (isUpdateTelegramEnabled() === true) {
+            window.electronApi.ipcRenderer.send(CHANNELS.UPDATE_TELEGRAM, filteredConfig, directory())
+          }
+          if (isUpdateConfigEnabled() === true) {
+            window.electronApi.ipcRenderer.send(CHANNELS.UPDATE_CONFIG, APP_MAP)
+          }
         }
-      })(downloadInfoStart, downloadStatus, infos, isUpdateConfigEnabled, directory)
+      })(downloadInfoStart, downloadStatus, infos, isUpdateConfigEnabled, isUpdateTelegramEnabled, directory)
     })
     window.electronApi.ipcRenderer.on(CHANNELS.DOWNLOAD_CANCEL, (_, { appName }: DownloadCancelArgs) => {
       setDownloadInfoProgress(appName, {

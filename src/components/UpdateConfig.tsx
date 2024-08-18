@@ -4,14 +4,14 @@ import type { Component } from 'solid-js'
 import { isUpdateConfigEnabledAtom } from '../store/atoms'
 
 const UpdateConfig: Component<{
-  class: string | undefined
+  class?: string
 }> = (props) => {
   const [isUpdateConfigEnabled, setIsUpdateConfigEnabled] = useAtom(isUpdateConfigEnabledAtom)
 
   return (
-    <div class={`form-control join-item${props.class ? ' ' + props.class : ''}`}>
-      <label class="label cursor-pointer">
-        <span class="label-text">Update "Config" file</span>
+    <div class={`form-control${props.class ? ` ${props.class}` : ''}`}>
+      <label class="label cursor-pointer p-0">
+        <span class="label-text">Update <b>Config</b> <i>File</i></span>
 
         <input
           type="checkbox"

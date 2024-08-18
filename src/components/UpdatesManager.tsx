@@ -4,13 +4,20 @@ import DownloadFolders from './DownloadFolders'
 import SelectCategories from './SelectCategories'
 import TableContainer from './TableContainer'
 import UpdateConfig from './UpdateConfig'
+import UpdateTelegram from './UpdateTelegram'
 
 const UpdatesManager: Component = () => {
   return (
     <div>
       <DownloadFolders />
 
-      <UpdateConfig class="absolute right-0" />
+      <div class="flex justify-end">
+        <UpdateTelegram />
+      </div>
+
+      <div class="flex justify-end">
+        <UpdateConfig />
+      </div>
 
       <SelectCategories />
 

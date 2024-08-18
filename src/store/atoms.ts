@@ -8,6 +8,7 @@ export const messageAtom = atom<string>('')
 export const directoryAtom = atom<string>()
 export const isDirectoryDisabledAtom = atom<boolean>(false)
 export const isUpdateConfigEnabledAtom = atom<boolean>(true)
+export const isUpdateTelegramEnabledAtom = atom<boolean>(true)
 
 // enable default or all categories
 const initCategoriesToCheck = DEFAULT_CATEGORIES_SELECTED.length === 0 ? ALL_CATEGORIES : DEFAULT_CATEGORIES_SELECTED
