@@ -129,7 +129,7 @@ ipcMain.on(CHANNELS.DOWNLOAD_CANCEL, (_, id: string): void => {
   manager.cancelDownload(id)
 })
 
-ipcMain.on(CHANNELS.UPDATE_TELEGRAM, async (_, config: Config, saveFolder: string): Promise<void> => {
+ipcMain.on(CHANNELS.UPDATE_TELEGRAM, async (_, config: Config, directory: string): Promise<void> => {
   for (const category in config) {
     const appConfigs = config[category as Category]
     for (const appName in appConfigs) {
@@ -138,7 +138,7 @@ ipcMain.on(CHANNELS.UPDATE_TELEGRAM, async (_, config: Config, saveFolder: strin
       const template = createTemplate(appConfig, appName, category as Category)
       await updateTextMessage(appConfig, template)
 
-      const documentFolder = path.join(saveFolder, category as Category, applyRegex(appName, { version: appConfig.version }))
+      const documentFolder = path.join(directory, category as Category, applyRegex(appName, { version: appConfig.version }))
       const documentName = fs.readdirSync(documentFolder).at(0)!
       const documentPath = path.join(documentFolder, documentName)
       const documentInfo: DocumentInfo = {
@@ -155,7 +155,7 @@ ipcMain.on(CHANNELS.UPDATE_CONFIG, (_, config: Config): void => {
   fs.writeFileSync('./src/config.ts', `let APP_MAP = ${updatedConfig}\n\nexport default APP_MAP`)
 })
 
-ipcMain.on(CHANNELS.DOWNLOAD_BY_URL, async (_, { appName, downloadLink, directory, version }: DownloadByUrlArgs): Promise<void> => {
+ipcMain.on(CHANNELS.DOWNLOAD_BY_URL, async (_, { appName, category, downloadLink, directory, version }: DownloadByUrlArgs): Promise<void> => {
   // mainWindow.webContents.downloadURL(downloadUrl)
 
   await manager.download({
@@ -164,7 +164,7 @@ ipcMain.on(CHANNELS.DOWNLOAD_BY_URL, async (_, { appName, downloadLink, director
     directory: directory === undefined
       ? undefined
       // Add folder "AppName <NEW_VERSION>"
-      : path.join(directory, applyRegex(appName, { version })),
+      : path.join(directory, category, applyRegex(appName, { version })),
     ...directory === undefined && {
       // Enable Save As
       saveDialogOptions: {}

@@ -123,6 +123,7 @@ type DownloadStatus = {
 
 type DownloadByUrlArgs = {
   appName: AppName
+  category: Category
   downloadLink: string
   directory?: string
   version: string
