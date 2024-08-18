@@ -155,15 +155,20 @@ ipcMain.on(CHANNELS.UPDATE_CONFIG, (_, config: Config): void => {
   fs.writeFileSync('./src/config.ts', `let APP_MAP = ${updatedConfig}\n\nexport default APP_MAP`)
 })
 
-ipcMain.on(CHANNELS.DOWNLOAD_BY_URL, async (_, { appName, downloadLink, directory }: DownloadByUrlArgs): Promise<void> => {
+ipcMain.on(CHANNELS.DOWNLOAD_BY_URL, async (_, { appName, downloadLink, directory, version }: DownloadByUrlArgs): Promise<void> => {
   // mainWindow.webContents.downloadURL(downloadUrl)
 
   await manager.download({
     window: mainWindow,
     url: downloadLink,
-    directory,
-    // enable Save As
-    ...directory === undefined && { saveDialogOptions: {} },
+    directory: directory === undefined
+      ? undefined
+      // Add folder "AppName <NEW_VERSION>"
+      : path.join(directory, applyRegex(appName, { version })),
+    ...directory === undefined && {
+      // Enable Save As
+      saveDialogOptions: {}
+    },
     callbacks: {
       onDownloadStarted: ({ id, item, resolvedFilename }) => {
         mainWindow.webContents.send(CHANNELS.DOWNLOAD_STARTED, {

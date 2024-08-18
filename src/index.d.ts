@@ -125,6 +125,7 @@ type DownloadByUrlArgs = {
   appName: AppName
   downloadLink: string
   directory?: string
+  version: string
 }
 
 type DownloadStartedArgs = {

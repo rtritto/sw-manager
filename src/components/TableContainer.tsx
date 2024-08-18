@@ -82,7 +82,8 @@ const TableContainer: Component = () => {
             window.electronApi.ipcRenderer.send(CHANNELS.DOWNLOAD_BY_URL, {
               appName,
               downloadLink,
-              directory
+              directory,
+              version: infos[category as Category]![appName].newVersion
             } as DownloadByUrlArgs)
           })
         }
