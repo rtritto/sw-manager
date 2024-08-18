@@ -7,15 +7,12 @@ import { createStore } from 'solid-js/store'
 
 import APP_MAP from '../config'
 import { CHANNELS, DOWNLOAD_STATUS } from '../constants'
-import selectColumn from './selectColumn'
 import { convertBytes, convertProgress, convertSecondsToDHMS } from '../utils'
 import { categoriesCheckedAtom, checkedAppNamesAtom, directoryAtom, isDirectoryDisabledAtom, isUpdateConfigEnabledAtom } from '../store/atoms'
 import { categoriesCheckedStore, checkedAppNamesStore } from '../store/stores'
+import selectColumn from './selectColumn'
 import Table from './Table'
-
-type DownloadStatus = {
-  [appName in string]?: ValueOf<typeof DOWNLOAD_STATUS>
-}
+import { disabledCancelSelected, disabledDownloadSelected, disabledPauseSelected, disabledResumeSelected } from './TableContainer-disabled'
 
 type DownloadInfoStart = {
   [appName in string]?: {
@@ -37,70 +34,6 @@ type DownloadInfoProgress = {
 
 type CatergoriesCollapsed = {
   [category in Category]?: boolean
-}
-
-const disabledDownloadSelected = (checkedAppNames: CheckedAppNames, downloadStatus: DownloadStatus): boolean => {
-  const keys = Object.keys(checkedAppNames)
-  if (keys.length === 0) {
-    return true
-  }
-  for (const key of keys) {
-    const appNames = checkedAppNames[key]
-    for (const appName of appNames) {
-      if (appName in downloadStatus === false || downloadStatus[appName] === DOWNLOAD_STATUS.CANCEL) {
-        return false
-      }
-    }
-  }
-  return true
-}
-
-const disabledPauseSelected = (checkedAppNames: CheckedAppNames, downloadStatus: DownloadStatus): boolean => {
-  const keys = Object.keys(checkedAppNames)
-  if (keys.length === 0) {
-    return true
-  }
-  for (const key of keys) {
-    const appNames = checkedAppNames[key]
-    for (const appName of appNames) {
-      if (downloadStatus[appName] === DOWNLOAD_STATUS.DOWNLOADING) {
-        return false
-      }
-    }
-  }
-  return true
-}
-
-const disabledResumeSelected = (checkedAppNames: CheckedAppNames, downloadStatus: DownloadStatus): boolean => {
-  const keys = Object.keys(checkedAppNames)
-  if (keys.length === 0) {
-    return true
-  }
-  for (const key of keys) {
-    const appNames = checkedAppNames[key]
-    for (const appName of appNames) {
-      if (downloadStatus[appName] === DOWNLOAD_STATUS.PAUSED) {
-        return false
-      }
-    }
-  }
-  return true
-}
-
-const disabledCancelSelected = (checkedAppNames: CheckedAppNames, downloadStatus: DownloadStatus): boolean => {
-  const keys = Object.keys(checkedAppNames)
-  if (keys.length === 0) {
-    return true
-  }
-  for (const key of keys) {
-    const appNames = checkedAppNames[key]
-    for (const appName of appNames) {
-      if (downloadStatus[appName] === DOWNLOAD_STATUS.DOWNLOADING || downloadStatus[appName] === DOWNLOAD_STATUS.PAUSED) {
-        return false
-      }
-    }
-  }
-  return true
 }
 
 type CellInfo = {

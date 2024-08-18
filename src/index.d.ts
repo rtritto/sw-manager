@@ -117,6 +117,10 @@ type CheckedAppNames = {
   [category in Category]: AppName[]
 }
 
+type DownloadStatus = {
+  [appName in string]?: ValueOf<typeof import('./constants').DOWNLOAD_STATUS>
+}
+
 type DownloadByUrlArgs = {
   appName: AppName
   downloadLink: string
