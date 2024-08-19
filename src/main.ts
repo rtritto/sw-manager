@@ -9,7 +9,7 @@ import path from 'node:path'
 
 import { CHANNELS, DOWNLOAD_FOLDER, EVENTS } from './constants'
 import APP_MAP from './config'
-import { createTemplate } from './telegram/manager'
+import { createTemplate } from './telegram/utils'
 import { editMessageMedia, sendDocument } from './telegram/api'
 
 try {
