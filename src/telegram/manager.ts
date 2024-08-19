@@ -1,7 +1,5 @@
 import { applyRegex } from 'sw-download-checker'
 
-import { editMessageText, sendDocument, sendMessage } from './api'
-
 const HASH_TAG = '#'
 const EOL = '\n'
 
@@ -24,30 +22,4 @@ export const createTemplate = ({ url, version, telegram = {} }: NestedConfig, ap
   const templateAppName = applyRegex(appName, { version })
   const templateUrl = url === undefined ? '' : `${EOL}${url}`
   return `${templateTags}${EOL}${templateAppName}${templateUrl}`
-}
-
-export const updateTextMessage = async (nestedConfig: NestedConfig, text: string) => {
-  const { telegram = {} } = nestedConfig
-  let { messageId } = telegram
-
-  if (messageId === undefined) {
-    const resp = await sendMessage({ text }) as { result: { message_id: number } }
-    if ('telegram' in nestedConfig) {
-      messageId = resp.result.message_id
-      nestedConfig.telegram!.messageId = messageId
-    } else {
-      nestedConfig.telegram = { messageId }
-    }
-  } else {
-    await editMessageText({ messageId, text })
-  }
-
-  return messageId
-}
-
-export const uploadDocument = async (nestedConfig: NestedConfig, documentInfo: DocumentInfo) => {
-  const { telegram = {} } = nestedConfig
-  const { messageId } = telegram
-
-  await sendDocument({ documentInfo, messageId: messageId! })
 }

@@ -17,63 +17,83 @@ type ErrorBody = {
   description: string
 }
 
-const getJsonBody = async (response: Dispatcher.ResponseData) => {
+type RequestOptions = Parameters<typeof request>[1]
+
+const getJsonBody = async ({ url, options, response }: { url: string, options: RequestOptions, response: Dispatcher.ResponseData }) => {
   const body = await response.body.json()
   if (response.statusCode === 200) {
     return body
   }
-  throw new Error(JSON.stringify(body as ErrorBody))
+  throw new Error(JSON.stringify({
+    url,
+    statusCode: response.statusCode,
+    body: body as ErrorBody,
+    options
+  }))
 }
 
-/**
- * https://core.telegram.org/bots/api#editmessagetext
- */
-export const editMessageText = async ({ messageId, text }: {
-  messageId: number
-  text: string
-}) => {
-  return request(`${BASE_URL}${TELEGRAM_TOKEN_HTTP_API}/editMessageText`, {
-    method: 'POST',
-    query: {
-      chat_id: CHAT_ID,
-      message_id: messageId,
-      text
-    }
-  }).then(getJsonBody)
-}
-
-/**
- * https://core.telegram.org/bots/api#sendmessage
- */
-export const sendMessage = async ({ text }: {
-  text: string
-}) => {
-  return request(`${BASE_URL}${TELEGRAM_TOKEN_HTTP_API}/sendMessage`, {
-    method: 'POST',
-    query: {
-      chat_id: CHAT_ID,
-      text
-    }
-  }).then(getJsonBody)
+type SaveResponse = {
+  result: {
+    message_id: number
+  }
 }
 
 /**
  * https://core.telegram.org/bots/api#senddocument
  */
-export const sendDocument = async ({ documentInfo: { path, name }, messageId }: {
+export const sendDocument = async ({ documentInfo: { path, name }, caption }: {
   documentInfo: DocumentInfo
-  messageId: number
-}) => {
+  caption: string
+}): Promise<SaveResponse> => {
   const file = await openAsBlob(path)
   const formData = new FormData()
-  formData.set('document', file, name)
+  const DOCUMENT_PROPERTY = 'document'
+  formData.set(DOCUMENT_PROPERTY, file, name)
 
-  return request(`${BASE_URL}${TELEGRAM_TOKEN_HTTP_API}/sendDocument`, {
+  const url = `${BASE_URL}${TELEGRAM_TOKEN_HTTP_API}/sendDocument`
+  const options: RequestOptions = {
     method: 'POST',
     body: formData,
     query: {
       chat_id: CHAT_ID,
-      message_id: messageId
+      media: JSON.stringify({
+        type: 'document',
+        media: `attach://${DOCUMENT_PROPERTY}`
+      }),
+      caption
     }
-  }).then(getJsonBody)
+  }
+
+  return request(url, options).then((response) => getJsonBody({ url, options, response }) as Promise<SaveResponse>)
+}
+
+/**
+ * https://core.telegram.org/bots/api#editmessagemedia
+ */
+export const editMessageMedia = async ({ documentInfo: { path, name }, messageId, caption }: {
+  documentInfo: DocumentInfo
+  messageId: number
+  caption: string
+}) => {
+  const file = await openAsBlob(path)
+  const formData = new FormData()
+  const DOCUMENT_PROPERTY = 'document'
+  formData.set(DOCUMENT_PROPERTY, file, name)
+
+  const url = `${BASE_URL}${TELEGRAM_TOKEN_HTTP_API}/editMessageMedia`
+  const options: RequestOptions = {
+    method: 'POST',
+    body: formData,
+    query: {
+      chat_id: CHAT_ID,
+      message_id: messageId,
+      media: JSON.stringify({
+        type: 'document',
+        media: `attach://${DOCUMENT_PROPERTY}`,
+        caption
+      })
+    }
+  }
+
+  return request(url, options).then((response) => getJsonBody({ url, options, response }))
 }

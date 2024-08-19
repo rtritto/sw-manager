@@ -9,7 +9,8 @@ import path from 'node:path'
 
 import { CHANNELS, DOWNLOAD_FOLDER, EVENTS } from './constants'
 import APP_MAP from './config'
-import { createTemplate, updateTextMessage, uploadDocument } from './telegram/manager'
+import { createTemplate } from './telegram/manager'
+import { editMessageMedia, sendDocument } from './telegram/api'
 
 try {
   // Handle creating/removing shortcuts on Windows when installing/uninstalling.
@@ -135,17 +136,26 @@ ipcMain.on(CHANNELS.UPDATE_TELEGRAM, async (_, config: Config, directory: string
     for (const appName in appConfigs) {
       const appConfig = config[category as Category][appName]
 
-      const template = createTemplate(appConfig, appName, category as Category)
-      await updateTextMessage(appConfig, template)
+      const caption = createTemplate(appConfig, appName, category as Category)
 
       const documentFolder = path.join(directory, category as Category, applyRegex(appName, { version: appConfig.version }))
+      // Get first occurence
       const documentName = fs.readdirSync(documentFolder).at(0)!
       const documentPath = path.join(documentFolder, documentName)
       const documentInfo: DocumentInfo = {
         path: documentPath,
         name: documentName
       }
-      await uploadDocument(appConfig, documentInfo)
+
+      const { telegram = {} } = appConfig
+      let { messageId } = telegram
+
+      if (messageId === undefined) {
+        const resp = await sendDocument({ documentInfo, caption })
+        messageId = resp.result.message_id
+      } else {
+        await editMessageMedia({ documentInfo, messageId, caption })
+      }
     }
   }
 })
