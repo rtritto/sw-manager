@@ -264,9 +264,9 @@ const TableContainer: Component = () => {
       })
       setDownloadStatus(appName, DOWNLOAD_STATUS.DOWNLOADING)
     })
-    window.electronApi.ipcRenderer.on(CHANNELS.DOWNLOAD_COMPLETED, (_, { appName }: DownloadCompletedArgs) => {
-      setDownloadStatus(appName, DOWNLOAD_STATUS.COMPLETED);
-      ((downloadInfoStart, downloadStatus, infos, isUpdateConfigEnabled, isUpdateTelegramEnabled, directory) => {
+    window.electronApi.ipcRenderer.on(CHANNELS.DOWNLOAD_COMPLETED, async (_, { appName }: DownloadCompletedArgs) => {
+      setDownloadStatus(appName, DOWNLOAD_STATUS.COMPLETED)
+      await (async (downloadInfoStart, downloadStatus, infos, isUpdateConfigEnabled, isUpdateTelegramEnabled, directory) => {
         if (isUpdateTelegramEnabled() === true || isUpdateConfigEnabled() === true) {
           const getCompleted = () => {
             const completedAppNames: string[] = []
@@ -304,12 +304,17 @@ const TableContainer: Component = () => {
             }
           }
 
+          let configWithMessageIds: Config | undefined
           if (isUpdateTelegramEnabled() === true) {
             // APP_MAP[category][appName].telegram.message_id can be created
-            window.electronApi.ipcRenderer.send(CHANNELS.UPDATE_TELEGRAM, filteredConfig, directory())
+            configWithMessageIds = await window.electronApi.updateTelegram(filteredConfig, directory())
           }
-          if (isUpdateConfigEnabled() === true) {
-            window.electronApi.ipcRenderer.send(CHANNELS.UPDATE_CONFIG, APP_MAP)
+          if (
+            isUpdateConfigEnabled() === true
+            // Update telegram.messageId on sendMessage
+            || isUpdateTelegramEnabled() === true
+          ) {
+            window.electronApi.ipcRenderer.send(CHANNELS.UPDATE_CONFIG, configWithMessageIds === undefined ? APP_MAP : configWithMessageIds)
           }
         }
       })(downloadInfoStart, downloadStatus, infos, isUpdateConfigEnabled, isUpdateTelegramEnabled, directory)

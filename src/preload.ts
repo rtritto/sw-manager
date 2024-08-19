@@ -14,6 +14,7 @@ contextBridge.exposeInMainWorld('electronApi', {
   selectDownloadFolder: (): Promise<string | undefined> => ipcRenderer.invoke(CHANNELS.SELECT_DOWNLOAD_FOLDER),
   checkForUpdate: (categories: Category[]): Promise<Infos> => ipcRenderer.invoke(CHANNELS.CHECK_FOR_UPDATE, categories),
   singleDownload: (info: Info): Promise<string> => ipcRenderer.invoke(CHANNELS.SINGLE_DOWNLOAD, info),
+  updateTelegram: (config: Config, directory: string) => ipcRenderer.invoke(CHANNELS.UPDATE_TELEGRAM, config, directory),
   downloadsFolder: process.argv.find(value => value.startsWith('--downloads-folder='))!.split('=').at(1)!
 })
 

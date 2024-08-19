@@ -12,11 +12,14 @@ type Config = {
   [category in Category]: AppConfig
 }
 
+type UpdateTelegramReturn = Promise<Config | undefined>
+
 interface Window {
   electronApi: import('@electron-toolkit/preload').ElectronAPI & {
     selectDownloadFolder: () => Promise<string | undefined>
     checkForUpdate: (categories: Category[]) => Promise<Infos>
     singleDownload: (info: Info) => Promise<string>,
+    updateTelegram: (config: Config, directory: string) => UpdateTelegramReturn
     downloadsFolder: string
   }
 }

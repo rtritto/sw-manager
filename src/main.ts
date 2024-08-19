@@ -130,7 +130,8 @@ ipcMain.on(CHANNELS.DOWNLOAD_CANCEL, (_, id: string): void => {
   manager.cancelDownload(id)
 })
 
-ipcMain.on(CHANNELS.UPDATE_TELEGRAM, async (_, config: Config, directory: string): Promise<void> => {
+ipcMain.handle(CHANNELS.UPDATE_TELEGRAM, async (_, config: Config, directory: string): UpdateTelegramReturn => {
+  let atLeastOneCreation = false
   for (const category in config) {
     const appConfigs = config[category as Category]
     for (const appName in appConfigs) {
@@ -151,13 +152,24 @@ ipcMain.on(CHANNELS.UPDATE_TELEGRAM, async (_, config: Config, directory: string
       let { messageId } = telegram
 
       if (messageId === undefined) {
-        const resp = await sendDocument({ documentInfo, caption })
-        messageId = resp.result.message_id
+        ({ result: { message_id: messageId } } = await sendDocument({ documentInfo, caption }))
+
+        if ('telegram' in appConfig) {
+          config[category as Category][appName].telegram!.messageId = messageId
+        } else {
+          config[category as Category][appName].telegram = { messageId }
+        }
+
+        atLeastOneCreation = true
       } else {
         await editMessageMedia({ documentInfo, messageId, caption })
       }
     }
   }
+  if (atLeastOneCreation === true) {
+    return config
+  }
+  return
 })
 
 ipcMain.on(CHANNELS.UPDATE_CONFIG, (_, config: Config): void => {
