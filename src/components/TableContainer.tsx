@@ -8,7 +8,7 @@ import { createStore } from 'solid-js/store'
 import APP_MAP from '../config'
 import { CHANNELS, DOWNLOAD_STATUS } from '../constants'
 import { convertBytes, convertProgress, convertSecondsToDHMS } from '../utils'
-import { categoriesCheckedAtom, checkedAppNamesAtom, directoryAtom, isDirectoryDisabledAtom, isUpdateConfigEnabledAtom, isUpdateTelegramEnabledAtom } from '../store/atoms'
+import { categoriesCheckedAtom, checkedAppNamesAtom, directoryAtom, isUpdateConfigEnabledAtom, isUpdateTelegramEnabledAtom } from '../store/atoms'
 import { categoriesCheckedStore, checkedAppNamesStore } from '../store/stores'
 import selectColumn from './selectColumn'
 import Table from './Table'
@@ -51,7 +51,6 @@ const TableContainer: Component = () => {
   const [infos, setInfos] = createSignal<Infos>({})
   const [catergoriesCollapsed, setCatergoriesCollapsed] = createStore<CatergoriesCollapsed>({})
   const directory = useAtomValue(directoryAtom)
-  const isDirectoryDisabled = useAtomValue(isDirectoryDisabledAtom)
   const isUpdateConfigEnabled = useAtomValue(isUpdateConfigEnabledAtom)
   const isUpdateTelegramEnabled = useAtomValue(isUpdateTelegramEnabledAtom)
 
@@ -74,7 +73,7 @@ const TableContainer: Component = () => {
   }
 
   // eslint-disable-next-line unicorn/consistent-function-scoping
-  const handleDownloadSelected = async (downloadStatus: DownloadStatus, infos: Infos, checkedAppNames: CheckedAppNames, directory?: string) => {
+  const handleDownloadSelected = async (downloadStatus: DownloadStatus, infos: Infos, checkedAppNames: CheckedAppNames, directory: string) => {
     await Promise.allSettled(
       Object.keys(checkedAppNames).map((category) => checkedAppNames[category as Category].map((appName) => {
         if ((appName in downloadStatus) === false || downloadStatus[appName] === DOWNLOAD_STATUS.CANCEL) {
@@ -343,7 +342,7 @@ const TableContainer: Component = () => {
           <button
             class="btn"
             disabled={disabledDownloadSelected(checkedAppNames(), downloadStatus)}
-            onClick={() => handleDownloadSelected(downloadStatus, infos(), checkedAppNames(), isDirectoryDisabled() === true ? undefined : directory())}
+            onClick={() => handleDownloadSelected(downloadStatus, infos(), checkedAppNames(), directory())}
           >
             <IconDownload />
           </button>

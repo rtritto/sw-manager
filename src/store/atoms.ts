@@ -5,8 +5,7 @@ import { ALL_CATEGORIES, DEFAULT_CATEGORIES_SELECTED } from '../constants'
 export const showNotificationAtom = atom<boolean>(false)
 export const showRestartButtonAtom = atom<boolean>(false)
 export const messageAtom = atom<string>('')
-export const directoryAtom = atom<string>()
-export const isDirectoryDisabledAtom = atom<boolean>(false)
+export const directoryAtom = atom<string>('')
 export const isUpdateConfigEnabledAtom = atom<boolean>(true)
 export const isUpdateTelegramEnabledAtom = atom<boolean>(true)
 

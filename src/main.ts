@@ -183,14 +183,8 @@ ipcMain.on(CHANNELS.DOWNLOAD_BY_URL, async (_, { appName, category, downloadLink
   await manager.download({
     window: mainWindow,
     url: downloadLink,
-    directory: directory === undefined
-      ? undefined
-      // Add folder "AppName <NEW_VERSION>"
-      : path.join(directory, category, applyRegex(appName, { version })),
-    ...directory === undefined && {
-      // Enable Save As
-      saveDialogOptions: {}
-    },
+    // Change <DOWNLOAD_FOLDER> folder to <DOWNLOAD_FOLDER>/<CATERGORY>/<AppName> <NEW_VERSION>
+    directory: path.join(directory, category, applyRegex(appName, { version })),
     callbacks: {
       onDownloadStarted: ({ id, item, resolvedFilename }) => {
         mainWindow.webContents.send(CHANNELS.DOWNLOAD_STARTED, {
