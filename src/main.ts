@@ -178,13 +178,20 @@ ipcMain.on(CHANNELS.UPDATE_CONFIG, (_, config: Config): void => {
 })
 
 ipcMain.on(CHANNELS.DOWNLOAD_BY_URL, async (_, { appName, category, downloadLink, directory, version }: DownloadByUrlArgs): Promise<void> => {
+  const fullDirectory = path.join(directory, category, applyRegex(appName, { version }))
+
+  if (fs.existsSync(fullDirectory) === true) {
+    // Delete all files in directory
+    fs.rmSync(fullDirectory, { recursive: true })
+  }
+
   // mainWindow.webContents.downloadURL(downloadUrl)
 
   await manager.download({
     window: mainWindow,
     url: downloadLink,
     // Change <DOWNLOAD_FOLDER> folder to <DOWNLOAD_FOLDER>/<CATERGORY>/<AppName> <NEW_VERSION>
-    directory: path.join(directory, category, applyRegex(appName, { version })),
+    directory: fullDirectory,
     callbacks: {
       onDownloadStarted: ({ id, item, resolvedFilename }) => {
         mainWindow.webContents.send(CHANNELS.DOWNLOAD_STARTED, {
