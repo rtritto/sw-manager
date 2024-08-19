@@ -7,7 +7,7 @@ import { applyRegex, getDownloadLink, getInfos } from 'sw-download-checker'
 import fs from 'node:fs'
 import path from 'node:path'
 
-import { CHANNELS, DOWNLOAD_FOLDER, EVENTS } from './constants'
+import { CHANNELS, DOWNLOAD_FOLDER, EVENTS, VERSION_SEPARATOR } from './constants'
 import APP_MAP from './config'
 import { createTemplate } from './telegram/utils'
 import { editMessageMedia, sendDocument } from './telegram/api'
@@ -178,12 +178,18 @@ ipcMain.on(CHANNELS.UPDATE_CONFIG, (_, config: Config): void => {
 })
 
 ipcMain.on(CHANNELS.DOWNLOAD_BY_URL, async (_, { appName, category, downloadLink, directory, version }: DownloadByUrlArgs): Promise<void> => {
-  const fullDirectory = path.join(directory, category, applyRegex(appName, { version }))
+  const categoryDirectory = path.join(directory, category)
+  const firstAppName = appName.split(VERSION_SEPARATOR).at(0)!
 
-  if (fs.existsSync(fullDirectory) === true) {
-    // Delete all files in directory
-    fs.rmSync(fullDirectory, { recursive: true })
+  //#region Delete all files in directory
+  const oldAppNames = fs.readdirSync(categoryDirectory).filter((_appName) => _appName.startsWith(firstAppName))
+
+  for (const oldAppName of oldAppNames) {
+    fs.rmSync(path.join(categoryDirectory, oldAppName), { recursive: true })
   }
+  //#endregion
+
+  const fullDirectory = path.join(categoryDirectory, applyRegex(appName, { version }))
 
   // mainWindow.webContents.downloadURL(downloadUrl)
 
