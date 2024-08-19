@@ -19,7 +19,7 @@ interface Window {
     selectDownloadFolder: (defaultDownloadsFolder: string) => Promise<string>
     checkForUpdate: (categories: Category[]) => Promise<Infos>
     singleDownload: (info: Info) => Promise<string>,
-    updateTelegram: (config: Config, directory: string) => UpdateTelegramReturn
+    updateTelegram: (filteredConfig: Config, directory: string, originalConfig: Config) => UpdateTelegramReturn
     downloadsFolder: string
   }
 }

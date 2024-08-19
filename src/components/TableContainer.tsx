@@ -306,7 +306,7 @@ const TableContainer: Component = () => {
           let configWithMessageIds: Config | undefined
           if (isUpdateTelegramEnabled() === true) {
             // APP_MAP[category][appName].telegram.message_id can be created
-            configWithMessageIds = await window.electronApi.updateTelegram(filteredConfig, directory())
+            configWithMessageIds = await window.electronApi.updateTelegram(filteredConfig, directory(), APP_MAP)
           }
           if (
             isUpdateConfigEnabled() === true
