@@ -11,7 +11,7 @@ import { CHANNELS } from './constants'
 contextBridge.exposeInMainWorld('electronApi', {
   // https://github.com/davidgs/on-air-desktop/blob/main/src/main/preload.ts
   ...electronAPI,
-  selectDownloadFolder: (): Promise<string> => ipcRenderer.invoke(CHANNELS.SELECT_DOWNLOAD_FOLDER),
+  selectDownloadFolder: (defaultDownloadsFolder: string): Promise<string> => ipcRenderer.invoke(CHANNELS.SELECT_DOWNLOAD_FOLDER, defaultDownloadsFolder),
   checkForUpdate: (categories: Category[]): Promise<Infos> => ipcRenderer.invoke(CHANNELS.CHECK_FOR_UPDATE, categories),
   singleDownload: (info: Info): Promise<string> => ipcRenderer.invoke(CHANNELS.SINGLE_DOWNLOAD, info),
   updateTelegram: (config: Config, directory: string) => ipcRenderer.invoke(CHANNELS.UPDATE_TELEGRAM, config, directory),

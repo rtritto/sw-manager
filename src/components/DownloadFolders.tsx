@@ -7,7 +7,8 @@ const DownloadFolders: Component = () => {
   const [directory, setDirectory] = useAtom(directoryAtom)
 
   const handleSelectDownlaodsFolder = async () => {
-    const selectedDownloadFolder = await window.electronApi.selectDownloadFolder()
+    const defaultDownloadsFolder = window.electronApi.downloadsFolder
+    const selectedDownloadFolder = await window.electronApi.selectDownloadFolder(defaultDownloadsFolder)
     setDirectory(selectedDownloadFolder)
   }
 

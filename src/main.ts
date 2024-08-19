@@ -89,12 +89,12 @@ ipcMain.on(CHANNELS.RESTART_APP, () => {
 })
 
 
-ipcMain.handle(CHANNELS.SELECT_DOWNLOAD_FOLDER, async () => {
+ipcMain.handle(CHANNELS.SELECT_DOWNLOAD_FOLDER, async (_, defaultDownloadsFolder: string) => {
   const { filePaths } = await dialog.showOpenDialog(mainWindow, {
     properties: ['openDirectory']
   })
   const selectedDownloadFolder = filePaths.at(0)
-  const downloadFolder = selectedDownloadFolder === undefined ? window.electronApi.downloadsFolder : selectedDownloadFolder
+  const downloadFolder = selectedDownloadFolder === undefined ? defaultDownloadsFolder : selectedDownloadFolder
   // Append DOWNLOAD_FOLDER
   return path.join(downloadFolder, DOWNLOAD_FOLDER)
 })
