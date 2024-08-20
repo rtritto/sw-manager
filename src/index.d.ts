@@ -97,7 +97,6 @@ type AppName = string
 type Info = {
   appName: AppName
   website: string
-  isVersionUpdated?: boolean
   currentVersion?: string
   newVersion?: string
   imageUrl?: string

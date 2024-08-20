@@ -9288,12 +9288,12 @@ __metadata:
 
 "sw-download-checker@github:rtritto/sw-download-checker":
   version: 1.0.0
-  resolution: "sw-download-checker@https://github.com/rtritto/sw-download-checker.git#commit=76ef1b4760b55b9dfca1c79d2239ad7792e51220"
+  resolution: "sw-download-checker@https://github.com/rtritto/sw-download-checker.git#commit=9a7204dd8a77c5ee6be9e5953bb066ea0b4472e7"
   dependencies:
     html-entities: "npm:^2.5.2"
     node-html-parser: "npm:^6.1.13"
     undici: "npm:^6.19.8"
-  checksum: 10c0/1d57c1050abbae1071fde32cedc2f6029ae7b0ddd25521c69ddb9c3e8c61394754fdf1f937185a4693938f7d1bbb950854af04f66523fcecf94ead8e9cb8ef33
+  checksum: 10c0/593b84cfc441848d60004f0e04b63b8395dbdf604f5d657cbfaf5d3722b8253f000983ab3030958a269aeecdd88c969c481e45a1de639e6b669c668126130904
   languageName: node
   linkType: hard
 
