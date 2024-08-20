@@ -380,14 +380,14 @@ const TableContainer: Component = () => {
       </div>
 
       <For each={Object.keys(infos())}>
-        {(item, index) => (
-          <div tabindex={index()} class={`collapse ${catergoriesCollapsed[item] === true ? 'collapse-open' : 'collapse-close'} collapse-arrow border-base-300 bg-base-200 border`}>
+        {(category, index) => (
+          <div tabindex={index()} class={`collapse ${catergoriesCollapsed[category] === true ? 'collapse-open' : 'collapse-close'} collapse-arrow border-base-300 bg-base-200 border`}>
             <div class="collapse-title text-xl font-medium" onClick={() => {
-              setCatergoriesCollapsed(item as Category, !catergoriesCollapsed[item])
-            }}>{item} ({Object.keys(infos()[item]).length})</div>
+              setCatergoriesCollapsed(category as Category, !catergoriesCollapsed[category])
+            }}>{category} - ( {checkedAppNames()[category] === undefined ? 0 : checkedAppNames()[category].length} / {Object.keys(infos()[category]).length} )</div>
 
             <div class="collapse-content">
-              <Table columnData={Object.values(infos()[item])} columns={columns()} item={item} />
+              <Table columnData={Object.values(infos()[category])} columns={columns()} item={category} />
             </div>
           </div>
         )}
