@@ -9288,12 +9288,12 @@ __metadata:
 
 "sw-download-checker@github:rtritto/sw-download-checker":
   version: 1.0.0
-  resolution: "sw-download-checker@https://github.com/rtritto/sw-download-checker.git#commit=7ef0baf9eb022e5e77868fe064052e3381ae447c"
+  resolution: "sw-download-checker@https://github.com/rtritto/sw-download-checker.git#commit=76ef1b4760b55b9dfca1c79d2239ad7792e51220"
   dependencies:
     html-entities: "npm:^2.5.2"
     node-html-parser: "npm:^6.1.13"
-    undici: "npm:^6.19.5"
-  checksum: 10c0/817c39efbe0e056a44ff35e40ab890dc2bf283fb1611b24930feee9962de585568a47e3b8610c9c7bcfcac3df9ba1fafc2942f859f403027ee83ef4f67572ef2
+    undici: "npm:^6.19.8"
+  checksum: 10c0/1d57c1050abbae1071fde32cedc2f6029ae7b0ddd25521c69ddb9c3e8c61394754fdf1f937185a4693938f7d1bbb950854af04f66523fcecf94ead8e9cb8ef33
   languageName: node
   linkType: hard
 
@@ -9809,10 +9809,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"undici@npm:^6.19.5, undici@npm:^6.19.7":
-  version: 6.19.7
-  resolution: "undici@npm:6.19.7"
-  checksum: 10c0/801d1e66d5bccdd3fcc9ecf1c95b83a593e4867b89e21ed725e35bd4d572b3d3ce1d7feab2a4f2046f65923de70bfafb69ac148c633d1ab30a948d6fec24475a
+"undici@npm:^6.19.7, undici@npm:^6.19.8":
+  version: 6.19.8
+  resolution: "undici@npm:6.19.8"
+  checksum: 10c0/07fd8520bce7e34ea29c07ef0de27b734183042cdb4e2f1262cd1fb9b755a6b04ff2471040395dfb1770fb7786069a97c5178bcf706b80a34075994f46feb37c
   languageName: node
   linkType: hard
 

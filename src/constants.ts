@@ -2,8 +2,6 @@ import APP_MAP from './config'
 
 export const DOWNLOAD_FOLDER = 'SWManagerDownloads'
 
-export const VERSION_SEPARATOR = '<VERSION>'
-
 export enum CHANNELS {
   // import(electron-updater).UpdaterEvents
   ERROR = 'error',
