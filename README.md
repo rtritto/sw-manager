@@ -6,12 +6,10 @@
 
 # TODO
 - Auto-install (silent install/extract) for apps and Portable apps (use a folder like `/Portable`)
-- Update and upload apps on Telegram
 - Install and config `electron-builder`, see
   - https://github.com/theogravity/electron-dl-manager/tree/main/test-app
   - https://github.com/spa5k/quran_next
 - Add restart download
-- Set size for imageUrl (es: Microsoft Activation Scripts)
 - Fix FanControl regex match
 - Add absolute imports
 - Add black list to ignore app from config file

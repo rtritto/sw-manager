@@ -133,7 +133,7 @@ const TableContainer: Component = () => {
     columnHelper.accessor('imageUrl', {
       id: 'imageUrl',
       header: 'App',
-      cell: info => <img src={info.getValue() as string} />
+      cell: info => <img src={info.getValue() as string} width={32} />
     }),
     columnHelper.accessor('currentVersion', {
       id: 'currentVersion',

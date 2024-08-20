@@ -320,7 +320,7 @@ let APP_MAP = {
     'FFmpeg Batch Converter <VERSION> Portable': {
       url: 'https://www.filecatchers.com/ffmpeg-batch-portable',
       urlTmp: 'https://ffmpeg-batch.sourceforge.io',
-      imageUrl: 'https://a.fsdn.com/allura/p/ffmpeg-batch/icon?20db2b4f2fe89ea6fc91ff8cc1ffd10acb631fd73fc6991a7d043aa1a3397866?&w=135',
+      imageUrl: 'https://a.fsdn.com/allura/p/ffmpeg-batch/icon?20db2b4f2fe89ea6fc91ff8cc1ffd10acb631fd73fc6991a7d043aa1a3397866?&w=32',
       version: '2.8.1',
       website: 'FileCatchers'
     },
