@@ -46,14 +46,16 @@ let APP_MAP = {
     'WHDownloader <VERSION>': {
       url: 'https://www.softpedia.com/get/System/System-Miscellaneous/Windows-Hotfix-Downloader.shtml',
       imageUrl: 'https://windows-cdn.softpedia.com/screenshots/ico/Windows-Hotfix-Downloader.png',
+      download: 'https://www.pcrestore.it/download/send/51-aggiornamenti/2613-whdownloader-windows-hotfix-downloader.html',
       id: 235948,
       childNumber: 1,
       version: '0.0.2.5',
       website: 'Softpedia'
     },
-    'WinToolkit <VERSION>': {
+    'Win Toolkit <VERSION>': {
       url: 'https://www.softpedia.com/get/System/OS-Enhancements/Windows-7-Toolkit.shtml',
       imageUrl: 'https://windows-cdn.softpedia.com/screenshots/ico/Windows-7-Toolkit.png',
+      download: 'https://www.pcrestore.it/download/elenco-categorie/send/45-utilityvarie/2137-win-toolkit.html',
       id: 181550,
       childNumber: 2,
       version: '2.0.6276.30646',
