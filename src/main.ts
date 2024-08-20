@@ -181,13 +181,15 @@ ipcMain.on(CHANNELS.DOWNLOAD_BY_URL, async (_, { appName, category, downloadLink
   const categoryDirectory = path.join(directory, category)
   const firstAppName = appName.split(VERSION_SEPARATOR).at(0)!
 
-  //#region Delete all files in directory
-  const oldAppNames = fs.readdirSync(categoryDirectory).filter((_appName) => _appName.startsWith(firstAppName))
+  if (fs.existsSync(categoryDirectory) === true) {
+    //#region Delete all files in directory
+    const oldAppNames = fs.readdirSync(categoryDirectory).filter((_appName) => _appName.startsWith(firstAppName))
 
-  for (const oldAppName of oldAppNames) {
-    fs.rmSync(path.join(categoryDirectory, oldAppName), { recursive: true })
+    for (const oldAppName of oldAppNames) {
+      fs.rmSync(path.join(categoryDirectory, oldAppName), { recursive: true })
+    }
+    //#endregion
   }
-  //#endregion
 
   const fullDirectory = path.join(categoryDirectory, applyRegex(appName, { version }))
 
