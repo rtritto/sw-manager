@@ -97,7 +97,7 @@ let APP_MAP = {
     },
     'Microsoft Activation Scripts <VERSION>': {
       imageUrl: 'https://massgrave.dev/img/logo_small.png',
-      download: 'https://github.com/massgravel/Microsoft-Activation-Scripts/archive/refs/heads/master.zip',
+      download: 'https://github.com/massgravel/Microsoft-Activation-Scripts/raw/master/MAS/Separate-Files-Version/Activators/HWID_Activation.cmd',
       owner: 'massgravel',
       repo: 'Microsoft-Activation-Scripts',
       version: '1.5',
