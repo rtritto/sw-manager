@@ -204,6 +204,12 @@ let APP_MAP = {
       id: 79107,
       version: '6.2.3',
       website: 'Softpedia'
+    },
+    'VirtualBox <VERSION> Portable': {
+      url: 'https://www.filecatchers.com/virtualbox-portable',
+      imageUrl: 'https://windows-cdn.softpedia.com/screenshots/ico/VirtualBox.png',
+      version: '7.0.4',
+      website: 'FileCatchers'
     }
   },
   Downloader: {
