@@ -12,11 +12,12 @@
   - https://github.com/spa5k/quran_next
 - Add restart download
 - Set size for imageUrl (es: Microsoft Activation Scripts)
-- Fix version XAMP
+- Fix FanControl regex match
 - Add absolute imports
 - Add black list to ignore app from config file
 - Click to Check or Uncheck
 - Click A Shift Click C to Check A - B - C
+- Match all version in config: version: '((\d)*.)*'
 
 # Bugs
 - Support PnP (remove patch of `@electron-forge/core-utils` and `@electron-forge/core`):

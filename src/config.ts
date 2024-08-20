@@ -137,6 +137,10 @@ let APP_MAP = {
       id: 32107,
       childNumber: 2,
       version: '8.2.4',
+      versionOptions: {
+        title: '"<VERSION>".split(" / ").at(0).split("-").at(0)',
+        download: '"<VERSION>".split(" / ").at(0).split("-").at(0)'
+      },
       website: 'Softpedia'
     },
     'AIDA64 Engineer Edition <VERSION> Portable': {
