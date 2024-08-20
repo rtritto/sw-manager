@@ -238,7 +238,7 @@ let APP_MAP = {
       imageUrl: 'https://windows-cdn.softpedia.com/screenshots/ico/yt-dlp.png',
       owner: 'yt-dlp',
       repo: 'yt-dlp',
-      assetNumber: 15,
+      assetNumber: 14,
       version: '2024.03.10',
       website: 'GitHub'
     },
