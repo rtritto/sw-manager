@@ -8,8 +8,8 @@ const DownloadFolders: Component = () => {
 
   const handleSelectDownlaodsFolder = async () => {
     const defaultDownloadsFolder = window.electronApi.downloadsFolder
-    const selectedDownloadFolder = await window.electronApi.selectDownloadFolder(defaultDownloadsFolder)
-    setDirectory(selectedDownloadFolder)
+    const selectedDownloadsFolder = await window.electronApi.selectDownloadFolder(defaultDownloadsFolder)
+    setDirectory(selectedDownloadsFolder)
   }
 
   const handleOpenDownlaodsFolder = async () => {
