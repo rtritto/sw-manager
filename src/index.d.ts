@@ -2,7 +2,10 @@ type ValueOf<T> = T[keyof T]
 
 type Channels = ValueOf<typeof import('./constants').CHANNELS>
 
-type Category = keyof (typeof import('./config').default)
+// type Category = keyof (typeof import('./config').default)
+type Category = 'SO' | 'Downloader' | 'Media' | 'Office' | 'Tools' | 'Browser' | 'Emulator' | 'Dev' | 'Info' | 'VPN'
+
+type Website = 'FileCatchers' | 'FCPortables' | 'PortableApps' | 'Softpedia' | 'GitHub' | 'VideoHelp'
 
 type DownloadData = import('electron-dl-manager').DownloadData
 
@@ -56,8 +59,8 @@ type NestedConfig = {
   tagNumber?: number
   version: string
   versionOptions?: VersionOptions
-  website: string
-  websiteTmp?: string
+  website: Website
+  websiteTmp?: Website
   comment?: string
   telegram?: Telegram
 }
@@ -96,7 +99,7 @@ type AppName = string
 
 type Info = {
   appName: AppName
-  website: string
+  website: Website
   currentVersion?: string
   newVersion?: string
   imageUrl?: string

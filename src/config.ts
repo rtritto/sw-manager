@@ -1,4 +1,4 @@
-let APP_MAP = {
+let APP_MAP: Config = {
   SO: {
     'CCleaner <VERSION> Portable': {
       url: 'https://www.fcportables.com/ccleaner-portable',

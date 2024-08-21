@@ -174,7 +174,7 @@ ipcMain.handle(CHANNELS.UPDATE_TELEGRAM, async (_, filteredConfig: Config, direc
 
 ipcMain.on(CHANNELS.UPDATE_CONFIG, (_, config: Config): void => {
   const updatedConfig = JSON5.stringify(config, null, 2, { quote: '\'' })
-  fs.writeFileSync('./src/config.ts', `let APP_MAP = ${updatedConfig}\n\nexport default APP_MAP`)
+  fs.writeFileSync('./src/config.ts', `let APP_MAP: Config = ${updatedConfig}\n\nexport default APP_MAP`)
 })
 
 ipcMain.on(CHANNELS.DOWNLOAD_BY_URL, async (_, { appName, category, downloadLink, directory, version }: DownloadByUrlArgs): Promise<void> => {
