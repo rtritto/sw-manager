@@ -284,7 +284,7 @@ const TableContainer: Component = () => {
           }
           const filteredInfos: Infos = {}
           for (const category in infos()) {
-            filteredInfos[category] = {}
+            filteredInfos[category as Category] = {}
             for (const completedAppName of completedAppNames) {
               filteredInfos[category][completedAppName] = infos()[category][completedAppName]
             }
@@ -296,7 +296,7 @@ const TableContainer: Component = () => {
             for (const appName in filteredInfos[category as Category]) {
               // Update APP_MAP
               const { newVersion } = filteredInfos[category as Category]![appName]
-              APP_MAP[category as Category][appName].version = newVersion
+              APP_MAP[category][appName].version = newVersion
 
               // Get filtered Config
               filteredConfig[category as Category][appName] = APP_MAP[category as Category][appName]
