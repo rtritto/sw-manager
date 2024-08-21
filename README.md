@@ -20,6 +20,7 @@
 - ? Add option to delete downloaded file after downloaded (Update Telegram option must be enabled)
 - Sync/centralize definition type from this project and sw-download-checker
 - Before upload document on Telegram, if document is > 1.97, split in parts
+- Fix tooltips text not visible at borders
 
 # Bugs
 - Support PnP (remove patch of `@electron-forge/core-utils` and `@electron-forge/core`):

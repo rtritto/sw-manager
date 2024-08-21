@@ -1,3 +1,4 @@
+import { IconFolderCog, IconFolderOpen } from '@tabler/icons-solidjs'
 import { useAtom } from 'solid-jotai'
 import type { Component } from 'solid-js'
 
@@ -22,9 +23,13 @@ const DownloadFolders: Component = () => {
 
       <input type="text m-1" class="input input-bordered w-full" value={directory()} onChange={(e) => setDirectory(e.target.value)} />
 
-      <button class="btn mx-1" onClick={handleSelectDownlaodsFolder}>Change</button>
+      <div class="tooltip tooltip-bottom m-1" data-tip="Open Downloads folder">
+        <button class="btn mx-1" onClick={handleOpenDownlaodsFolder}><IconFolderOpen /></button>
+      </div>
 
-      <button class="btn mx-1" onClick={handleOpenDownlaodsFolder}>Open</button>
+      <div class="tooltip tooltip-bottom m-1" data-tip="Change Downloads folder">
+        <button class="btn mx-1" onClick={handleSelectDownlaodsFolder}><IconFolderCog /></button>
+      </div>
     </span>
   )
 }
