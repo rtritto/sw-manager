@@ -7,34 +7,6 @@ let APP_MAP = {
       version: '6.19.10858',
       website: 'FCPortables'
     },
-    'OpenVPN <VERSION>': {
-      url: 'https://www.softpedia.com/get/Security/Security-Related/OpenVPN.shtml',
-      imageUrl: 'https://windows-cdn.softpedia.com/screenshots/ico/OpenVPN.png',
-      download: 'https://swupdate.openvpn.org/community/releases/OpenVPN-<VERSION>-amd64.msi',
-      version: '2.6.6',
-      versionOptions: {
-        title: '"<VERSION>".split(" ").at(0)',
-        download: '"<VERSION>".split(" ").join("-")'
-      },
-      website: 'Softpedia'
-    },
-    'TomVPN <VERSION> Portable': {
-      url: 'https://www.filecatchers.com/tomvpn-portable',
-      urlTmp: 'https://www.softpedia.com/get/Internet/Secure-Browsing-VPN/TomVPN.shtml',
-      imageUrl: 'https://windows-cdn.softpedia.com/screenshots/ico/TomVPN.png',
-      version: '2.3.8',
-      website: 'FCPortables'
-    },
-    'HWMonitor <VERSION> Portable': {
-      url: 'https://www.softpedia.com/get/PORTABLE-SOFTWARE/System/System-Info/Portable-HWMonitor.shtml',
-      imageUrl: 'https://windows-cdn.softpedia.com/screenshots/ico/Portable-HWMonitor.png',
-      download: 'https://download.cpuid.com/hwmonitor/hwmonitor_<VERSION>.zip',
-      version: '1.51.0',
-      versionOptions: {
-        download: '"<VERSION>".split(".").slice(0,3).join("-")'
-      },
-      website: 'Softpedia'
-    },
     'NTLite <VERSION>': {
       url: 'https://www.softpedia.com/get/System/OS-Enhancements/NTLite.shtml',
       imageUrl: 'https://windows-cdn.softpedia.com/screenshots/ico/NTLite.png',
@@ -69,22 +41,6 @@ let APP_MAP = {
       childNumber: 2,
       version: '13.4',
       website: 'Softpedia'
-    },
-    'Process Explorer <VERSION> Portable': {
-      url: 'https://www.softpedia.com/get/System/System-Info/Process-Explorer.shtml',
-      urlTmp1: 'https://portableapps.com/apps/utilities/process-explorer-portable',
-      urlTmp2: 'https://www.softpedia.com/get/PORTABLE-SOFTWARE/System/System-Info/Process-Explorer-Portable.shtml',
-      imageUrl: 'https://windows-cdn.softpedia.com/screenshots/ico/Process-Explorer.png',
-      download: 'https://download.sysinternals.com/files/ProcessExplorer.zip',
-      version: '17.04',
-      website: 'Softpedia'
-    },
-    'CrystalDiskInfo <VERSION> Portable': {
-      url: 'https://portableapps.com/apps/utilities/crystaldiskinfo_portable',
-      imageUrl: 'https://windows-cdn.softpedia.com/screenshots/ico/CrystalDiskInfo.png',
-      download: 'https://download2.portableapps.com/portableapps/CrystalDiskInfoPortable/CrystalDiskInfoPortable_<VERSION>.paf.exe',
-      version: '9.2.1',
-      website: 'PortableApps'
     },
     'LockHunter <VERSION> Portable': {
       url: 'https://www.softpedia.com/get/System/File-Management/LockHunter.shtml',
@@ -122,33 +78,6 @@ let APP_MAP = {
       url: 'https://www.fcportables.com/revo-uninstaller-pro-portable',
       imageUrl: 'https://windows-cdn.softpedia.com/screenshots/ico/Revo-Uninstaller.png',
       version: '5.1.7',
-      website: 'FCPortables'
-    },
-    'HWiNFO64 <VERSION> Portable': {
-      url: 'https://portableapps.com/apps/utilities/hwinfo-portable',
-      imageUrl: 'https://windows-cdn.softpedia.com/screenshots/ico/HWiNFO64.png',
-      download: 'https://download2.portableapps.com/portableapps/HWiNFOPortable/HWiNFOPortable_<VERSION>_English.paf.exe',
-      version: '7.50.5150',
-      website: 'PortableApps'
-    },
-    'XAMPP <VERSION>': {
-      url: 'https://www.softpedia.com/get/Internet/Servers/Server-Tools/XAMPP.shtml',
-      urlTmp: 'https://www.apachefriends.org/index.html',
-      imageUrl: 'https://windows-cdn.softpedia.com/screenshots/ico/XAMPP.gif',
-      download: 'https://netcologne.dl.sourceforge.net/project/xampp/XAMPP%20Windows/<VERSION>/xampp-windows-x64-<VERSION>-0-VS16-installer.exe',
-      id: 32107,
-      childNumber: 2,
-      version: '8.2.4',
-      versionOptions: {
-        title: '"<VERSION>".split(" / ").at(0).split("-").at(0)',
-        download: '"<VERSION>".split(" / ").at(0).split("-").at(0)'
-      },
-      website: 'Softpedia'
-    },
-    'AIDA64 Engineer Edition <VERSION> Portable': {
-      url: 'https://www.fcportables.com/aida64-portable',
-      imageUrl: 'https://windows-cdn.softpedia.com/screenshots/ico/AIDA64-Engineer.gif',
-      version: '6.90.6500',
       website: 'FCPortables'
     },
     'Thunderbird Supernova <VERSION> Portable': {
@@ -579,6 +508,26 @@ let APP_MAP = {
       website: 'GitHub'
     }
   },
+  Browser: {
+    'Opera One <VERSION> Portable': {
+      url: 'https://portableapps.com/apps/internet/opera_portable',
+      imageUrl: 'https://windows-cdn.softpedia.com/screenshots/ico/Opera-for-Windows-without-Java.png',
+      download: 'https://download2.portableapps.com/portableapps/OperaPortable/OperaPortable_<VERSION>.paf.exe',
+      version: '112.0.5197.39',
+      website: 'PortableApps'
+    },
+    'Tor Browser <VERSION> Portable': {
+      url: 'https://www.softpedia.com/get/Security/Security-Related/Tor-Browser.shtml',
+      imageUrl: 'https://windows-cdn.softpedia.com/screenshots/ico/Tor-Browser.png',
+      download: 'https://dist.torproject.org/torbrowser/<VERSION>/tor-browser-windows-x86_64-portable-<VERSION>.exe',
+      version: '13.5.2',
+      versionOptions: {
+        download: '"<VERSION>".split(" / ").at(0)',
+        title: '"<VERSION>".split(" / ").at(0)'
+      },
+      website: 'Softpedia'
+    }
+  },
   Emulator: {
     'MEmu <VERSION>': {
       url: 'https://www.softpedia.com/get/Mobile-Phone-Tools/Others/MEmu.shtml',
@@ -604,7 +553,7 @@ let APP_MAP = {
       version: '7.0.5.8',
       website: 'Softpedia'
     },
-    NSC_Builder: {
+    'NSC_Builder <VERSION>': {
       owner: 'julesontheroad',
       repo: 'NSC_BUILDER',
       assetNumber: 1,
@@ -631,7 +580,7 @@ let APP_MAP = {
       website: 'GitHub'
     }
   },
-  DB: {
+  Dev: {
     'Robo 3T <VERSION> Portable': {
       url: 'https://www.softpedia.com/get/PORTABLE-SOFTWARE/Database-Utils/Portable-Robo-3T.shtml',
       urlTmp: 'https://github.com/Studio3T/robomongo/releases/latest',
@@ -649,6 +598,93 @@ let APP_MAP = {
       },
       version: '2023.5.0',
       website: 'Softpedia'
+    },
+    'XAMPP <VERSION>': {
+      url: 'https://www.softpedia.com/get/Internet/Servers/Server-Tools/XAMPP.shtml',
+      urlTmp: 'https://www.apachefriends.org/index.html',
+      imageUrl: 'https://windows-cdn.softpedia.com/screenshots/ico/XAMPP.gif',
+      download: 'https://netcologne.dl.sourceforge.net/project/xampp/XAMPP%20Windows/<VERSION>/xampp-windows-x64-<VERSION>-0-VS16-installer.exe',
+      id: 32107,
+      childNumber: 2,
+      version: '8.2.4',
+      versionOptions: {
+        title: '"<VERSION>".split(" / ").at(0).split("-").at(0)',
+        download: '"<VERSION>".split(" / ").at(0).split("-").at(0)'
+      },
+      website: 'Softpedia'
+    },
+    'Postman <VERSION> Portable': {
+      imageUrl: 'https://windows-cdn.softpedia.com/screenshots/ico/Postman-Postdot.png',
+      owner: 'portapps',
+      repo: 'postman-portable',
+      assetNumber: 2,
+      version: '11.6.1',
+      versionOptions: {
+        title: '"<VERSION>".split("-").at(0)',
+        download: '"<VERSION>".split("-").join("-")'
+      },
+      website: 'GitHub'
+    }
+  },
+  Info: {
+    'AIDA64 Engineer Edition <VERSION> Portable': {
+      url: 'https://www.fcportables.com/aida64-portable',
+      imageUrl: 'https://windows-cdn.softpedia.com/screenshots/ico/AIDA64-Engineer.gif',
+      version: '6.90.6500',
+      website: 'FCPortables'
+    },
+    'CrystalDiskInfo <VERSION> Portable': {
+      url: 'https://portableapps.com/apps/utilities/crystaldiskinfo_portable',
+      imageUrl: 'https://windows-cdn.softpedia.com/screenshots/ico/CrystalDiskInfo.png',
+      download: 'https://download2.portableapps.com/portableapps/CrystalDiskInfoPortable/CrystalDiskInfoPortable_<VERSION>.paf.exe',
+      version: '9.2.1',
+      website: 'PortableApps'
+    },
+    'HWiNFO64 <VERSION> Portable': {
+      url: 'https://portableapps.com/apps/utilities/hwinfo-portable',
+      imageUrl: 'https://windows-cdn.softpedia.com/screenshots/ico/HWiNFO64.png',
+      download: 'https://download2.portableapps.com/portableapps/HWiNFOPortable/HWiNFOPortable_<VERSION>_English.paf.exe',
+      version: '7.50.5150',
+      website: 'PortableApps'
+    },
+    'HWMonitor <VERSION> Portable': {
+      url: 'https://www.softpedia.com/get/PORTABLE-SOFTWARE/System/System-Info/Portable-HWMonitor.shtml',
+      imageUrl: 'https://windows-cdn.softpedia.com/screenshots/ico/Portable-HWMonitor.png',
+      download: 'https://download.cpuid.com/hwmonitor/hwmonitor_<VERSION>.zip',
+      version: '1.51.0',
+      versionOptions: {
+        download: '"<VERSION>".split(".").slice(0,3).join("-")'
+      },
+      website: 'Softpedia'
+    },
+    'Process Explorer <VERSION> Portable': {
+      url: 'https://www.softpedia.com/get/System/System-Info/Process-Explorer.shtml',
+      urlTmp1: 'https://portableapps.com/apps/utilities/process-explorer-portable',
+      urlTmp2: 'https://www.softpedia.com/get/PORTABLE-SOFTWARE/System/System-Info/Process-Explorer-Portable.shtml',
+      imageUrl: 'https://windows-cdn.softpedia.com/screenshots/ico/Process-Explorer.png',
+      download: 'https://download.sysinternals.com/files/ProcessExplorer.zip',
+      version: '17.04',
+      website: 'Softpedia'
+    }
+  },
+  VPN: {
+    'OpenVPN <VERSION>': {
+      url: 'https://www.softpedia.com/get/Security/Security-Related/OpenVPN.shtml',
+      imageUrl: 'https://windows-cdn.softpedia.com/screenshots/ico/OpenVPN.png',
+      download: 'https://swupdate.openvpn.org/community/releases/OpenVPN-<VERSION>-amd64.msi',
+      version: '2.6.6',
+      versionOptions: {
+        title: '"<VERSION>".split(" ").at(0)',
+        download: '"<VERSION>".split(" ").join("-")'
+      },
+      website: 'Softpedia'
+    },
+    'TomVPN <VERSION> Portable': {
+      url: 'https://www.filecatchers.com/tomvpn-portable',
+      urlTmp: 'https://www.softpedia.com/get/Internet/Secure-Browsing-VPN/TomVPN.shtml',
+      imageUrl: 'https://windows-cdn.softpedia.com/screenshots/ico/TomVPN.png',
+      version: '2.3.8',
+      website: 'FCPortables'
     }
   }
 }
