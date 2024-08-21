@@ -18,13 +18,7 @@ type Config = {
 type UpdateTelegramReturn = Promise<Config | undefined>
 
 interface Window {
-  electronApi: import('@electron-toolkit/preload').ElectronAPI & {
-    selectDownloadFolder: (defaultDownloadsFolder: string) => Promise<string>
-    checkForUpdate: (categories: Category[]) => Promise<Infos>
-    singleDownload: (info: Info) => Promise<string>,
-    updateTelegram: (filteredConfig: Config, directory: string, originalConfig: Config) => UpdateTelegramReturn
-    downloadsFolder: string
-  }
+  electronApi: import('@electron-toolkit/preload').ElectronAPI & import('./preload').ElectronApi
 }
 
 type GithubTag = {

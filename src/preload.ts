@@ -7,8 +7,7 @@ import { useSetAtom } from 'solid-jotai'
 import { messageAtom, showNotificationAtom, showRestartButtonAtom } from './store/atoms'
 import { CHANNELS } from './constants'
 
-// Set up context bridge between the renderer process and the main process expose as window
-contextBridge.exposeInMainWorld('electronApi', {
+const api = {
   // https://github.com/davidgs/on-air-desktop/blob/main/src/main/preload.ts
   ...electronAPI,
   selectDownloadFolder: (defaultDownloadsFolder: string): Promise<string> => ipcRenderer.invoke(CHANNELS.SELECT_DOWNLOAD_FOLDER, defaultDownloadsFolder),
@@ -16,7 +15,12 @@ contextBridge.exposeInMainWorld('electronApi', {
   singleDownload: (info: Info): Promise<string> => ipcRenderer.invoke(CHANNELS.SINGLE_DOWNLOAD, info),
   updateTelegram: (filteredConfig: Config, directory: string, originalConfig: Config) => ipcRenderer.invoke(CHANNELS.UPDATE_TELEGRAM, filteredConfig, directory, originalConfig),
   downloadsFolder: process.argv.find(value => value.startsWith('--downloads-folder='))!.split('=').at(1)!
-})
+}
+
+export type ElectronApi = typeof api
+
+// Set up context bridge between the renderer process and the main process expose as window
+contextBridge.exposeInMainWorld('electronApi', api)
 
 const setShowNotification = useSetAtom(showNotificationAtom)
 const setShowRestartButtonAtom = useSetAtom(showRestartButtonAtom)
