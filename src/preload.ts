@@ -14,6 +14,7 @@ const api = {
   checkForUpdate: (categories: Category[]): Promise<Infos> => ipcRenderer.invoke(CHANNELS.CHECK_FOR_UPDATE, categories),
   singleDownload: (info: Info): Promise<string> => ipcRenderer.invoke(CHANNELS.SINGLE_DOWNLOAD, info),
   updateTelegram: (filteredConfig: Config, directory: string, originalConfig: Config) => ipcRenderer.invoke(CHANNELS.UPDATE_TELEGRAM, filteredConfig, directory, originalConfig),
+  openFolder: (folderPath: string, isFile: boolean) => ipcRenderer.invoke(CHANNELS.OPEN_FOLDER, folderPath, isFile),
   downloadsFolder: process.argv.find(value => value.startsWith('--downloads-folder='))!.split('=').at(1)!
 }
 

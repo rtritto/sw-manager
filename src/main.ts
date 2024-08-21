@@ -1,4 +1,4 @@
-import { app, BrowserWindow, dialog, ipcMain } from 'electron'
+import { app, BrowserWindow, dialog, ipcMain, shell } from 'electron'
 import { ElectronDownloadManager } from 'electron-dl-manager'
 import log from 'electron-log'
 import { autoUpdater } from 'electron-updater'
@@ -128,6 +128,14 @@ ipcMain.on(CHANNELS.DOWNLOAD_RESUME, (_, id: string): void => {
 
 ipcMain.on(CHANNELS.DOWNLOAD_CANCEL, (_, id: string): void => {
   manager.cancelDownload(id)
+})
+
+ipcMain.handle(CHANNELS.OPEN_FOLDER, async (_, folderPath: string, isFile: boolean) => {
+  if (isFile === true) {
+    shell.showItemInFolder(folderPath)
+  } else {
+    await shell.openPath(folderPath)
+  }
 })
 
 ipcMain.handle(CHANNELS.UPDATE_TELEGRAM, async (_, filteredConfig: Config, directory: string, originalConfig: Config): UpdateTelegramReturn => {

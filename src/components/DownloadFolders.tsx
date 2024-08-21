@@ -12,6 +12,10 @@ const DownloadFolders: Component = () => {
     setDirectory(selectedDownloadFolder)
   }
 
+  const handleOpenDownlaodsFolder = async () => {
+    await window.electronApi.openFolder(directory(), false)
+  }
+
   return (
     <span class="items-center flex">
       <span class="whitespace-nowrap font-bold m-1">Downloads Folder:</span>
@@ -19,6 +23,8 @@ const DownloadFolders: Component = () => {
       <input type="text m-1" class="input input-bordered w-full" value={directory()} onChange={(e) => setDirectory(e.target.value)} />
 
       <button class="btn mx-1" onClick={handleSelectDownlaodsFolder}>Change</button>
+
+      <button class="btn mx-1" onClick={handleOpenDownlaodsFolder}>Open</button>
     </span>
   )
 }

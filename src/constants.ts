@@ -22,7 +22,8 @@ export enum CHANNELS {
   SELECT_DOWNLOAD_FOLDER = 'single_download_folder',
   UPDATE_ERROR = 'update_error',
   UPDATE_CONFIG = 'update_config',
-  UPDATE_TELEGRAM = 'update_telegram'
+  UPDATE_TELEGRAM = 'update_telegram',
+  OPEN_FOLDER = 'open_folder'
 }
 
 export enum DOWNLOAD_STATUS {
