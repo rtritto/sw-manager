@@ -93,6 +93,7 @@ type AppName = string
 
 type Info = {
   appName: AppName
+  category: Category
   website: Website
   currentVersion?: string
   newVersion?: string
