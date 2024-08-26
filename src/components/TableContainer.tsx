@@ -1,6 +1,6 @@
 import { createColumnHelper } from '@tanstack/solid-table'
 import type { ColumnDef } from '@tanstack/solid-table'
-import { IconDownload, IconPlayerPauseFilled, IconPlayerPlayFilled, IconPlayerStopFilled, IconSearch } from '@tabler/icons-solidjs'
+import { IconDownload, IconFolderOpen, IconPlayerPauseFilled, IconPlayerPlayFilled, IconPlayerStopFilled, IconSearch } from '@tabler/icons-solidjs'
 import { useAtom, useAtomValue } from 'solid-jotai'
 import { createEffect, createMemo, createSignal, For, Show, type Component } from 'solid-js'
 import { createStore } from 'solid-js/store'
@@ -13,6 +13,7 @@ import { categoriesCheckedStore, checkedAppNamesStore } from '../store/stores'
 import selectColumn from './selectColumn'
 import Table from './Table'
 import { disabledCancelSelected, disabledDownloadSelected, disabledPauseSelected, disabledResumeSelected } from './TableContainer-disabled'
+import handleOpenFolder from './handleClick/handleOpenFolder'
 
 type DownloadInfoStart = {
   [appName in string]?: {
@@ -148,7 +149,7 @@ const TableContainer: Component = () => {
       // header: 'Download Status',
       header: 'Progress',
       cell: (info: CellInfo) => {
-        const { row: { original: { appName } } } = info
+        const { row: { original: { appName, category, newVersion } } } = info
         return (
           <Show when={appName in downloadInfoStart ? downloadInfoStart[appName]!.fileName !== '' : false}>
             <div>
@@ -159,6 +160,17 @@ const TableContainer: Component = () => {
                   || downloadStatus[appName] === DOWNLOAD_STATUS.PAUSED
                   || downloadStatus[appName] === DOWNLOAD_STATUS.COMPLETED}
               >
+                <Show when={downloadStatus[appName] === DOWNLOAD_STATUS.COMPLETED}>
+                  <div class="tooltip tooltip-bottom m-1" data-tip="Open File folder">
+                    <button class="btn h-6 min-h-6" onClick={() => handleOpenFolder([
+                      directory(),
+                      category,
+                      // applyRegex(appName, { version: newVersion! })
+                      appName.replace('<VERSION>', newVersion!)
+                    ])}><IconFolderOpen size={16} /></button>
+                  </div>
+                </Show>
+
                 <div class="my-0 h-0.5 divider divider-neutral" />
 
                 <div class="flex items-center">

@@ -3,6 +3,7 @@ import { useAtom } from 'solid-jotai'
 import type { Component } from 'solid-js'
 
 import { directoryAtom } from '../store/atoms'
+import handleOpenFolder from './handleClick/handleOpenFolder'
 
 const DownloadFolders: Component = () => {
   const [directory, setDirectory] = useAtom(directoryAtom)
@@ -13,10 +14,6 @@ const DownloadFolders: Component = () => {
     setDirectory(selectedDownloadsFolder)
   }
 
-  const handleOpenDownlaodsFolder = async () => {
-    await window.electronApi.openFolder(directory(), false)
-  }
-
   return (
     <span class="items-center flex">
       <span class="whitespace-nowrap font-bold m-1">Downloads Folder:</span>
@@ -24,7 +21,7 @@ const DownloadFolders: Component = () => {
       <input type="text m-1" class="input input-bordered w-full" value={directory()} onChange={(e) => setDirectory(e.target.value)} />
 
       <div class="tooltip tooltip-bottom m-1" data-tip="Open Downloads folder">
-        <button class="btn mx-1" onClick={handleOpenDownlaodsFolder}><IconFolderOpen /></button>
+        <button class="btn mx-1" onClick={() => handleOpenFolder(directory())}><IconFolderOpen /></button>
       </div>
 
       <div class="tooltip tooltip-bottom m-1" data-tip="Change Downloads folder">

@@ -102,7 +102,7 @@ ipcMain.handle(CHANNELS.SELECT_DOWNLOAD_FOLDER, async (_, defaultDownloadsFolder
 ipcMain.handle(CHANNELS.CHECK_FOR_UPDATE, async (_, categories: Category[]): Promise<Infos> => {
   const _infos: Infos = {}
   for (const category of categories) {
-    const categoryInfos = await getInfos(APP_MAP[category])
+    const categoryInfos = await getInfos(APP_MAP[category], category)
     for (const appName in categoryInfos.errors) {
       const appError = categoryInfos.errors[appName] as Error
       appError.message = `${appName} - ${appError.message}`
@@ -130,12 +130,14 @@ ipcMain.on(CHANNELS.DOWNLOAD_CANCEL, (_, id: string): void => {
   manager.cancelDownload(id)
 })
 
-ipcMain.handle(CHANNELS.OPEN_FOLDER, async (_, folderPath: string, isFile: boolean) => {
-  if (isFile === true) {
-    shell.showItemInFolder(folderPath)
-  } else {
-    await shell.openPath(folderPath)
-  }
+ipcMain.handle(CHANNELS.OPEN_FOLDER, async (_, folderPath: string | string[]) => {
+  const _folderPath = folderPath.constructor.name === 'String'
+    ? folderPath as string
+    : path.join(...folderPath)
+  // Show the folder
+  // shell.showItemInFolder(_folderPath)
+  // Open the folder
+  await shell.openPath(_folderPath)
 })
 
 ipcMain.handle(CHANNELS.UPDATE_TELEGRAM, async (_, filteredConfig: Config, directory: string, originalConfig: Config): UpdateTelegramReturn => {
