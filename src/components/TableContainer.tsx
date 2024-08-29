@@ -171,7 +171,7 @@ const TableContainer: Component = () => {
                   </div>
                 </Show>
 
-                <div class="my-0 h-0.5 divider divider-neutral" />
+                <div class="divider divider-neutral my-0 h-0.5" />
 
                 <div class="flex items-center">
                   <progress
@@ -203,7 +203,7 @@ const TableContainer: Component = () => {
               >
                 <span class="whitespace-nowrap">{convertBytes(downloadInfoProgress[appName]!.receivedBytes)}</span>
 
-                <div class="my-0 h-0.5 divider divider-neutral" />
+                <div class="divider divider-neutral my-0 h-0.5" />
               </Show>
 
               <span class="whitespace-nowrap">{convertBytes(downloadInfoStart[appName]!.fileSize)}</span>
@@ -343,7 +343,7 @@ const TableContainer: Component = () => {
 
   return (
     <div>
-      <div class="items-center flex">
+      <div class="flex items-center">
         <div class="tooltip tooltip-bottom m-1" data-tip="Find Updates">
           <button class="btn" onClick={handleCheckForUpdate}>
             <IconSearch />
@@ -393,7 +393,7 @@ const TableContainer: Component = () => {
 
       <For each={Object.keys(infos())}>
         {(category, index) => (
-          <div tabindex={index()} class={`collapse ${catergoriesCollapsed[category] === true ? 'collapse-open' : 'collapse-close'} collapse-arrow border-base-300 bg-base-200 border`}>
+          <div tabindex={index()} class={`collapse ${catergoriesCollapsed[category] === true ? 'collapse-open' : 'collapse-close'} collapse-arrow border border-base-300 bg-base-200`}>
             <div class="collapse-title text-xl font-medium" onClick={() => {
               setCatergoriesCollapsed(category as Category, !catergoriesCollapsed[category])
             }}>{category} - ( {checkedAppNames()[category] === undefined ? 0 : checkedAppNames()[category].length} / {Object.keys(infos()[category]).length} )</div>
