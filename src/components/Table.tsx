@@ -7,6 +7,7 @@ import { For, Show, createSignal, mergeProps, onCleanup, type Component } from '
 import { checkedAppNamesAtom } from '../store/atoms'
 import { checkedAppNamesStore } from '../store/stores'
 
+/** Source: https://stackoverflow.com/a/77891659 */
 const Table: Component<{
   columnData: Record<string, unknown>[]
   columns: ColumnDef<Record<string, unknown>, any>[]
