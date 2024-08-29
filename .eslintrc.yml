@@ -27,8 +27,8 @@ ignorePatterns:
 
 rules:
   #region eslint
-  comma-dangle: [2, never]
-  semi: [2, never]
+  comma-dangle: [1, never]
+  semi: [1, never]
   #endregion
 
   #region @typescript-eslint
