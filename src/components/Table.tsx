@@ -72,7 +72,7 @@ const Table: Component<{
 
   return (
     // <section class="no-scrollbar table-rounded-md max-w-xl7 w-full overflow-auto rounded-md border border-gray-200 bg-white drop-shadow-sm">
-    <section class="no-scrollbar table-rounded-md max-w-xl7 w-full overflow-auto rounded-md border">
+    <section class="w-full overflow-auto rounded-md border">
       <table class="table w-full">
         <thead>
           <For each={solidTable.getHeaderGroups()}>{(headerGroup) => (

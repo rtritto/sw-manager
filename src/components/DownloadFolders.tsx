@@ -15,8 +15,8 @@ const DownloadFolders: Component = () => {
   }
 
   return (
-    <span class="items-center flex">
-      <span class="whitespace-nowrap font-bold m-1">Downloads Folder:</span>
+    <span class="flex items-center">
+      <span class="m-1 whitespace-nowrap font-bold">Downloads Folder:</span>
 
       <input type="text m-1" class="input input-bordered w-full" value={directory()} onChange={(e) => setDirectory(e.target.value)} />
 
