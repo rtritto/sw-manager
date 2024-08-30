@@ -74,7 +74,6 @@
     "@tabler/icons-solidjs",
     "@tanstack/solid-table",
     "bytes",
-    "daisyui",
     "electron",
     "electron-dl-manager",
     "electron-log",
@@ -85,6 +84,7 @@
     "node-html-parser",
     "solid-jotai",
     "solid-js",
+    "sw-download-checker",
     "undici"
   ],
   "tmpDevDependencies": [
