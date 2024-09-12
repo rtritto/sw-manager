@@ -8,5 +8,5 @@ updates:
     groups:
       patterns:
         update-types:
-          - patch
-          - minor
+            - patch
+            - minor
