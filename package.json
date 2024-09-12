@@ -63,7 +63,7 @@
     "sw-download-checker": "github:rtritto/sw-download-checker",
     "tailwindcss": "^3.4.10",
     "ts-node": "^10.9.2",
-    "typescript": "^5.5.4",
+    "typescript": "5.5.4",
     "undici": "^6.19.7",
     "vite": "^5.4.1",
     "vite-plugin-require": "^1.2.14",
