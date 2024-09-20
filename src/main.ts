@@ -36,6 +36,7 @@ const createWindow = () => {
     // height: 600,
     // autoHideMenuBar: true,
     // icon: 'icon.ico',
+    darkTheme: true,
     webPreferences: {
       // Append DOWNLOAD_FOLDER
       additionalArguments: [`--downloads-folder=${path.join(app.getPath('downloads'), DOWNLOAD_FOLDER)}`],
