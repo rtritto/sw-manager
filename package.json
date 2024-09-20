@@ -62,7 +62,6 @@
     "solid-js": "^1.8.22",
     "sw-download-checker": "github:rtritto/sw-download-checker",
     "tailwindcss": "^3.4.12",
-    "ts-node": "^10.9.2",
     "typescript": "5.5.4",
     "undici": "^6.19.7",
     "vite": "^5.4.6",
