@@ -327,7 +327,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@electron-forge/cli@npm:^7.4.0":
+"@electron-forge/cli@npm:^7.5.0":
   version: 7.5.0
   resolution: "@electron-forge/cli@npm:7.5.0"
   dependencies:
@@ -363,6 +363,24 @@ __metadata:
     semver: "npm:^7.2.1"
     yarn-or-npm: "npm:^3.0.1"
   checksum: 10c0/a00276f2e48fb0031e6ad5f61561e0290ba1ad9fe0559511f5925845f3fbb1a234b54c6c50350ecf00d62b02883bd24cc4970556571c34ab7921bcfb317eea58
+  languageName: node
+  linkType: hard
+
+"@electron-forge/core-utils@patch:@electron-forge/core-utils@npm%3A7.5.0#~/.yarn/patches/@electron-forge-core-utils-npm-7.5.0-66af53682e.patch":
+  version: 7.5.0
+  resolution: "@electron-forge/core-utils@patch:@electron-forge/core-utils@npm%3A7.5.0#~/.yarn/patches/@electron-forge-core-utils-npm-7.5.0-66af53682e.patch::version=7.5.0&hash=87e436"
+  dependencies:
+    "@electron-forge/shared-types": "npm:7.5.0"
+    "@electron/rebuild": "npm:^3.2.10"
+    "@malept/cross-spawn-promise": "npm:^2.0.0"
+    chalk: "npm:^4.0.0"
+    debug: "npm:^4.3.1"
+    find-up: "npm:^5.0.0"
+    fs-extra: "npm:^10.0.0"
+    log-symbols: "npm:^4.0.0"
+    semver: "npm:^7.2.1"
+    yarn-or-npm: "npm:^3.0.1"
+  checksum: 10c0/884ccbecd480f65973f1f1ab0b2c69cbf05620ea80132f94cc4ad0c4cd10d11af668bd669dd9c365c2e8c9bd9c385a355ca8e5e060ab21bc85afc568c78c3e6a
   languageName: node
   linkType: hard
 
@@ -409,6 +427,49 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@electron-forge/core@patch:@electron-forge/core@npm%3A7.5.0#~/.yarn/patches/@electron-forge-core-npm-7.5.0-5623e6130a.patch":
+  version: 7.5.0
+  resolution: "@electron-forge/core@patch:@electron-forge/core@npm%3A7.5.0#~/.yarn/patches/@electron-forge-core-npm-7.5.0-5623e6130a.patch::version=7.5.0&hash=d29553"
+  dependencies:
+    "@electron-forge/core-utils": "npm:7.5.0"
+    "@electron-forge/maker-base": "npm:7.5.0"
+    "@electron-forge/plugin-base": "npm:7.5.0"
+    "@electron-forge/publisher-base": "npm:7.5.0"
+    "@electron-forge/shared-types": "npm:7.5.0"
+    "@electron-forge/template-base": "npm:7.5.0"
+    "@electron-forge/template-vite": "npm:7.5.0"
+    "@electron-forge/template-vite-typescript": "npm:7.5.0"
+    "@electron-forge/template-webpack": "npm:7.5.0"
+    "@electron-forge/template-webpack-typescript": "npm:7.5.0"
+    "@electron-forge/tracer": "npm:7.5.0"
+    "@electron/get": "npm:^3.0.0"
+    "@electron/packager": "npm:^18.3.5"
+    "@electron/rebuild": "npm:^3.2.10"
+    "@malept/cross-spawn-promise": "npm:^2.0.0"
+    chalk: "npm:^4.0.0"
+    debug: "npm:^4.3.1"
+    fast-glob: "npm:^3.2.7"
+    filenamify: "npm:^4.1.0"
+    find-up: "npm:^5.0.0"
+    fs-extra: "npm:^10.0.0"
+    got: "npm:^11.8.5"
+    interpret: "npm:^3.1.1"
+    listr2: "npm:^7.0.2"
+    lodash: "npm:^4.17.20"
+    log-symbols: "npm:^4.0.0"
+    node-fetch: "npm:^2.6.7"
+    progress: "npm:^2.0.3"
+    rechoir: "npm:^0.8.0"
+    resolve-package: "npm:^1.0.1"
+    semver: "npm:^7.2.1"
+    source-map-support: "npm:^0.5.13"
+    sudo-prompt: "npm:^9.1.1"
+    username: "npm:^5.1.0"
+    yarn-or-npm: "npm:^3.0.1"
+  checksum: 10c0/68f30c4e9d81be176aae75a1a7031e5dea275c0ddea3b20c2d980d603362d357016e41fb75cf4a96e161b7e7ad8a505c5dbebaf2b64c96288fa83ddda0574ea6
+  languageName: node
+  linkType: hard
+
 "@electron-forge/maker-base@npm:7.5.0":
   version: 7.5.0
   resolution: "@electron-forge/maker-base@npm:7.5.0"
@@ -420,7 +481,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@electron-forge/maker-deb@npm:^7.4.0":
+"@electron-forge/maker-deb@npm:^7.5.0":
   version: 7.5.0
   resolution: "@electron-forge/maker-deb@npm:7.5.0"
   dependencies:
@@ -434,7 +495,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@electron-forge/maker-rpm@npm:^7.4.0":
+"@electron-forge/maker-rpm@npm:^7.5.0":
   version: 7.5.0
   resolution: "@electron-forge/maker-rpm@npm:7.5.0"
   dependencies:
@@ -448,7 +509,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@electron-forge/maker-squirrel@npm:^7.4.0":
+"@electron-forge/maker-squirrel@npm:^7.5.0":
   version: 7.5.0
   resolution: "@electron-forge/maker-squirrel@npm:7.5.0"
   dependencies:
@@ -463,7 +524,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@electron-forge/maker-zip@npm:^7.4.0":
+"@electron-forge/maker-zip@npm:^7.5.0":
   version: 7.5.0
   resolution: "@electron-forge/maker-zip@npm:7.5.0"
   dependencies:
@@ -476,7 +537,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@electron-forge/plugin-auto-unpack-natives@npm:^7.4.0":
+"@electron-forge/plugin-auto-unpack-natives@npm:^7.5.0":
   version: 7.5.0
   resolution: "@electron-forge/plugin-auto-unpack-natives@npm:7.5.0"
   dependencies:
@@ -495,7 +556,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@electron-forge/plugin-electronegativity@npm:^7.4.0":
+"@electron-forge/plugin-electronegativity@npm:^7.5.0":
   version: 7.5.0
   resolution: "@electron-forge/plugin-electronegativity@npm:7.5.0"
   dependencies:
@@ -506,7 +567,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@electron-forge/plugin-fuses@npm:^7.4.0":
+"@electron-forge/plugin-fuses@npm:^7.5.0":
   version: 7.5.0
   resolution: "@electron-forge/plugin-fuses@npm:7.5.0"
   dependencies:
@@ -518,7 +579,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@electron-forge/plugin-vite@npm:^7.4.0":
+"@electron-forge/plugin-vite@npm:^7.5.0":
   version: 7.5.0
   resolution: "@electron-forge/plugin-vite@npm:7.5.0"
   dependencies:
@@ -543,7 +604,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@electron-forge/shared-types@npm:7.5.0, @electron-forge/shared-types@npm:^7.4.0":
+"@electron-forge/shared-types@npm:7.5.0, @electron-forge/shared-types@npm:^7.5.0":
   version: 7.5.0
   resolution: "@electron-forge/shared-types@npm:7.5.0"
   dependencies:
@@ -9211,16 +9272,16 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "sw-manager@workspace:."
   dependencies:
-    "@electron-forge/cli": "npm:^7.4.0"
-    "@electron-forge/maker-deb": "npm:^7.4.0"
-    "@electron-forge/maker-rpm": "npm:^7.4.0"
-    "@electron-forge/maker-squirrel": "npm:^7.4.0"
-    "@electron-forge/maker-zip": "npm:^7.4.0"
-    "@electron-forge/plugin-auto-unpack-natives": "npm:^7.4.0"
-    "@electron-forge/plugin-electronegativity": "npm:^7.4.0"
-    "@electron-forge/plugin-fuses": "npm:^7.4.0"
-    "@electron-forge/plugin-vite": "npm:^7.4.0"
-    "@electron-forge/shared-types": "npm:^7.4.0"
+    "@electron-forge/cli": "npm:^7.5.0"
+    "@electron-forge/maker-deb": "npm:^7.5.0"
+    "@electron-forge/maker-rpm": "npm:^7.5.0"
+    "@electron-forge/maker-squirrel": "npm:^7.5.0"
+    "@electron-forge/maker-zip": "npm:^7.5.0"
+    "@electron-forge/plugin-auto-unpack-natives": "npm:^7.5.0"
+    "@electron-forge/plugin-electronegativity": "npm:^7.5.0"
+    "@electron-forge/plugin-fuses": "npm:^7.5.0"
+    "@electron-forge/plugin-vite": "npm:^7.5.0"
+    "@electron-forge/shared-types": "npm:^7.5.0"
     "@electron-toolkit/preload": "npm:^3.0.1"
     "@electron/fuses": "npm:^1.8.0"
     "@tabler/icons-solidjs": "npm:^3.17.0"

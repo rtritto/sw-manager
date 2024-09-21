@@ -18,16 +18,16 @@
     "typecheck": "yarn run typecheck:node && yarn run typecheck:web"
   },
   "devDependencies": {
-    "@electron-forge/cli": "^7.4.0",
-    "@electron-forge/maker-deb": "^7.4.0",
-    "@electron-forge/maker-rpm": "^7.4.0",
-    "@electron-forge/maker-squirrel": "^7.4.0",
-    "@electron-forge/maker-zip": "^7.4.0",
-    "@electron-forge/plugin-auto-unpack-natives": "^7.4.0",
-    "@electron-forge/plugin-electronegativity": "^7.4.0",
-    "@electron-forge/plugin-fuses": "^7.4.0",
-    "@electron-forge/plugin-vite": "^7.4.0",
-    "@electron-forge/shared-types": "^7.4.0",
+    "@electron-forge/cli": "^7.5.0",
+    "@electron-forge/maker-deb": "^7.5.0",
+    "@electron-forge/maker-rpm": "^7.5.0",
+    "@electron-forge/maker-squirrel": "^7.5.0",
+    "@electron-forge/maker-zip": "^7.5.0",
+    "@electron-forge/plugin-auto-unpack-natives": "^7.5.0",
+    "@electron-forge/plugin-electronegativity": "^7.5.0",
+    "@electron-forge/plugin-fuses": "^7.5.0",
+    "@electron-forge/plugin-vite": "^7.5.0",
+    "@electron-forge/shared-types": "^7.5.0",
     "@electron-toolkit/preload": "^3.0.1",
     "@electron/fuses": "^1.8.0",
     "@tabler/icons-solidjs": "^3.17.0",
@@ -95,8 +95,8 @@
     "node": ">=20.6.0 || >=22"
   },
   "resolutions": {
-    "@electron-forge/core-utils@npm:7.4.0": "patch:@electron-forge/core-utils@npm%3A7.4.0#~/.yarn/patches/@electron-forge-core-utils-npm-7.4.0-881d5c9e73.patch",
-    "@electron-forge/core@npm:7.4.0": "patch:@electron-forge/core@npm%3A7.4.0#~/.yarn/patches/@electron-forge-core-npm-7.4.0-4c33fc0cff.patch",
+    "@electron-forge/core@npm:7.5.0": "patch:@electron-forge/core@npm%3A7.5.0#~/.yarn/patches/@electron-forge-core-npm-7.5.0-5623e6130a.patch",
+    "@electron-forge/core-utils@npm:7.5.0": "patch:@electron-forge/core-utils@npm%3A7.5.0#~/.yarn/patches/@electron-forge-core-utils-npm-7.5.0-66af53682e.patch",
     "json5@npm:^1.0.2": "patch:json5@npm%3A2.2.3#~/.yarn/patches/json5-npm-2.2.3-9962c55073.patch",
     "json5@npm:^2.2.3": "patch:json5@npm%3A2.2.3#~/.yarn/patches/json5-npm-2.2.3-9962c55073.patch"
   }
