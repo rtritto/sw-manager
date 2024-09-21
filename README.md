@@ -1,3 +1,5 @@
+Related issue: https://github.com/electron/forge/issues/3671
+
 # Install
 `yarn`
 
