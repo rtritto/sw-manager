@@ -6,7 +6,6 @@
   "editor.tabSize": 2,
   "eslint.alwaysShowStatus": true,
   "eslint.nodePath": ".yarn/sdks",
-  "eslint.packageManager": "yarn",
   "files.associations": {
     "*.css": "tailwindcss"
   },
