@@ -19,9 +19,6 @@ extends:
 parser: '@typescript-eslint/parser'
 parserOptions:
   project: tsconfig.json
-plugins:
-  - '@typescript-eslint'
-  - solid
 ignorePatterns:
   - src/config.ts
 
