@@ -1757,12 +1757,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:*, @types/node@npm:^22.7.1":
-  version: 22.7.1
-  resolution: "@types/node@npm:22.7.1"
+"@types/node@npm:*, @types/node@npm:^22.7.4":
+  version: 22.7.4
+  resolution: "@types/node@npm:22.7.4"
   dependencies:
     undici-types: "npm:~6.19.2"
-  checksum: 10c0/5647181455d543992f5e93165e7ad2ca0e97402e748a1209c07135320b6f220ffb5b2531b0412d6d33bb3173b5bcd9418899d9fa6f04596a5ec9f338b2f37992
+  checksum: 10c0/c22bf54515c78ff3170142c1e718b90e2a0003419dc2d55f79c9c9362edd590a6ab1450deb09ff6e1b32d1b4698da407930b16285e8be3a009ea6cd2695cac01
   languageName: node
   linkType: hard
 
@@ -2909,13 +2909,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"builder-util-runtime@npm:9.2.5":
-  version: 9.2.5
-  resolution: "builder-util-runtime@npm:9.2.5"
+"builder-util-runtime@npm:9.2.10":
+  version: 9.2.10
+  resolution: "builder-util-runtime@npm:9.2.10"
   dependencies:
     debug: "npm:^4.3.4"
     sax: "npm:^1.2.4"
-  checksum: 10c0/1791a2543355bf9656b3321d20e2a23b1e61c4a7172a824767379da6321f8e6e8a33347238c64c9ac81168b41ebf5c66ce7a69c3c35b1f5e230072d9fe36c605
+  checksum: 10c0/28681b8037ad0fb6a33c79532656f7eeddcf7c1d3c922253630d8794929c20a78adc6e4028111708643a1d10e25812c65ac1241886570ff12d6aa6308abe9015
   languageName: node
   linkType: hard
 
@@ -3548,15 +3548,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"daisyui@npm:^4.12.10":
-  version: 4.12.10
-  resolution: "daisyui@npm:4.12.10"
+"daisyui@npm:^4.12.12":
+  version: 4.12.12
+  resolution: "daisyui@npm:4.12.12"
   dependencies:
     css-selector-tokenizer: "npm:^0.8"
     culori: "npm:^3"
     picocolors: "npm:^1"
     postcss-js: "npm:^4"
-  checksum: 10c0/f677d9717d6241d6c829141645ff15a5d6aaa9e279a90e1acb248613c9cc25d7d0b9fcac55ec572537f6bc472e1ab5f0bed7797a1815b6fde9a644be62f357d0
+  checksum: 10c0/12d542638394784b964a0cb47b051eeb7e1170ba87572fe4c8c40352a7583603787778e0b11b14b3cd0aa953396a77d41ad828dcae95a46ec91dbeccf07890fa
   languageName: node
   linkType: hard
 
@@ -3937,11 +3937,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"electron-updater@npm:6.3.4":
-  version: 6.3.4
-  resolution: "electron-updater@npm:6.3.4"
+"electron-updater@npm:^6.3.9":
+  version: 6.3.9
+  resolution: "electron-updater@npm:6.3.9"
   dependencies:
-    builder-util-runtime: "npm:9.2.5"
+    builder-util-runtime: "npm:9.2.10"
     fs-extra: "npm:^10.1.0"
     js-yaml: "npm:^4.1.0"
     lazy-val: "npm:^1.0.5"
@@ -3949,7 +3949,7 @@ __metadata:
     lodash.isequal: "npm:^4.5.0"
     semver: "npm:^7.6.3"
     tiny-typed-emitter: "npm:^2.1.0"
-  checksum: 10c0/ca67160d251c16f896672e15b81dcfbf759a6a8350dc919666d426207e60038d20b75c5351705af3153ae686621d2856df2ce68ed538e0aad397ef90723d0da1
+  checksum: 10c0/e692e8d744ba311caf17bfdf59d469b3f331b8dcbb174786ed69bba52b630093e8cd7d48f04c10e28cd25ead9c0896d42c92a25525275daaf47681da0dfd2094
   languageName: node
   linkType: hard
 
@@ -9224,16 +9224,16 @@ __metadata:
     "@tanstack/solid-table": "npm:^8.20.5"
     "@types/bytes": "npm:^3.1.4"
     "@types/electron-squirrel-startup": "npm:^1.0.2"
-    "@types/node": "npm:^22.7.1"
+    "@types/node": "npm:^22.7.4"
     "@yarnpkg/sdks": "npm:^3.2.0"
     autoprefixer: "npm:^10.4.20"
     bytes: "npm:^3.1.2"
-    daisyui: "npm:^4.12.10"
+    daisyui: "npm:^4.12.12"
     electron: "npm:^32.1.2"
     electron-dl-manager: "npm:^3.2.0"
     electron-log: "npm:^5.2.0"
     electron-squirrel-startup: "npm:^1.0.1"
-    electron-updater: "npm:6.3.4"
+    electron-updater: "npm:^6.3.9"
     eslint: "npm:^9.12.0"
     eslint-plugin-import: "npm:^2.31.0"
     eslint-plugin-solid: "npm:^0.14.3"
