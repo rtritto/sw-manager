@@ -73,7 +73,6 @@ const TableContainer: Component = () => {
     setCatergoriesCollapsed(_catergoriesCollapsed)
   }
 
-  // eslint-disable-next-line unicorn/consistent-function-scoping
   const handleDownloadSelected = async (downloadStatus: DownloadStatus, infos: Infos, checkedAppNames: CheckedAppNames, directory: string) => {
     await Promise.allSettled(
       Object.keys(checkedAppNames).map((category) => checkedAppNames[category as Category].map((appName) => {
