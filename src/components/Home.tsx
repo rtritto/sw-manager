@@ -25,7 +25,7 @@ const Home: Component = () => {
   }
 
   const restartApp = () => {
-    window.electronApi.ipcRenderer.send(CHANNELS.RESTART_APP)
+    globalThis.electronApi.ipcRenderer.send(CHANNELS.RESTART_APP)
   }
 
   return (
@@ -47,7 +47,7 @@ const Home: Component = () => {
       </Show>
 
       <Provider>
-        <HydrateAtoms initialValues={[[directoryAtom, window.electronApi.downloadsFolder]]}>
+        <HydrateAtoms initialValues={[[directoryAtom, globalThis.electronApi.downloadsFolder]]}>
           <UpdatesManager />
         </HydrateAtoms>
       </Provider>

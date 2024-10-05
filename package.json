@@ -47,7 +47,7 @@
     "eslint-plugin-import": "^2.31.0",
     "eslint-plugin-solid": "^0.14.3",
     "eslint-plugin-tailwindcss": "^3.17.4",
-    "eslint-plugin-unicorn": "^55.0.0",
+    "eslint-plugin-unicorn": "^56.0.0",
     "html-entities": "^2.5.2",
     "jotai": "^2.10.0",
     "json5": "patch:json5@npm%3A2.2.3#~/.yarn/patches/json5-npm-2.2.3-9962c55073.patch",

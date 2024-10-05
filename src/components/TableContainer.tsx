@@ -62,7 +62,7 @@ const TableContainer: Component = () => {
         categoriesToCheck.push(categoryChecked as Category)
       }
     }
-    const _infos = await window.electronApi.checkForUpdate(categoriesToCheck)
+    const _infos = await globalThis.electronApi.checkForUpdate(categoriesToCheck)
     setCheckedAppNames({} as CheckedAppNames)
     setInfos(_infos)
     const _categories = Object.keys(_infos)
@@ -77,8 +77,8 @@ const TableContainer: Component = () => {
     await Promise.allSettled(
       Object.keys(checkedAppNames).map((category) => checkedAppNames[category as Category].map((appName) => {
         if ((appName in downloadStatus) === false || downloadStatus[appName] === DOWNLOAD_STATUS.CANCEL) {
-          return window.electronApi.singleDownload(infos[category as Category]![appName]).then((downloadLink) => {
-            window.electronApi.ipcRenderer.send(CHANNELS.DOWNLOAD_BY_URL, {
+          return globalThis.electronApi.singleDownload(infos[category as Category]![appName]).then((downloadLink) => {
+            globalThis.electronApi.ipcRenderer.send(CHANNELS.DOWNLOAD_BY_URL, {
               appName,
               category,
               downloadLink,
@@ -96,7 +96,7 @@ const TableContainer: Component = () => {
     for (const appNames of appNamesList) {
       for (const appName of appNames) {
         if (downloadStatus[appName] === DOWNLOAD_STATUS.DOWNLOADING) {
-          window.electronApi.ipcRenderer.send(CHANNELS.DOWNLOAD_PAUSE, downloadInfoStart[appName]!.fileId)
+          globalThis.electronApi.ipcRenderer.send(CHANNELS.DOWNLOAD_PAUSE, downloadInfoStart[appName]!.fileId)
           setDownloadStatus(appName, DOWNLOAD_STATUS.PAUSED)
         }
       }
@@ -108,7 +108,7 @@ const TableContainer: Component = () => {
     for (const appNames of appNamesList) {
       for (const appName of appNames) {
         if (downloadStatus[appName] === DOWNLOAD_STATUS.PAUSED) {
-          window.electronApi.ipcRenderer.send(CHANNELS.DOWNLOAD_RESUME, downloadInfoStart[appName]!.fileId)
+          globalThis.electronApi.ipcRenderer.send(CHANNELS.DOWNLOAD_RESUME, downloadInfoStart[appName]!.fileId)
           setDownloadStatus(appName, DOWNLOAD_STATUS.DOWNLOADING)
         }
       }
@@ -120,7 +120,7 @@ const TableContainer: Component = () => {
     for (const appNames of appNamesList) {
       for (const appName of appNames) {
         if (downloadStatus[appName] === DOWNLOAD_STATUS.DOWNLOADING || downloadStatus[appName] === DOWNLOAD_STATUS.PAUSED) {
-          window.electronApi.ipcRenderer.send(CHANNELS.DOWNLOAD_CANCEL, downloadInfoStart[appName]!.fileId)
+          globalThis.electronApi.ipcRenderer.send(CHANNELS.DOWNLOAD_CANCEL, downloadInfoStart[appName]!.fileId)
         }
       }
     }
@@ -245,7 +245,7 @@ const TableContainer: Component = () => {
 
   createEffect(() => {
     // Listen for the event
-    window.electronApi.ipcRenderer.on(CHANNELS.DOWNLOAD_STARTED, (_, {
+    globalThis.electronApi.ipcRenderer.on(CHANNELS.DOWNLOAD_STARTED, (_, {
       appName,
       id,
       resolvedFilename,
@@ -259,7 +259,7 @@ const TableContainer: Component = () => {
       })
       setDownloadStatus(appName, DOWNLOAD_STATUS.STARTED)
     })
-    window.electronApi.ipcRenderer.on(CHANNELS.DOWNLOAD_PROGRESS, (_, {
+    globalThis.electronApi.ipcRenderer.on(CHANNELS.DOWNLOAD_PROGRESS, (_, {
       appName,
       downloadRateBytesPerSecond,
       estimatedTimeRemainingSeconds,
@@ -274,7 +274,7 @@ const TableContainer: Component = () => {
       })
       setDownloadStatus(appName, DOWNLOAD_STATUS.DOWNLOADING)
     })
-    window.electronApi.ipcRenderer.on(CHANNELS.DOWNLOAD_COMPLETED, async (_, { appName }: DownloadCompletedArgs) => {
+    globalThis.electronApi.ipcRenderer.on(CHANNELS.DOWNLOAD_COMPLETED, async (_, { appName }: DownloadCompletedArgs) => {
       setDownloadStatus(appName, DOWNLOAD_STATUS.COMPLETED)
       await (async (downloadInfoStart, downloadStatus, infos, isUpdateConfigEnabled, isUpdateTelegramEnabled, directory) => {
         if (isUpdateTelegramEnabled() === true || isUpdateConfigEnabled() === true) {
@@ -317,19 +317,19 @@ const TableContainer: Component = () => {
           let configWithMessageIds: Config | undefined
           if (isUpdateTelegramEnabled() === true) {
             // APP_MAP[category][appName].telegram.message_id can be created
-            configWithMessageIds = await window.electronApi.updateTelegram(filteredConfig, directory(), APP_MAP)
+            configWithMessageIds = await globalThis.electronApi.updateTelegram(filteredConfig, directory(), APP_MAP)
           }
           if (
             isUpdateConfigEnabled() === true
             // Update telegram.messageId on sendMessage
             || isUpdateTelegramEnabled() === true
           ) {
-            window.electronApi.ipcRenderer.send(CHANNELS.UPDATE_CONFIG, configWithMessageIds === undefined ? APP_MAP : configWithMessageIds)
+            globalThis.electronApi.ipcRenderer.send(CHANNELS.UPDATE_CONFIG, configWithMessageIds === undefined ? APP_MAP : configWithMessageIds)
           }
         }
       })(downloadInfoStart, downloadStatus, infos, isUpdateConfigEnabled, isUpdateTelegramEnabled, directory)
     })
-    window.electronApi.ipcRenderer.on(CHANNELS.DOWNLOAD_CANCEL, (_, { appName }: DownloadCancelArgs) => {
+    globalThis.electronApi.ipcRenderer.on(CHANNELS.DOWNLOAD_CANCEL, (_, { appName }: DownloadCancelArgs) => {
       setDownloadInfoProgress(appName, {
         downloadRateBytesPerSecond: 0,
         estimatedTimeRemainingSeconds: 0,

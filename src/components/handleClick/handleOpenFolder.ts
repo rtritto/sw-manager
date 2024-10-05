@@ -1,5 +1,5 @@
 const handleOpenFolder = async (folderPath: string | string[]) => {
-  await window.electronApi.openFolder(folderPath)
+  await globalThis.electronApi.openFolder(folderPath)
 }
 
 export default handleOpenFolder
