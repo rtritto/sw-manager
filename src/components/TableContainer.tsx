@@ -1,6 +1,6 @@
 import { createColumnHelper } from '@tanstack/solid-table'
 import type { ColumnDef } from '@tanstack/solid-table'
-import { IconDownload, IconFolderOpen, IconPlayerPauseFilled, IconPlayerPlayFilled, IconPlayerStopFilled, IconSearch } from '@tabler/icons-solidjs'
+import { IconDownload, IconPlayerPauseFilled, IconPlayerPlayFilled, IconPlayerStopFilled, IconSearch } from '@tabler/icons-solidjs'
 import { useAtom, useAtomValue } from 'solid-jotai'
 import { createEffect, createMemo, createSignal, For, Show, type Component } from 'solid-js'
 import { createStore } from 'solid-js/store'
@@ -14,6 +14,7 @@ import selectColumn from './selectColumn'
 import Table from './Table'
 import { disabledCancelSelected, disabledDownloadSelected, disabledPauseSelected, disabledResumeSelected } from './TableContainer-disabled'
 import handleOpenFolder from './handleClick/handleOpenFolder'
+import { FolderOpenIcon } from './Icons'
 
 type DownloadInfoStart = {
   [appName in string]?: {
@@ -166,7 +167,7 @@ const TableContainer: Component = () => {
                       category,
                       // applyRegex(appName, { version: newVersion! })
                       appName.replace('<VERSION>', newVersion!)
-                    ])}><IconFolderOpen size={16} /></button>
+                    ])}><FolderOpenIcon size={16} /></button>
                   </div>
                 </Show>
 

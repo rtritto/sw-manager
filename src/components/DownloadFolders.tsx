@@ -1,9 +1,10 @@
-import { IconFolderCog, IconFolderOpen } from '@tabler/icons-solidjs'
+import { IconFolderCog } from '@tabler/icons-solidjs'
 import { useAtom } from 'solid-jotai'
 import type { Component } from 'solid-js'
 
 import { directoryAtom } from '../store/atoms'
 import handleOpenFolder from './handleClick/handleOpenFolder'
+import { FolderOpenIcon } from './Icons'
 
 const DownloadFolders: Component = () => {
   const [directory, setDirectory] = useAtom(directoryAtom)
@@ -21,7 +22,8 @@ const DownloadFolders: Component = () => {
       <input type="text m-1" class="input input-bordered w-full" value={directory()} onChange={(e) => setDirectory(e.target.value)} />
 
       <div class="tooltip tooltip-bottom m-1" data-tip="Open Downloads folder">
-        <button class="btn mx-1" onClick={() => handleOpenFolder(directory())}><IconFolderOpen /></button>
+        <button class="btn mx-1" onClick={() => handleOpenFolder(directory())}><FolderOpenIcon /></button>
+        {/*  btn-sm */}
       </div>
 
       <div class="tooltip tooltip-bottom m-1" data-tip="Change Downloads folder">
