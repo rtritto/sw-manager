@@ -1,6 +1,5 @@
 import type { ConfigEnv, UserConfig } from 'vite'
 import { defineConfig, mergeConfig } from 'vite'
-import vitePluginRequire from 'vite-plugin-require'
 
 import { getBuildConfig, getBuildDefine, esmodule, external, pluginHotRestart } from './vite.base.config'
 
@@ -21,8 +20,7 @@ export default defineConfig((env) => {
       }
     },
     plugins: [
-      pluginHotRestart('restart'),
-      (vitePluginRequire as any).default()
+      pluginHotRestart('restart')
     ],
     define,
     resolve: {
