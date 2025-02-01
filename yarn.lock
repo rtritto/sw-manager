@@ -3728,16 +3728,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"electron@npm:^32.1.2":
-  version: 32.3.0
-  resolution: "electron@npm:32.3.0"
+"electron@npm:^34.0.2":
+  version: 34.0.2
+  resolution: "electron@npm:34.0.2"
   dependencies:
     "@electron/get": "npm:^2.0.0"
     "@types/node": "npm:^20.9.0"
     extract-zip: "npm:^2.0.1"
   bin:
     electron: cli.js
-  checksum: 10c0/808fcb746c6c73eda1b8b989559f31205a5aec3fe1058b55d38573cce698fb3b298ee41b842273c0dc82325beac230849c28b5d19c1b773677c5f41e2fde4f25
+  checksum: 10c0/c1708b7a01a1490fb9162823a95b4ebdcae237c624c4f9836fc9cb6bde063a650422f2219eb56a38ca1e8e50f0d178961c2224879cf0dc334f9e9891e85e817d
   languageName: node
   linkType: hard
 
@@ -9144,7 +9144,7 @@ __metadata:
     autoprefixer: "npm:^10.4.20"
     bytes: "npm:^3.1.2"
     daisyui: "npm:^4.12.23"
-    electron: "npm:^32.1.2"
+    electron: "npm:^34.0.2"
     electron-dl-manager: "npm:^3.2.1"
     electron-log: "npm:^5.3.0"
     electron-squirrel-startup: "npm:^1.0.1"
